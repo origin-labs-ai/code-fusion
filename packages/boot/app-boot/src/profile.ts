@@ -7,7 +7,7 @@
  * `cf.profile` with its ordered `bundles` list) and a `cordis.patch.yml`
  * (the user's own patch layer, applied after every bundle layer). Bundles are
  * npm packages whose manifest declares
- * `"xhe": { "bundle": { "patch": "./cordis.patch.yml" } }`; the tree is
+ * `"cf": { "bundle": { "patch": "./cordis.patch.yml" } }`; the tree is
  * composed by applying each bundle's patch list in `cf.profile.bundles` order over
  * an empty entry list, then the profile's own patches, then any launcher
  * layers (`--patch` files and flag-derived patches).
@@ -15,7 +15,7 @@
  * Module resolution is two-anchor by construction: a bundle name resolves
  * first from the cf installation (the launcher's own package), then from the
  * profile directory. The Loader's `baseUrl` is the profile directory, whose
- * `node_modules` pnpm manages for out-of-tree plugins, while the maintained
+ * `node_modules` npm manages for out-of-tree plugins, while the maintained
  * flat fallback directory `$CF_HOME/profiles/node_modules` (one symlink per
  * package the installation's app and bundles depend on) makes every in-box
  * plugin Node-resolvable from any profile through the ordinary parent-walk.
@@ -130,21 +130,18 @@ const PROFILE_PATCH_TEMPLATE = `# Your patch layer for this cf profile, applied 
 []
 `
 
-// The hoisted linker gives out-of-tree plugins a flat node_modules whose
+// npm's hoisted linker gives out-of-tree plugins a flat node_modules whose
 // missing peers (cordis and friends) fall through to the healed
 // profiles/node_modules installation fallback, so every plugin shares the
-// installation's single cordis instance instead of a duplicate. pnpm ≥10
-// reads its settings from pnpm-workspace.yaml, not .npmrc.
-const PROFILE_PNPM_WORKSPACE = `packages:
-  - .
-
-nodeLinker: hoisted
-autoInstallPeers: false
+// installation's single cordis instance instead of a duplicate. npm installs
+// peers automatically, so the profile disables that to keep the fallback the
+// only source of the shared peers.
+const PROFILE_NPMRC = `legacy-peer-deps=true
 `
 
 /**
  * Initialize a profile directory: manifest, empty user patch layer, and the
- * pnpm settings out-of-tree plugins need. Existing files are never touched,
+ * npm settings out-of-tree plugins need. Existing files are never touched,
  * so re-running is a no-op on an initialized profile.
  * @param dir - the profile directory from {@link resolveProfileDir}.
  * @param bundles - the initial `cf.profile.bundles` layer list.
@@ -154,7 +151,7 @@ export function initProfile(dir: string, bundles: readonly string[]): void {
   const manifestPath = join(dir, 'package.json')
   if (!existsSync(manifestPath)) {
     const manifest: ProfileManifest & { private: boolean } = {
-      name: `xhe-profile-${basename(dir)}`,
+      name: `cf-profile-${basename(dir)}`,
       private: true,
       dependencies: {},
       cf: { profile: { bundles: [...bundles] } },
@@ -163,8 +160,8 @@ export function initProfile(dir: string, bundles: readonly string[]): void {
   }
   const patchPath = join(dir, PROFILE_PATCH_FILENAME)
   if (!existsSync(patchPath)) writeFileSync(patchPath, PROFILE_PATCH_TEMPLATE)
-  const workspacePath = join(dir, 'pnpm-workspace.yaml')
-  if (!existsSync(workspacePath)) writeFileSync(workspacePath, PROFILE_PNPM_WORKSPACE)
+  const settingsPath = join(dir, '.npmrc')
+  if (!existsSync(settingsPath)) writeFileSync(settingsPath, PROFILE_NPMRC)
 }
 
 /** Ensure `link` is a symlink to `target`, replacing a wrong or dangling link; a real directory throws. */
@@ -207,10 +204,10 @@ function ensureSymlink(link: string, target: string): void {
  * over `dependencies` from the app manifest), each resolved from its own
  * real location. Node's parent-directory walk from any profile finds this
  * directory after the profile's own `node_modules`, so every in-box plugin
- * resolves without pnpm ever managing it — the exact "bundles come from the
+ * resolves without npm ever managing it — the exact "bundles come from the
  * installation" contract. The closure (not just direct dependencies) is
  * required for out-of-tree plugins: their peer dependencies name Service
- * Definition packages (`xhe-compaction`, `xhe-invariants`, ...) that the app
+ * Definition packages (`cf-compaction`, `cf-invariants`, ...) that the app
  * reaches only through its Service Provider packages. Symlinked packages
  * resolve their own dependencies from their real directories (Node's default
  * symlink-following), so each package needs only its one flat link.
@@ -232,8 +229,8 @@ export function healProfilesModuleFallback(installAnchor: string, home: string =
   // map itself (first resolution wins, matching Node's own nearest-wins).
   const queue: { anchor: string; manifest: ProfileManifest }[] = [{ anchor: installAnchor, manifest: appManifest }]
   for (let next = queue.shift(); next !== undefined; next = queue.shift()) {
-    // Peer dependencies participate: Service Definition packages (xhe-subprocess,
-    // xhe-compaction, ...) are peers of their implementations, never plain
+    // Peer dependencies participate: Service Definition packages (cf-subprocess,
+    // cf-compaction, ...) are peers of their implementations, never plain
     // dependencies, yet out-of-tree plugins import them directly.
     /* v8 ignore next -- a real app manifest always declares dependencies */
     for (const dep of [...Object.keys(next.manifest.dependencies ?? {}), ...Object.keys(next.manifest.peerDependencies ?? {})]) {
@@ -317,7 +314,7 @@ function normalizeShippedProfile(name: string, dir: string, manifest: ProfileMan
  * probe the require resolution paths for a directory holding the named
  * manifest. This is Node's own node_modules lookup order, so the result
  * matches what the Loader would import from the same anchor, and
- * `existsSync` follows the symlinks pnpm's isolated layout uses.
+ * `existsSync` follows the symlinks npm's installed layout uses.
  */
 function packageDirFromAnchor(anchor: string, packageName: string): string | undefined {
   // resolve.paths returns null only for builtins, which no bundle name is.

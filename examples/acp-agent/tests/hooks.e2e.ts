@@ -47,7 +47,7 @@ describe.skipIf(!process.env.DEEPSEEK_API_KEY)('acp-agent e2e: a PreToolUse hook
     spawned = launchAcpTestAgent({
       agent: AGENT,
       cwd: workdir,
-      env: { XHE_PERMISSION_MODE: 'danger-full-access' },
+      env: { CF_PERMISSION_MODE: 'danger-full-access' },
     })
     const { client, updates } = spawned
 

@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/examples/acp-demo"
   },
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
   "bin": {
-    "xhe-acp-demo": "lib/bin.js"
+    "cf-acp-demo": "lib/bin.js"
   },
   "exports": {
     ".": {
@@ -40,37 +40,37 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-acp": "workspace:^",
-    "@origin-ai/cf-agent-spine-demo": "workspace:^",
-    "@origin-ai/cf-app-boot": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session-checkpoint-policy": "workspace:^",
-    "@origin-ai/cf-session-persistence-jsonl": "workspace:^",
-    "@origin-ai/cf-session-query": "workspace:^",
-    "@origin-ai/cf-session-query-sqlite": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-agent-instructions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/cordis-plugin-include": "*",
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-acp": "*",
+    "@origin-ai/cf-agent-spine-demo": "*",
+    "@origin-ai/cf-app-boot": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session-checkpoint-policy": "*",
+    "@origin-ai/cf-session-persistence-jsonl": "*",
+    "@origin-ai/cf-session-query": "*",
+    "@origin-ai/cf-session-query-sqlite": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-agent-instructions": "*",
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-acp": "workspace:^",
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-spine-demo": "workspace:^",
-    "@origin-ai/cf-app-boot": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session-checkpoint-policy": "workspace:^",
-    "@origin-ai/cf-session-persistence-jsonl": "workspace:^",
-    "@origin-ai/cf-session-query": "workspace:^",
-    "@origin-ai/cf-session-query-sqlite": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-agent-instructions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/cordis-plugin-include": "*",
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-acp": "*",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-spine-demo": "*",
+    "@origin-ai/cf-app-boot": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session-checkpoint-policy": "*",
+    "@origin-ai/cf-session-persistence-jsonl": "*",
+    "@origin-ai/cf-session-query": "*",
+    "@origin-ai/cf-session-query-sqlite": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-agent-instructions": "*",
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/schemastery": "*"
   }
 }

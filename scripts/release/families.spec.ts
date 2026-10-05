@@ -27,7 +27,7 @@ function write(path: string, content: string): void {
 }
 
 function buildFixture(environment: Record<string, string>): string {
-  const root = mkdtempSync(join(tmpdir(), 'xhe-release-build-'))
+  const root = mkdtempSync(join(tmpdir(), 'cf-release-build-'))
   roots.push(root)
   write(join(root, 'apps/web/dist/index.html'), '<main></main>')
   write(join(root, 'packages/client/example/lib/client.js'), 'module.exports = {}\n')
@@ -41,38 +41,38 @@ afterEach(() => {
 })
 
 describe('release families', () => {
-  it('excludes private experimental packages from the dsh release', () => {
-    const members = releaseFamily('dsh').members(resolve(import.meta.dirname, '../..'))
+  it('excludes private experimental packages from the cf release', () => {
+    const members = releaseFamily('cf').members(resolve(import.meta.dirname, '../..'))
 
     expect(members.some(member => member.directory.startsWith('packages/experimental/'))).toBe(false)
     expect(members.map(member => member.name)).not.toContain('@origin-ai/cf-experimental-agent-team')
   })
 
-  it('bumps private dsh packages without adding release tags', () => {
-    const root = mkdtempSync(join(tmpdir(), 'xhe-release-version-'))
+  it('bumps private cf packages without adding release tags', () => {
+    const root = mkdtempSync(join(tmpdir(), 'cf-release-version-'))
     roots.push(root)
     write(join(root, 'package.json'), '{"version":"0.0.1"}\n')
     write(join(root, 'packages/experimental/prototype/package.json'), '{"version":"0.0.1","private":true}\n')
     write(join(root, 'packages/core/unselected/package.json'), '{"version":"0.0.1"}\n')
 
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const published = member('packages/core/published', '@origin-ai/cf-published')
-    const { planned } = planShared(dsh, root, [published], '0.0.2')
+    const { planned } = planShared(cf, root, [published], '0.0.2')
 
     expect(planned.map(entry => ({ path: entry.manifestPath, tag: entry.tag }))).toEqual([
       { path: 'package.json', tag: undefined },
-      { path: 'packages/core/published/package.json', tag: 'xhe-v0.0.2' },
+      { path: 'packages/core/published/package.json', tag: 'cf-v0.0.2' },
       { path: 'packages/experimental/prototype/package.json', tag: undefined },
     ])
   })
 
-  it('names one tag for the whole dsh family and one per vendored package', () => {
-    const dsh = releaseFamily('dsh')
+  it('names one tag for the whole cf family and one per vendored package', () => {
+    const cf = releaseFamily('cf')
     const vendor = releaseFamily('vendor')
     const cli = member('apps/cli', '@origin-ai/cf')
     const cordis = { ...member('vendor/cordis', '@deepseek-ai/cordis'), version: '4.0.1' }
 
-    expect(dsh.tagFor(cli)).toBe('xhe-v0.0.1')
+    expect(cf.tagFor(cli)).toBe('cf-v0.0.1')
     expect(vendor.tagFor(cordis)).toBe('vendor-cordis-v4.0.1')
     // The prefix is constructed, not recovered from a tag: a version with a
     // hyphen would defeat any suffix-stripping.
@@ -81,11 +81,11 @@ describe('release families', () => {
   })
 
   it('rejects a family whose members disagree on the shared version', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [member('apps/cli', '@origin-ai/cf'), { ...member('apps/web', '@origin-ai/cf-web-frontend'), version: '0.0.2' }]
 
-    expect(() => { dsh.verifyVersions(members) }).toThrow(/must share one version/)
-    expect(() => { dsh.verifyVersions([members[0]!]) }).not.toThrow()
+    expect(() => { cf.verifyVersions(members) }).toThrow(/must share one version/)
+    expect(() => { cf.verifyVersions([members[0]!]) }).not.toThrow()
   })
 
   it('accepts independent vendored versions and rejects an unpublishable one', () => {
@@ -99,32 +99,32 @@ describe('release families', () => {
     expect(() => { vendor.verifyVersions([{ ...members[0]!, version: 'latest' }]) }).toThrow(/unpublishable version/)
   })
 
-  it('requires a current official client build only for dsh artifacts', () => {
-    const dsh = releaseFamily('dsh')
+  it('requires a current official client build only for cf artifacts', () => {
+    const cf = releaseFamily('cf')
     const vendor = releaseFamily('vendor')
     const officialEnvironment = officialClientBuildEnvironment(resolve(import.meta.dirname, '../..'))
-    vi.stubEnv('XHE_CLIENT_COMMIT_HASH', officialEnvironment.XHE_CLIENT_COMMIT_HASH)
+    vi.stubEnv('CF_CLIENT_COMMIT_HASH', officialEnvironment.CF_CLIENT_COMMIT_HASH)
     const official = buildFixture(officialEnvironment)
     const defaultBuild = buildFixture({})
 
-    expect(() => { dsh.verifyBuildArtifacts(official) }).not.toThrow()
-    expect(() => { dsh.verifyBuildArtifacts(defaultBuild) }).toThrow(/XHE_CLIENT_TITLE/)
-    expect(() => { dsh.verifyBuildArtifacts(join(defaultBuild, 'missing')) }).toThrow(/record.*missing/)
+    expect(() => { cf.verifyBuildArtifacts(official) }).not.toThrow()
+    expect(() => { cf.verifyBuildArtifacts(defaultBuild) }).toThrow(/CF_CLIENT_TITLE/)
+    expect(() => { cf.verifyBuildArtifacts(join(defaultBuild, 'missing')) }).toThrow(/record.*missing/)
     expect(() => { vendor.verifyBuildArtifacts(join(defaultBuild, 'missing')) }).not.toThrow()
 
     write(join(official, 'packages/client/example/lib/client.js'), 'module.exports = { changed: true }\n')
-    expect(() => { dsh.verifyBuildArtifacts(official) }).toThrow(/artifacts differ/)
+    expect(() => { cf.verifyBuildArtifacts(official) }).toThrow(/artifacts differ/)
   })
 
   it('publishes a dependency before its consumer, and orders ties by name', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/consumer', '@origin-ai/cf-consumer', { dependencies: { '@origin-ai/cf-library': 'workspace:^' } }),
       member('packages/a/library', '@origin-ai/cf-library'),
       member('packages/a/zebra', '@origin-ai/cf-zebra'),
     ]
 
-    expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
+    expect(cf.publishOrder(members).order.map(entry => entry.name)).toEqual([
       '@origin-ai/cf-library',
       '@origin-ai/cf-consumer',
       '@origin-ai/cf-zebra',
@@ -132,31 +132,31 @@ describe('release families', () => {
   })
 
   it('reports a runtime dependency cycle instead of emitting an arbitrary order', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/left', '@origin-ai/cf-left', { dependencies: { '@origin-ai/cf-right': 'workspace:^' } }),
       member('packages/a/right', '@origin-ai/cf-right', { dependencies: { '@origin-ai/cf-left': 'workspace:^' } }),
     ]
 
-    expect(() => { dsh.publishOrder(members) }).toThrow(/dependency cycle/)
+    expect(() => { cf.publishOrder(members) }).toThrow(/dependency cycle/)
   })
 
   it('publishes a peer before its consumer', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/consumer', '@origin-ai/cf-consumer', { peerDependencies: { '@origin-ai/cf-zebra': 'workspace:^' } }),
       member('packages/a/zebra', '@origin-ai/cf-zebra'),
     ]
 
     // Name order alone would place the consumer first; the peer edge moves it.
-    expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
+    expect(cf.publishOrder(members).order.map(entry => entry.name)).toEqual([
       '@origin-ai/cf-zebra',
       '@origin-ai/cf-consumer',
     ])
   })
 
   it('orders around a peer cycle rather than refusing to publish, and reports the edge it dropped', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/left', '@origin-ai/cf-left', { peerDependencies: { '@origin-ai/cf-right': 'workspace:^' } }),
       member('packages/a/right', '@origin-ai/cf-right', { peerDependencies: { '@origin-ai/cf-left': 'workspace:^' } }),
@@ -164,7 +164,7 @@ describe('release families', () => {
 
     // Sibling packages declare each other as peers, and npm treats an unmet peer
     // as a warning, so this pair has to publish rather than fail the release.
-    const plan = dsh.publishOrder(members)
+    const plan = cf.publishOrder(members)
     expect(plan.order.map(entry => entry.name)).toEqual([
       '@origin-ai/cf-right',
       '@origin-ai/cf-left',
@@ -176,7 +176,7 @@ describe('release families', () => {
   })
 
   it('honours an install edge even when a peer cycle surrounds it', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/base', '@origin-ai/cf-base', { peerDependencies: { '@origin-ai/cf-consumer': 'workspace:^' } }),
       member('packages/a/consumer', '@origin-ai/cf-consumer', {
@@ -187,7 +187,7 @@ describe('release families', () => {
 
     // The install edge is absolute: base publishes first, and the peer edge that
     // would reverse it is the one dropped.
-    const plan = dsh.publishOrder(members)
+    const plan = cf.publishOrder(members)
     expect(plan.order.map(entry => entry.name)).toEqual([
       '@origin-ai/cf-base',
       '@origin-ai/cf-consumer',
@@ -198,7 +198,7 @@ describe('release families', () => {
   })
 
   it('refuses an order that would publish a consumer before a dependency it installs', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/alpha', '@origin-ai/cf-alpha', { peerDependencies: { '@origin-ai/cf-bravo': 'workspace:^' } }),
       member('packages/a/bravo', '@origin-ai/cf-bravo', { peerDependencies: { '@origin-ai/cf-charlie': 'workspace:^' } }),
@@ -209,11 +209,11 @@ describe('release families', () => {
     // would order this, and the traversal drops the install edge instead. That
     // order would publish charlie before the alpha it installs, so it is refused
     // here rather than published.
-    expect(() => { dsh.publishOrder(members) }).toThrow(/no publish order honours @deepseek-ai\/xhe-charlie -> @deepseek-ai\/xhe-alpha/)
+    expect(() => { cf.publishOrder(members) }).toThrow(/no publish order honours @deepseek-ai\/cf-charlie -> @deepseek-ai\/cf-alpha/)
   })
 
   it('ignores devDependencies when ordering', () => {
-    const dsh = releaseFamily('dsh')
+    const cf = releaseFamily('cf')
     const members = [
       member('packages/a/alpha', '@origin-ai/cf-alpha', { devDependencies: { '@origin-ai/cf-zebra': 'workspace:^' } }),
       member('packages/a/zebra', '@origin-ai/cf-zebra'),
@@ -221,26 +221,26 @@ describe('release families', () => {
 
     // A dev dependency is absent from the published package, so it must not move
     // the consumer behind it.
-    expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
+    expect(cf.publishOrder(members).order.map(entry => entry.name)).toEqual([
       '@origin-ai/cf-alpha',
       '@origin-ai/cf-zebra',
     ])
   })
 
-  it('applies the harness payload policy to dsh and keeps upstream payloads for vendored packages', () => {
-    const dsh = releaseFamily('dsh')
+  it('applies the harness payload policy to cf and keeps upstream payloads for vendored packages', () => {
+    const cf = releaseFamily('cf')
     const vendor = releaseFamily('vendor')
     const harness = member('packages/a/library', '@origin-ai/cf-library')
     const vendored = member('vendor/cordis', '@deepseek-ai/cordis')
 
-    expect(() => { dsh.validatePayload(harness, ['package/lib/index.js', 'package/src/index.ts']) })
+    expect(() => { cf.validatePayload(harness, ['package/lib/index.js', 'package/src/index.ts']) })
       .toThrow(/publishes source file/)
     expect(() => { vendor.validatePayload(vendored, ['package/lib/index.js', 'package/src/index.ts']) }).not.toThrow()
     expect(() => { vendor.validatePayload(vendored, []) }).toThrow(/empty tarball/)
   })
 
   it('drives the installed entry only for the family that publishes one', () => {
-    expect(releaseFamily('dsh').installedEntry).toEqual({ packageName: '@origin-ai/cf', binPath: 'lib/bin.js' })
+    expect(releaseFamily('cf').installedEntry).toEqual({ packageName: '@origin-ai/cf', binPath: 'lib/bin.js' })
     expect(releaseFamily('vendor').installedEntry).toBeUndefined()
   })
 

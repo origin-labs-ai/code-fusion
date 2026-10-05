@@ -203,9 +203,9 @@ Record actual corrections in `<review>`, then output the corrected complete docu
 Below are representative examples of common problems and their corrections. Follow the "Good" versions within the rule each example illustrates; examples do not override source context or higher-priority requirements.
 
 ### Colloquial verb → Professional verb
-- Source: `The repo pins pnpm@11.7.0 in package.json`
-- Bad: ` package.json  pnpm@11.7.0`
-- Good: ` package.json  pnpm@11.7.0`
+- Source: `The repo pins npm@12.0.2 in package.json`
+- Bad: ` package.json  npm@12.0.2`
+- Good: ` package.json  npm@12.0.2`
 
 ### Run-on sentence → Natural phrasing with pause
 - Source: `Read docs/architecture.md before changing anything under packages/.`

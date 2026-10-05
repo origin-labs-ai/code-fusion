@@ -48,7 +48,7 @@ describe('local attachment service', () => {
   })
 
   it('saves and reads through the service boundary', async () => {
-    const cfHome = await mkdtemp(join(tmpdir(), 'xhe-attachment-service-'))
+    const cfHome = await mkdtemp(join(tmpdir(), 'cf-attachment-service-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { cfHome })
       const data = Uint8Array.from(Buffer.from(
@@ -63,7 +63,7 @@ describe('local attachment service', () => {
   })
 
   it('commits a fully prepared image batch in input order', async () => {
-    const cfHome = await mkdtemp(join(tmpdir(), 'xhe-attachment-batch-success-'))
+    const cfHome = await mkdtemp(join(tmpdir(), 'cf-attachment-batch-success-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { cfHome })
       const first = new Uint8Array(await sharp({
@@ -87,7 +87,7 @@ describe('local attachment service', () => {
   })
 
   it.each([3, 4] as const)('admits a 16-bit %s-channel PNG as an 8-bit normalized object', async (channels) => {
-    const cfHome = await mkdtemp(join(tmpdir(), 'xhe-attachment-16-bit-'))
+    const cfHome = await mkdtemp(join(tmpdir(), 'cf-attachment-16-bit-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { cfHome })
       const source = new Uint8Array(await sharp({
@@ -106,7 +106,7 @@ describe('local attachment service', () => {
   })
 
   it('prepares every batch member before any write', async () => {
-    const cfHome = await mkdtemp(join(tmpdir(), 'xhe-attachment-batch-'))
+    const cfHome = await mkdtemp(join(tmpdir(), 'cf-attachment-batch-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { cfHome, normalizedImageMaxBytes: 1 })
       const valid = Uint8Array.from(Buffer.from(
@@ -124,7 +124,7 @@ describe('local attachment service', () => {
   })
 
   it('validates without persisting: a rejected image leaves no storage root behind', async () => {
-    const cfHome = await mkdtemp(join(tmpdir(), 'xhe-attachment-validate-'))
+    const cfHome = await mkdtemp(join(tmpdir(), 'cf-attachment-validate-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { cfHome })
       await expect(service.validateImage({ data: Uint8Array.of(1, 2, 3), mediaType: 'image/png' }))

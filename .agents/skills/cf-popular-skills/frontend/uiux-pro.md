@@ -1,4 +1,4 @@
-name: xhe-uiux-pro
+name: cf-uiux-pro
 description: **UI/UX PROFESSIONAL SKILL** 🎨 Complete frontend expertise for building beautiful, accessible, performant user interfaces. Covers React/Vue/Angular, CSS/SCSS/Tailwind, design systems, accessibility (WCAG 2.1 AA), responsive design, animations, UX patterns, component architecture, state management, performance optimization. Use when working on ANY frontend/UI/UX task.
 ---
 

@@ -1,10 +1,10 @@
 name: cf-popular-skills
-description: Collection of 20+ popular Claude Code-style skills and slash commands for XHE (Xee Harness Enhanced). Includes code review, testing, git workflow, debugging, Gauntlet-Loop pattern, and more. Use when user wants powerful AI coding agent capabilities.
+description: Collection of 20+ popular Claude Code-style skills and slash commands for CF (CodeFusion). Includes code review, testing, git workflow, debugging, Gauntlet-Loop pattern, and more. Use when user wants powerful AI coding agent capabilities.
 ---
 
-# XHE Popular Skills Collection
+# CF Popular Skills Collection
 
-**Supercharge your XHE experience with 20+ battle-tested skills inspired by Claude Code, Cursor, and Gauntlet-Loop patterns.**
+**Supercharge your CF experience with 20+ battle-tested skills inspired by Claude Code, Cursor, and Gauntlet-Loop patterns.**
 
 ## Available Skills & Commands
 
@@ -67,7 +67,7 @@ description: Collection of 20+ popular Claude Code-style skills and slash comman
 ## Quick Start
 
 ```bash
-# In XHE Web UI or CLI, use:
+# In CF Web UI or CLI, use:
 /review          # Review current changes
 /test            # Generate tests for selected file
 /commit          # Auto-generate commit message
@@ -90,7 +90,7 @@ Each skill has its own detailed documentation:
 
 ## Integration Notes
 
-These skills work with XHE's native:
+These skills work with CF's native:
 - **Skill System**: Auto-discovered via `.agents/skills/`
 - **Command Registry**: Registered as slash commands via `ctx.commands`
 - **Tool Pipeline**: Uses existing shell/fs/web tools
@@ -98,7 +98,7 @@ These skills work with XHE's native:
 
 ## Quality Guarantees
 
-Every skill follows XHE conventions:
+Every skill follows CF conventions:
 - ✅ Defensive patterns applied
 - ✅ Session events emitted
 - ✅ Model-visible = logged invariant

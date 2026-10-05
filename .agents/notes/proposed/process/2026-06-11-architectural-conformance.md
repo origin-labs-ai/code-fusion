@@ -10,13 +10,13 @@ Two architectural guarantees currently live only in prose: (1) nothing depends o
 
 **dependency-cruiser** with rules:
 
-- `packages/*` (except agent-loop's own tests and examples/) must not import `@origin-ai/xhe-agent-loop`.
-- No cross-package deep imports (`@origin-ai/xhe-*/src/...` paths) — public entry points only.
+- `packages/*` (except agent-loop's own tests and examples/) must not import `@origin-ai/cf-agent-loop`.
+- No cross-package deep imports (`@origin-ai/cf-*/src/...` paths) — public entry points only.
 - No import cycles anywhere in packages/.
 - `vendor/*` must not import from `packages/*`.
-- Layering: xhe-llm imports nothing from other dsh packages; xhe-session only xhe-llm; etc. (the dependency table in packages/README.md, enforced).
+- Layering: cf-llm imports nothing from other cf packages; cf-session only cf-llm; etc. (the dependency table in packages/README.md, enforced).
 
-**Adapter conformance kit** in xhe-llm (`@origin-ai/xhe-llm/conformance`): a reusable vitest suite parameterized by an adapter factory, asserting the chunk-protocol contract — index monotonicity per block, no deltas after `block-end` for an index, exactly one `finish`, usage at most once, every `tool-call-delta` carries the call id, abort honored promptly. Run it against the mocks now; the DeepSeek V4 adapter inherits it on day one. Optionally a dev-mode `strictAdapter()` wrapper enforcing the same at runtime behind a debug flag (pairs with [the dev-mode invariants](../../implemented/architecture/2026-06-11-dev-invariants-over-deep-readonly.md)).
+**Adapter conformance kit** in cf-llm (`@origin-ai/cf-llm/conformance`): a reusable vitest suite parameterized by an adapter factory, asserting the chunk-protocol contract — index monotonicity per block, no deltas after `block-end` for an index, exactly one `finish`, usage at most once, every `tool-call-delta` carries the call id, abort honored promptly. Run it against the mocks now; the DeepSeek V4 adapter inherits it on day one. Optionally a dev-mode `strictAdapter()` wrapper enforcing the same at runtime behind a debug flag (pairs with [the dev-mode invariants](../../implemented/architecture/2026-06-11-dev-invariants-over-deep-readonly.md)).
 
 ## Plan
 
@@ -29,6 +29,6 @@ dependency-cruiser config + CI step first (an hour of work, permanent guarantee)
 
 ## Risks
 
-Dep-cruiser rule maintenance as packages are added — keep rules pattern-based (`xhe-*`) rather than enumerated.
+Dep-cruiser rule maintenance as packages are added — keep rules pattern-based (`cf-*`) rather than enumerated.
 
 <!-- agent-note-format: alternatives-not-recorded (pre-format Agent Note) -->

@@ -38,9 +38,9 @@ export interface AppIdentity {
  * can suppress attribution entirely.
  */
 export const APP_IDENTITY: AppIdentity = {
-  product: 'xhe',
+  product: 'cf',
   version,
-  url: 'https://github.com/deepseek-ai/xhe',
+  url: 'https://github.com/deepseek-ai/cf',
 }
 
 /**

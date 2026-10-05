@@ -50,7 +50,7 @@ interface AgentHandle {
 
 ## The agent handle
 
-`Agent` is the surface every plugin (UI, hooks, orchestrators) programs against; `ctx.agents.get(id)` returns it, and the [initiator scope](#initiating-agent) carries it. The concrete implementation is package-internal to xhe-agent-loop; nothing outside the loop depends on it. The unified `send` method exposes target and wakeup routing directly; `followup`, `steer`, and `inject` are fixed-preset aliases.
+`Agent` is the surface every plugin (UI, hooks, orchestrators) programs against; `ctx.agents.get(id)` returns it, and the [initiator scope](#initiating-agent) carries it. The concrete implementation is package-internal to cf-agent-loop; nothing outside the loop depends on it. The unified `send` method exposes target and wakeup routing directly; `followup`, `steer`, and `inject` are fixed-preset aliases.
 
 Source: [`packages/core/agent/src/types.ts`](../../packages/core/agent/src/types.ts)
 
@@ -282,12 +282,12 @@ Six canonical maps use this pattern; a plugin author extends these:
 
 | Map | Package | Derives | Catalog |
 |---|---|---|---|
-| `ContentBlockMap` | xhe-llm | `ContentBlock` | [llm-streaming.md](llm-streaming.md#content-blocks-and-messages) |
-| `MessageSourceMap` | xhe-llm | `MessageSource` | [llm-streaming.md](llm-streaming.md#content-blocks-and-messages) |
-| `FinishReasonMap` | xhe-llm | `FinishReason` | [llm-streaming.md](llm-streaming.md#the-model-request-and-result) |
-| `TurnTriggerMap` | xhe-session | `TurnTrigger` | [session.md](session.md) |
-| `TurnEndReasonMap` | xhe-session | `TurnEndReason` | [session.md](session.md) |
-| `SessionEventMap` | xhe-session | `SessionEvent` | [session.md](session.md) |
+| `ContentBlockMap` | cf-llm | `ContentBlock` | [llm-streaming.md](llm-streaming.md#content-blocks-and-messages) |
+| `MessageSourceMap` | cf-llm | `MessageSource` | [llm-streaming.md](llm-streaming.md#content-blocks-and-messages) |
+| `FinishReasonMap` | cf-llm | `FinishReason` | [llm-streaming.md](llm-streaming.md#the-model-request-and-result) |
+| `TurnTriggerMap` | cf-session | `TurnTrigger` | [session.md](session.md) |
+| `TurnEndReasonMap` | cf-session | `TurnEndReason` | [session.md](session.md) |
+| `SessionEventMap` | cf-session | `SessionEvent` | [session.md](session.md) |
 
 Two large discriminated unions are the ones consumers `switch` over most: **`StreamChunk`** (the streaming protocol) and **`SessionEvent`** (the log entry). Per the repo convention, `switch` on the tag — don't chain `if`s — so each arm narrows and a typo'd tag fails to compile.
 
@@ -295,7 +295,7 @@ Two large discriminated unions are the ones consumers `switch` over most: **`Str
 
 IDs passed between packages are **branded** — structurally strings, but non-interchangeable at the type level (a `SessionId` cannot be passed where a `CallId` is expected). Construction goes through a per-type factory; comparison, logging, and JSON behave as ordinary strings.
 
-The `Branded<B>` primitive lives in its own type-only package, [xhe-brand](../../packages/util/brand) (no runtime code, no harness-package dependency), so any package can brand the ids it owns without depending on an unrelated capability package.
+The `Branded<B>` primitive lives in its own type-only package, [cf-brand](../../packages/util/brand) (no runtime code, no harness-package dependency), so any package can brand the ids it owns without depending on an unrelated capability package.
 
 Source: [`packages/util/brand/src/index.ts`](../../packages/util/brand/src/index.ts)
 
@@ -304,7 +304,7 @@ Source: [`packages/util/brand/src/index.ts`](../../packages/util/brand/src/index
 type Branded<B extends string> = string & { readonly [BRAND]: B }
 ```
 
-The two core IDs are `CallId` (correlates a tool call with its result; xhe-llm) and `SessionId` (the shared live agent and durable session identity; xhe-session). Capability packages brand their own ids too, such as `JobId` in [jobs.md](jobs.md).
+The two core IDs are `CallId` (correlates a tool call with its result; cf-llm) and `SessionId` (the shared live agent and durable session identity; cf-session). Capability packages brand their own ids too, such as `JobId` in [jobs.md](jobs.md).
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 
@@ -312,7 +312,7 @@ The two core IDs are `CallId` (correlates a tool call with its result; xhe-llm) 
 
 ## Cordis API
 
-Generated from source by `scripts/gen-cordis-catalog.ts` (verified fresh by `pnpm run verify-cordis-catalog` in doc-sync; regenerate with `pnpm run gen-cordis-catalog`) — the language sides differ only in locale-specific paired document paths. Signature blocks use a `ts cordis-catalog` fence and keep the original source JSDoc; dispatch modes are defined in the [primer](../cordis-primer.md#dispatch-modes), and the framework-inherited `ctx` API lives in [cordis-api/inherited.md](../cordis-api/inherited.md).
+Generated from source by `scripts/gen-cordis-catalog.ts` (verified fresh by `npm run verify-cordis-catalog` in doc-sync; regenerate with `npm run gen-cordis-catalog`) — the language sides differ only in locale-specific paired document paths. Signature blocks use a `ts cordis-catalog` fence and keep the original source JSDoc; dispatch modes are defined in the [primer](../cordis-primer.md#dispatch-modes), and the framework-inherited `ctx` API lives in [cordis-api/inherited.md](../cordis-api/inherited.md).
 
 <a id="ctxagentdefaultmodel--agentdefaultmodelconfig"></a>
 
@@ -520,7 +520,7 @@ serviceFor<K extends string & keyof Context>(agent: { ctx: Context }, name: K): 
  * new one is ensured BEFORE the link moves. An unknown or unusable preset
  * therefore throws with the agent exactly as it was — there is no torn-down
  * state to restore. The re-link runs through the binding this roster kept
- * from the agent's mount — xhe-scope's only re-link authority. An agent
+ * from the agent's mount — cf-scope's only re-link authority. An agent
  * that never composed one has nothing to re-link: the switch is then the
  * agent's first bind, exactly a mount.
  * @param agentCtx - the agent's scope context.

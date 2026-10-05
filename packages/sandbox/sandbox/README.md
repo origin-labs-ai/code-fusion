@@ -16,7 +16,7 @@ Implementations: [`@origin-ai/cf-sandbox-local`](../sandbox-local/) (Linux: `bwr
 
 #### What the model sees
 
-Through [`xhe-bash-sandbox`](../../shell/bash-sandbox/README.md) and [`xhe-tool-bash`](../../shell/tool-bash/README.md), failure to enforce a requested mode produces code `SANDBOX_UNAVAILABLE` and the exact error below. An execution-time runner failure adds ` Runner failure: <detail>`.
+Through [`cf-bash-sandbox`](../../shell/bash-sandbox/README.md) and [`cf-tool-bash`](../../shell/tool-bash/README.md), failure to enforce a requested mode produces code `SANDBOX_UNAVAILABLE` and the exact error below. An execution-time runner failure adds ` Runner failure: <detail>`.
 
 ##### Exact error
 

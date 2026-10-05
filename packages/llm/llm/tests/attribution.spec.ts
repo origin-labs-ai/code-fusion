@@ -19,9 +19,9 @@ describe('APP_IDENTITY', () => {
 
   it('carries only static public product facts', () => {
     expect(APP_IDENTITY).toEqual({
-      product: 'xhe',
+      product: 'cf',
       version: manifest.version,
-      url: 'https://github.com/deepseek-ai/xhe',
+      url: 'https://github.com/deepseek-ai/cf',
     })
   })
 })
@@ -29,7 +29,7 @@ describe('APP_IDENTITY', () => {
 describe('userAgent', () => {
   it('renders product/version with the +url comment', () => {
     expect(userAgent()).toBe(
-      `xhe/${manifest.version} (+https://github.com/deepseek-ai/xhe)`,
+      `cf/${manifest.version} (+https://github.com/deepseek-ai/cf)`,
     )
   })
 

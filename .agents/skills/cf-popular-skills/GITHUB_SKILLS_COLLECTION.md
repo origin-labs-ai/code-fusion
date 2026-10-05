@@ -1,4 +1,4 @@
-# 🌟 XHE Popular Skills - Complete GitHub Collection
+# 🌟 CF Popular Skills - Complete GitHub Collection
 
 **100+ Skills from the most popular AI coding agent repositories!**
 
@@ -424,7 +424,7 @@ WITH optimization:
 
 ### Quick Start (All Skills Available Now!)
 ```bash
-# In XHE Web UI or CLI:
+# In CF Web UI or CLI:
 /help                         # See all available commands
 /<command-name>               # Any command from above!
 

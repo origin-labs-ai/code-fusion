@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/mcp/mcp-client"
   },
   "type": "module",
@@ -32,29 +32,29 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-attachment": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-subprocess": "workspace:^",
-    "@origin-ai/cf-timeout": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-attachment": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-subprocess": "*",
+    "@origin-ai/cf-timeout": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@deepseek-ai/schemastery": "*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@origin-ai/cf-attachment": "workspace:^",
-    "@origin-ai/cf-attachment-local": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-subprocess": "workspace:^",
-    "@origin-ai/cf-timeout": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
+    "@origin-ai/cf-attachment": "*",
+    "@origin-ai/cf-attachment-local": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-subprocess": "*",
+    "@origin-ai/cf-timeout": "*",
+    "@origin-ai/cf-tools": "*",
     "@modelcontextprotocol/server-everything": "^2026.7.4",
     "@modelcontextprotocol/server-filesystem": "^2026.7.4",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis": "*"
   }
 }

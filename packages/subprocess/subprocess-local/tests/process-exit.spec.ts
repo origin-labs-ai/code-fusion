@@ -87,7 +87,7 @@ function cleanupTree(state: TreeState | undefined, identities: ProcessIdentity[]
 }
 
 async function runScenario(kind: ManagedKind, trigger: ExitTrigger) {
-  const root = await mkdtemp(join(tmpdir(), `xhe-subprocess-host-exit-${kind}-${trigger}-`))
+  const root = await mkdtemp(join(tmpdir(), `cf-subprocess-host-exit-${kind}-${trigger}-`))
   const launch = resolveExampleLaunch({
     srcBin: hostScript,
     mode: 'src',

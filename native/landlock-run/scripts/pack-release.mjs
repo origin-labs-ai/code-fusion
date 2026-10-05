@@ -2,8 +2,8 @@
 /**
  * Pack every published package into release tarballs, in publish order
  * (platform packages first, then the entries that optionally depend on
- * them), and write `publish-order.txt` next to them. `pnpm pack` produces
- * the EXACT bytes `pnpm publish` would upload and runs each package's
+ * them), and write `publish-order.txt` next to them. `npm pack` produces
+ * the EXACT bytes `npm publish` would upload and runs each package's
  * `prepack` gate, so a missing binary or unbuilt `lib/` refuses here.
  *
  * Usage: `node scripts/pack-release.mjs [dest] [--current-platform-only]`.
@@ -48,21 +48,16 @@ fs.rmSync(destination, { recursive: true, force: true });
 fs.mkdirSync(destination, { recursive: true });
 
 const dirs = [...(currentPlatformOnly ? hostPlatformDirs() : platformDirs()), ...entryDirs()];
-const platformSet = new Set(platformDirs());
 const publishOrder = [];
 for (const dir of dirs) {
   const manifest = readJson(path.join(root, dir, 'package.json'));
-  // Platform packages are packed with npm: pnpm pack (observed on 11.7.0)
-  // normalizes file modes and STRIPS the executable bit, which ships a
-  // launcher no consumer can spawn; npm pack preserves it. Platform packages
-  // have no dependencies by construction, so they need none of pnpm's
-  // workspace-protocol conversion — the entry packages do, and carry no
-  // executables, so they keep pnpm pack.
-  if (platformSet.has(dir)) {
-    run('npm', ['pack', `./${dir}`, '--pack-destination', destination]);
-  } else {
-    run('pnpm', ['--dir', dir, 'pack', '--pack-destination', destination]);
-  }
+  // One pack path for both package families, run from the repository root so
+  // each tarball is named from its own directory. Two properties matter and
+  // are checked below: `npm pack` preserves the executable bit on the shipped
+  // launcher (some pack paths normalize file modes and strip it, shipping a
+  // launcher no consumer can spawn), and it rewrites workspace-protocol
+  // ranges in the entry packages' manifests into resolved versions.
+  run('npm', ['pack', `./${dir}`, '--pack-destination', destination]);
 
   const tarball = tarballName(manifest);
   const tarballPath = path.join(destination, tarball);

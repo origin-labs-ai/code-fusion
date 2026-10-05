@@ -33,7 +33,7 @@ describe('cf-base bundle', () => {
     expect(rows.length).toBeGreaterThan(50)
     expect(rows.some(row => row.id === 'agent-loop')).toBe(true)
     expect(rows.find(row => row.id === 'session-telemetry-otel')?.config?.['mode']).toEqual({
-      __jsExpr: "process.env.XHE_TELEMETRY_MODE || 'DISABLED'",
+      __jsExpr: "process.env.CF_TELEMETRY_MODE || 'DISABLED'",
     })
     expect(rows.filter(row => row.id === 'subagent-codex')).toHaveLength(0)
     expect(rows.filter(row => row.id === 'subagent-claude-code')).toHaveLength(0)

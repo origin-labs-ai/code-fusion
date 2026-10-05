@@ -38,7 +38,7 @@ Independent of the parent request cache. Child history grows append-only, while 
 
 #### What the model sees
 
-Through `xhe-tool-subagent`, the parent receives only the child's final output or stop-reason error.
+Through `cf-tool-subagent`, the parent receives only the child's final output or stop-reason error.
 
 #### Token effect
 

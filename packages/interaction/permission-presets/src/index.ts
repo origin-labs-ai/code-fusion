@@ -7,7 +7,7 @@
  * `permissions` session projection; the write side ships as the
  * `/permission` command — both optional children over the same service.
  *
- * @module xhe-permission-presets
+ * @module cf-permission-presets
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'

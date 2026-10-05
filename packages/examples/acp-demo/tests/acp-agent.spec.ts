@@ -31,15 +31,15 @@ async function mount(config: acpAgent.Config, withBash = false): Promise<Context
       start() { throw new Error('composition test does not execute bash') },
     })
   }
-  config.persistenceRoot ??= await mkdtemp(join(tmpdir(), 'xhe-acp-demo-persistence-'))
+  config.persistenceRoot ??= await mkdtemp(join(tmpdir(), 'cf-acp-demo-persistence-'))
   await ctx.plugin(acpAgent, config)
   return ctx
 }
 
 async function isolatedSkillsConfig(catalogDescriptionMaxLength?: number): Promise<NonNullable<acpAgent.Config['skills']>> {
-  const home = await mkdtemp(join(tmpdir(), 'xhe-acp-demo-skills-'))
+  const home = await mkdtemp(join(tmpdir(), 'cf-acp-demo-skills-'))
   return {
-    filesystem: { cfHome: join(home, '.dsh'), agentsHome: join(home, '.agents') },
+    filesystem: { cfHome: join(home, '.cf'), agentsHome: join(home, '.agents') },
     ...catalogDescriptionMaxLength !== undefined ? { tool: { catalogDescriptionMaxLength } } : {},
   }
 }
@@ -60,34 +60,34 @@ async function composePrefix(ctx: Context): Promise<Message[]> {
 }
 
 async function withIsolatedSkillHomes<T>(run: () => Promise<T>): Promise<T> {
-  const oldDshHome = process.env.CF_HOME
-  const oldAgentsHome = process.env.XHE_AGENTS_HOME
-  const home = await mkdtemp(join(tmpdir(), 'xhe-acp-demo-default-skills-'))
-  process.env.CF_HOME = join(home, '.dsh')
-  process.env.XHE_AGENTS_HOME = join(home, '.agents')
+  const oldCfHome = process.env.CF_HOME
+  const oldAgentsHome = process.env.CF_AGENTS_HOME
+  const home = await mkdtemp(join(tmpdir(), 'cf-acp-demo-default-skills-'))
+  process.env.CF_HOME = join(home, '.cf')
+  process.env.CF_AGENTS_HOME = join(home, '.agents')
   try {
     return await run()
   } finally {
-    if (oldDshHome === undefined) {
+    if (oldCfHome === undefined) {
       delete process.env.CF_HOME
     } else {
-      process.env.CF_HOME = oldDshHome
+      process.env.CF_HOME = oldCfHome
     }
     if (oldAgentsHome === undefined) {
-      delete process.env.XHE_AGENTS_HOME
+      delete process.env.CF_AGENTS_HOME
     } else {
-      process.env.XHE_AGENTS_HOME = oldAgentsHome
+      process.env.CF_AGENTS_HOME = oldAgentsHome
     }
   }
 }
 
-describe('xhe-acp-demo composition', () => {
+describe('cf-acp-demo composition', () => {
   it('brings up the spine + persistence + the ACP bridge', async () => {
     const ctx = await mount({
       provider: 'mock',
       model: 'mock',
       persona: 'hi',
-      persistenceRoot: await mkdtemp(join(tmpdir(), 'xhe-acp-demo-test-')),
+      persistenceRoot: await mkdtemp(join(tmpdir(), 'cf-acp-demo-test-')),
       persistenceCompression: 'none',
       skills: await isolatedSkillsConfig(),
       workspaceContext: false,
@@ -143,7 +143,7 @@ describe('xhe-acp-demo composition', () => {
       provider: 'mock',
       model: 'mock',
       persona: 'hi',
-      persistenceRoot: await mkdtemp(join(tmpdir(), 'xhe-acp-demo-workspace-context-')),
+      persistenceRoot: await mkdtemp(join(tmpdir(), 'cf-acp-demo-workspace-context-')),
       workspaceContext: false,
     })
     expect(ctx.get('agents')).toBeDefined()
@@ -174,7 +174,7 @@ describe('xhe-acp-demo composition', () => {
       provider: 'mock',
       model: 'mock',
       maxParallelToolCalls: 3,
-      persistenceRoot: await mkdtemp(join(tmpdir(), 'xhe-acp-demo-test-parallel-')),
+      persistenceRoot: await mkdtemp(join(tmpdir(), 'cf-acp-demo-test-parallel-')),
       skills: await isolatedSkillsConfig(),
       workspaceContext: false,
     })
@@ -232,7 +232,7 @@ describe('xhe-acp-demo composition', () => {
       provider: 'mock',
       model: 'mock',
       toolOrder: ['zulu', TOOL_ORDER_REST],
-      persistenceRoot: await mkdtemp(join(tmpdir(), 'xhe-acp-demo-test-tool-order-')),
+      persistenceRoot: await mkdtemp(join(tmpdir(), 'cf-acp-demo-test-tool-order-')),
       workspaceContext: false,
     })
     // The bundle's own bash tools pend on the absent `ctx.shell` executor in

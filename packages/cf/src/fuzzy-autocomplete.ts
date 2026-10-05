@@ -1,4 +1,4 @@
-/** Fuzzy Autocomplete for XH Slash Commands */
+/** Fuzzy Autocomplete for CF Slash Commands */
 import type { SkillCommand, FuzzyMatchResult } from './types'
 
 export function initFuzzyAutocomplete(ctx: any): void {

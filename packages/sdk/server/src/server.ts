@@ -121,7 +121,7 @@ export class HarnessSdkJsonRpcServer {
       if (this.provider !== 'deepseek-official') throw new Error(`no adapter registered for provider "${this.provider}"`)
       this.llmFiber = await this.ctx.plugin(LlmDeepSeek, {})
     }
-    return { serverInfo: { name: 'xhe-sdk-runtime', version: '0.0.1' } }
+    return { serverInfo: { name: 'cf-sdk-runtime', version: '0.0.1' } }
   }
 
   /**
@@ -196,7 +196,7 @@ export class HarnessSdkJsonRpcServer {
       case 'shutdown':
         return this.shutdown()
       default:
-        throw new Error(`unknown Xee Harness Enhanced SDK runtime method: ${method}`)
+        throw new Error(`unknown CodeFusion SDK runtime method: ${method}`)
     }
   }
 

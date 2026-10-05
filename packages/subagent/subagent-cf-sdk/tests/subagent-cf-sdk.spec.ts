@@ -85,7 +85,7 @@ describe('sdkStopReason', () => {
   })
 })
 
-describe('xhe-subagent-cf-sdk provider', () => {
+describe('cf-subagent-cf-sdk provider', () => {
   it('runs a child turn end to end with a parent-unique run id', async () => {
     const ctx = await setup({ FAKE_TEXT: 'hello from sdk child' })
     const run = await ctx.subagents.start('cf-sdk', request('do X'))
@@ -128,22 +128,22 @@ describe('xhe-subagent-cf-sdk provider', () => {
   })
 
   it('scrubs ambient credentials but forwards explicit config env', async () => {
-    process.env.XHE_TEST_AMBIENT_SECRET_KEY = 'leak-me-not'
+    process.env.CF_TEST_AMBIENT_SECRET_KEY = 'leak-me-not'
     try {
       const ctx = await setup({
-        FAKE_ECHO_ENV: 'XHE_TEST_AMBIENT_SECRET_KEY,DEEPSEEK_API_KEY',
+        FAKE_ECHO_ENV: 'CF_TEST_AMBIENT_SECRET_KEY,DEEPSEEK_API_KEY',
         DEEPSEEK_API_KEY: 'explicit-child-key',
         FAKE_TEXT: 'done',
       })
       const run = await ctx.subagents.start('cf-sdk', request())
       const result = await run.result
       const answer = text(result.output)
-      expect(answer).toContain('XHE_TEST_AMBIENT_SECRET_KEY=\n')
+      expect(answer).toContain('CF_TEST_AMBIENT_SECRET_KEY=\n')
       expect(answer).toContain('DEEPSEEK_API_KEY=explicit-child-key')
       await run.dispose()
       await ctx.fiber.dispose()
     } finally {
-      delete process.env.XHE_TEST_AMBIENT_SECRET_KEY
+      delete process.env.CF_TEST_AMBIENT_SECRET_KEY
     }
   })
 

@@ -13,15 +13,15 @@ const partitions = parseCoveragePartitionCount(process.env[COVERAGE_PARTITIONS_E
 if (partitions === undefined) {
   throw new Error(`${COVERAGE_PARTITIONS_ENV} is required by partitioned coverage.`)
 }
-const pnpmEntrypoint = process.env.npm_execpath
-if (pnpmEntrypoint === undefined || pnpmEntrypoint === '') {
-  throw new Error('partitioned coverage must be invoked through a pnpm package script.')
+const npmEntrypoint = process.env.npm_execpath
+if (npmEntrypoint === undefined || npmEntrypoint === '') {
+  throw new Error('partitioned coverage must be invoked through a npm package script.')
 }
 
 const coordinator = new CoveragePartitionCoordinator({
   root: resolve(import.meta.dirname, '..'),
   partitions,
-  pnpmEntrypoint,
+  npmEntrypoint,
   vitestArgs: [
     ...coverageTestTimeoutArgs(process.env[COVERAGE_TEST_TIMEOUT_ENV]),
     ...forwardedCoverageArgs(process.argv.slice(2)),

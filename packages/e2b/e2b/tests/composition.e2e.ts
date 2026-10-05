@@ -28,13 +28,13 @@ describe.skipIf(!process.env.E2B_API_KEY)('E2B live Loader composition', () => {
     if (apiKey === undefined) throw new Error('E2B_API_KEY disappeared before the PTY environment test')
     const sandbox = await Sandbox.create({
       apiKey,
-      envs: { NPM_TOKEN: 'sentinel-secret', XHE_STALE: 'sentinel-stale', KEEP: 'visible' },
+      envs: { NPM_TOKEN: 'sentinel-secret', CF_STALE: 'sentinel-stale', KEEP: 'visible' },
       timeoutMs: 60_000,
       secure: true,
       lifecycle: { onTimeout: 'kill' },
     })
     try {
-      const profileLeakPath = '/home/user/xhe-e2b-bootstrap-profile-leak'
+      const profileLeakPath = '/home/user/cf-e2b-bootstrap-profile-leak'
       const hostileProfile = [
         'if [[ "${NPM_TOKEN-}" == "sentinel-secret" ]]; then',
         `  printf leaked > ${profileLeakPath}`,
@@ -49,7 +49,7 @@ describe.skipIf(!process.env.E2B_API_KEY)('E2B live Loader composition', () => {
       const ctx = new Context()
       ctx.provide('e2b', {
         cwd: '/home/user',
-        runtimeRoot: '/home/user/.xhe-e2b',
+        runtimeRoot: '/home/user/.cf-e2b',
         getSandbox: async () => sandbox,
       } as never)
       const sandboxPolicyFiber = await ctx.plugin(SandboxPolicyService, {
@@ -105,10 +105,10 @@ describe.skipIf(!process.env.E2B_API_KEY)('E2B live Loader composition', () => {
       })
       const session = await backend.spawn({ sessionId: TerminalSessionId('env'), owner, type: 'shell' })
       const result = await session.startSend({
-        text: "printf 'NPM=<%s> DSH=<%s> KEEP=<%s>\\n' \"$NPM_TOKEN\" \"$XHE_STALE\" \"$KEEP\"",
+        text: "printf 'NPM=<%s> CF=<%s> KEEP=<%s>\\n' \"$NPM_TOKEN\" \"$CF_STALE\" \"$KEEP\"",
         submit: true,
       }).done
-      expect(result.viewport).toContain('NPM=<> DSH=<> KEEP=<visible>')
+      expect(result.viewport).toContain('NPM=<> CF=<> KEEP=<visible>')
       expect(result.viewport).not.toContain('sentinel-secret')
       expect(result.viewport).not.toContain('sentinel-stale')
       await expect(sandbox.files.read(profileLeakPath)).rejects.toBeInstanceOf(FileNotFoundError)
@@ -125,7 +125,7 @@ describe.skipIf(!process.env.E2B_API_KEY)('E2B live Loader composition', () => {
   it('runs FS, Bash, PTY, and LSP in one sandbox and deletes it', async () => {
     const { stdout, stderr } = await runLoaderSmoke({
       label: 'E2B composition',
-      tempDirPrefix: 'xhe-e2b-composition-',
+      tempDirPrefix: 'cf-e2b-composition-',
       binScript,
       libBinScript: binScript,
       configPath,
@@ -166,7 +166,7 @@ describe.skipIf(!process.env.E2B_API_KEY)('E2B live Loader composition', () => {
     const terminalMotd = (output.terminal as { motd: string }).motd
     expect(terminalMotd.length).toBeGreaterThan(0)
     expect(terminalMotd).not.toContain('exec /bin/bash')
-    expect(terminalMotd).not.toContain('.xhe-e2b/terminals/')
+    expect(terminalMotd).not.toContain('.cf-e2b/terminals/')
     expect((output.terminal as { echo: { viewport: string } }).echo.viewport).toContain('PTY-你好')
     expect((output.terminal as { scrollback: string }).scrollback).toContain('PTY-你好')
     expect((output.terminal as { signal: { targetPgid: number } }).signal.targetPgid).toBeGreaterThan(0)

@@ -25,7 +25,7 @@
 | MCP | MCP | | | |
 | PR | PR | PR（Pull Request） | | |
 | RAG | RAG | RAG（） | | |
-| SDK | SDK | | |  Python  TypeScript SDK  JSON-RPC ／；Xee Harness Enhanced  SDK |
+| SDK | SDK | | |  Python  TypeScript SDK  JSON-RPC ／；CodeFusion  SDK |
 | SSE | SSE | SSE（Server-Sent Events） | | |
 
 ## （）
@@ -66,7 +66,7 @@
 | job id | job id | |  id |  |
 | subagent | subagent | | | |
 | transcript | transcript | transcript（） | | ， |
-| Typert | Typert | | TypeRT、typeRT、Type RT | Xee Harness Enhanced 、、loader  registry  |
+| Typert | Typert | | TypeRT、typeRT、Type RT | CodeFusion 、、loader  registry  |
 | waterfall | waterfall | waterfall（） | | |
 | wheel | wheel  | | | Python  |
 | worktree | worktree | | | git  |

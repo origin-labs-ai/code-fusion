@@ -52,7 +52,7 @@ function resultText(result: { content: { type: string; text?: string }[] }): str
  * @returns the booted context.
  */
 async function boot(configLines: readonly string[]): Promise<Context> {
-  root = await mkdtemp(join(tmpdir(), 'xhe-todo-loader-'))
+  root = await mkdtemp(join(tmpdir(), 'cf-todo-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
     "- name: '@origin-ai/cf-agent'",

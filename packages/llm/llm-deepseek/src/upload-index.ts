@@ -1,4 +1,4 @@
-/** Durable DeepSeek attachment-to-file-id index. @module xhe-llm-deepseek/upload-index */
+/** Durable DeepSeek attachment-to-file-id index. @module cf-llm-deepseek/upload-index */
 
 import { createHash } from 'node:crypto'
 import { readFile, mkdir } from 'node:fs/promises'
@@ -108,7 +108,7 @@ function reusable(record: DeepSeekUploadRecord, now: number, refreshMarginMs: nu
   return record.expiresAt - now > refreshMarginMs
 }
 
-/** Atomic local index shared by every DeepSeek session in this XHE home. */
+/** Atomic local index shared by every DeepSeek session in this CF home. */
 export class DeepSeekUploadIndex {
   /** Absolute owner-private JSON index path. */
   readonly path: string

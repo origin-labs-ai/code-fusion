@@ -1,6 +1,6 @@
 # @origin-ai/cf-sandbox-local
 
-Local implementation of the [`xhe-sandbox`](../sandbox/) seam. It selects and caches one platform runner: Linux prefers a working `bwrap` then Landlock; macOS uses Seatbelt; Windows uses the ACL restricted-token runner. Multiple candidates are probed in order, while a sole candidate is selected directly.
+Local implementation of the [`cf-sandbox`](../sandbox/) seam. It selects and caches one platform runner: Linux prefers a working `bwrap` then Landlock; macOS uses Seatbelt; Windows uses the ACL restricted-token runner. Multiple candidates are probed in order, while a sole candidate is selected directly.
 
 The package root exports the default and named `LocalSandboxProvider` plugin and `Config`; platform profile builders stay internal.
 
@@ -25,7 +25,7 @@ Consumers: [`@origin-ai/cf-bash-sandbox`](../../shell/bash-sandbox/); see [the a
 
 ## Model Experience
 
-Indirectly, through [`xhe-bash-sandbox`](../../shell/bash-sandbox/README.md) and [`xhe-tool-bash`](../../shell/tool-bash/README.md), which render this provider's enforcement and denial facts while the [`xhe-sandbox`](../sandbox/README.md) seam owns the `SANDBOX_UNAVAILABLE` text and runner selection and profiles stay outside context.
+Indirectly, through [`cf-bash-sandbox`](../../shell/bash-sandbox/README.md) and [`cf-tool-bash`](../../shell/tool-bash/README.md), which render this provider's enforcement and denial facts while the [`cf-sandbox`](../sandbox/README.md) seam owns the `SANDBOX_UNAVAILABLE` text and runner selection and profiles stay outside context.
 
 #### KV Cache effect
 

@@ -1,4 +1,4 @@
-name: xhe-review
+name: cf-review
 description: Use when user wants to review code, PR, or changes. Performs comprehensive code review with quality checks, security analysis, and best practices validation.
 ---
 
@@ -58,7 +58,7 @@ git diff --cached --name-only
 - [ ] Magic numbers/constants
 - [ ] Comment necessity
 
-#### 5. **XHE-Specific Conventions**
+#### 5. **CF-Specific Conventions**
 - [ ] Plugin protocol compliance
 - [ ] Session event emission
 - [ ] Cordis effect registration/disposal
@@ -95,7 +95,7 @@ git diff --cached --name-only
 - Estimated fix time: ~X min
 ```
 
-## Integration with XHE
+## Integration with CF
 
 This skill uses:
 - `ctx.fs` for file reading

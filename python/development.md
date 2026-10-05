@@ -7,8 +7,8 @@ Follow the workflow for the contributor outcome you need: build runtime artifact
 Platform executables are build artifacts and are not checked into git. Run the build from the repository root:
 
 ```sh
-pnpm install
-pnpm exec tsx scripts/build-exe-for-python-sdk.ts
+npm install
+npx tsx scripts/build-exe-for-python-sdk.ts
 ```
 
 Use `--skip-build` when the required `lib/` artifacts already exist, or `--targets=node24-linux-x64,node24-linux-arm64,node24-macos-arm64` to select platforms. Products land in `dist-exe/` and the script syncs the selected carriers into `python/sdk-runtime/`. macOS builds also sync the matching spawn helper required by `node-pty`.
@@ -47,7 +47,7 @@ with DeepSeekHarness() as harness:
 
 Repository contributors can select either development carrier:
 
-- Set `XHE_RUNTIME_MODE=node` to use the built Node carrier on system Node `>=22.19`. The build script refreshes this carrier, but distributions never include or auto-select it.
+- Set `CF_RUNTIME_MODE=node` to use the built Node carrier on system Node `>=22.19`. The build script refreshes this carrier, but distributions never include or auto-select it.
 - Set `launch_args_override=("./node_modules/.bin/tsx", "packages/examples/jsonrpc-demo/src/bin.ts")` with the repository root as `cwd` to run unbuilt TypeScript source. Supply `cordis=...` when the default configuration is not suitable.
 
 See `python/sdk/tests/manual_sdk_agent_smoke.py` for a complete source-mode invocation.

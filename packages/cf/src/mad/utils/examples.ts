@@ -19,7 +19,7 @@
 
 import {
   // Error Handling
-  XHEError,
+  CFError,
   withRetry,
   CircuitBreaker,
   withTimeout,
@@ -114,7 +114,7 @@ export async function exampleCircuitBreaker(): Promise<void> {
       
       console.log(`✅ Call ${i}: ${result}`)
     } catch (error: error) {
-      if (error instanceof XHEError && error.message.includes('open')) {
+      if (error instanceof CFError && error.message.includes('open')) {
         console.log(`⚠️  Circuit OPENED - failing fast`)
       } else {
         console.log(`❌ Call ${i} failed: ${(error as Error).message}`)

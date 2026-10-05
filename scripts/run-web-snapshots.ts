@@ -1,17 +1,17 @@
 /** Run serial browser owners before one bounded snapshot pool. */
 import { spawn } from 'node:child_process'
-import { pnpmInvocation } from './pnpm-invocation.ts'
+import { npmInvocation } from './npm-invocation.ts'
 
 const serialFiles = [
   'apps/web/tests/hmr-live.e2e.ts',
   'apps/web/tests/cordis-tool-round.e2e.ts',
 ]
-const workerRaw = process.env.XHE_WEB_SNAPSHOT_WORKERS
+const workerRaw = process.env.CF_WEB_SNAPSHOT_WORKERS
 const workers = Number.parseInt(workerRaw ?? '', 10)
 if (!Number.isSafeInteger(workers) || workers < 2 || String(workers) !== workerRaw) {
-  throw new Error(`XHE_WEB_SNAPSHOT_WORKERS must be an integer greater than 1, got ${JSON.stringify(workerRaw)}.`)
+  throw new Error(`CF_WEB_SNAPSHOT_WORKERS must be an integer greater than 1, got ${JSON.stringify(workerRaw)}.`)
 }
-const invocation = pnpmInvocation(['exec', 'vitest', 'run', '--config', 'vitest.web.config.ts'])
+const invocation = npmInvocation(['exec', 'vitest', 'run', '--config', 'vitest.web.config.ts'])
 let serialStatus = 0
 for (const file of serialFiles) {
   serialStatus = await run(invocation.command, [...invocation.args, file])

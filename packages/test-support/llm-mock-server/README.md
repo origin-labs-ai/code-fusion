@@ -9,7 +9,7 @@ The library entry exports `startMockLlmServer(options)`, behavior and telemetry 
 Run the source entry from this repository:
 
 ```sh
-pnpm run mock:llm -- \
+npm run mock:llm -- \
   --port 8000 \
   --api-key mock-key \
   --sequence partial_disconnect,success \
@@ -21,7 +21,7 @@ Point the shipping DeepSeek adapter at the server; it appends `/chat/completions
 ```sh
 DEEPSEEK_BASE_URL=http://127.0.0.1:8000/v1 \
 DEEPSEEK_API_KEY=mock-key \
-pnpm xhe --profile headless "test provider recovery"
+npm run cf --profile headless "test provider recovery"
 ```
 
 The repository script writes JSONL to stdout: a `ready` record carries the `/v1` base URL and random seed, followed by request/result records that name both the scripted behavior and the concrete selected behavior. The private support package exposes no installable binary.
@@ -53,7 +53,7 @@ The repository script writes JSONL to stdout: a `ready` record carries the `/v1`
 Use a repeating `random` entry for an open-ended mixed run:
 
 ```sh
-pnpm run mock:llm -- \
+npm run mock:llm -- \
   --port 8000 \
   --sequence random \
   --repeat-last \

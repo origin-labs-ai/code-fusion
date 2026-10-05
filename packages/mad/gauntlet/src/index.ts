@@ -1,5 +1,5 @@
 /**
- * XH Gauntlet — acquire → freeze (bar + bar.sha256) → split → builder →
+ * CF Gauntlet — acquire → freeze (bar + bar.sha256) → split → builder →
  * fresh blind critic per round → compare → gap → fix, with hardened gates
  * (acquisition / bar-freeze / conformance / regression / stop-gate +
  * user-override).

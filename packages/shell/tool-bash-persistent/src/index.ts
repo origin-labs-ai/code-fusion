@@ -61,8 +61,8 @@ function maybeTruncate(content: string, maxOutputChars: number, incomplete = fal
 function markers(): CommandMarkers {
   const nonce = randomUUID()
   return {
-    start: `__XHE_PERSISTENT_BASH_START_${nonce}__`,
-    end: `__XHE_PERSISTENT_BASH_END_${nonce}:`,
+    start: `__CF_PERSISTENT_BASH_START_${nonce}__`,
+    end: `__CF_PERSISTENT_BASH_END_${nonce}:`,
   }
 }
 

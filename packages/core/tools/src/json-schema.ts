@@ -8,7 +8,7 @@
  * Unsupported or misplaced keywords reject rather than being accepted without
  * enforcement. Consumers that require an object root apply
  * {@link assertObjectJsonSchema} before accepting input.
- * @module xhe-tools/json-schema
+ * @module cf-tools/json-schema
  */
 
 import { assertNever, HarnessError } from '@origin-ai/cf-llm'

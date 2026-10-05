@@ -1,38 +1,36 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import * as yaml from 'js-yaml'
 import { describe, expect, it } from 'vitest'
 
 const root = resolve(import.meta.dirname, '..')
-const runnerPrivatePnpmDestination = '${{ runner.temp }}/setup-pnpm'
-const nativeWindowsPnpmDestination = '${{ runner.temp }}/setup-pnpm-js'
 
 describe('CI workflow', () => {
-  it('isolates every pnpm action setup destination per runner', () => {
-    const files = ['.github/workflows/ci.yml', '.github/workflows/ci-master.yml']
-    const setups: Array<{ jobName: string; step: unknown }> = []
+  it('installs with npm: no workflow references pnpm, and every setup-node cache names npm', () => {
+    const files = readdirSync(resolve(root, '.github/workflows'))
+      .filter(name => name.endsWith('.yml'))
+      .map(name => `.github/workflows/${name}`)
+    expect(files.length).toBeGreaterThan(0)
+
     for (const file of files) {
-      const workflow: unknown = yaml.load(readFileSync(resolve(root, file), 'utf8'))
+      const text = readFileSync(resolve(root, file), 'utf8')
+      expect(text, `${file} must not reference the retired pnpm package manager`).not.toMatch(/pnpm/i)
+      const workflow: unknown = yaml.load(text)
       if (!isRecord(workflow) || !isRecord(workflow.jobs)) throw new TypeError(`${file} must define jobs`)
       for (const [jobName, job] of Object.entries(workflow.jobs)) {
         if (!isRecord(job) || !Array.isArray(job.steps)) continue
         for (const step of job.steps) {
-          if (!isRecord(step) || typeof step.uses !== 'string' || !step.uses.startsWith('pnpm/action-setup@')) continue
-          setups.push({ jobName, step })
+          if (!isRecord(step) || typeof step.uses !== 'string' || !step.uses.startsWith('actions/setup-node@')) continue
+          const withBlock = isRecord(step.with) ? step.with : {}
+          if (!('cache' in withBlock)) continue
+          // A platform-conditional cache expression still has to name npm in
+          // the branch that caches anything.
+          const expression = String(withBlock.cache)
+          const selected = /&&\s*'([^']*)'\s*\|\|/.exec(expression)?.[1] ?? expression
+          if (selected === '') continue
+          expect(selected, `${file} job ${jobName} must cache the npm store`).toBe('npm')
         }
       }
-    }
-
-    expect(setups.length).toBeGreaterThan(0)
-    for (const { jobName, step } of setups) {
-      expect(step, `${jobName} must not share pnpm/action-setup's default destination`).toMatchObject({
-        with: {
-          dest: jobName === 'windows-native'
-            ? nativeWindowsPnpmDestination
-            : runnerPrivatePnpmDestination,
-        },
-      })
-      if (jobName === 'windows-native') expect(step).not.toMatchObject({ with: { standalone: true } })
     }
   })
 
@@ -76,21 +74,21 @@ describe('CI workflow', () => {
     // windows-native: non-blocking native job with failover, runs windows-complete.
     // Its pool is resolved by the Windows-specific switch.
     expect(typeof windowsNative['runs-on']).toBe('string')
-    expect(windowsNative['runs-on']).toContain('XHE_CI_FAILOVER_WINDOWS')
-    expect(windowsNative['runs-on']).not.toContain('XHE_CI_FAILOVER_LINUX')
+    expect(windowsNative['runs-on']).toContain('CF_CI_FAILOVER_WINDOWS')
+    expect(windowsNative['runs-on']).not.toContain('CF_CI_FAILOVER_LINUX')
     expect(windowsNative['runs-on']).toContain('self-hosted')
-    expect(windowsNative['runs-on']).toContain('xhe-win-ci')
-    expect(windowsNative['runs-on']).toContain('xhe-windows-2025-16core')
+    expect(windowsNative['runs-on']).toContain('cf-win-ci')
+    expect(windowsNative['runs-on']).toContain('cf-windows-2025-16core')
     expect(windowsNative.name).toBe('windows node 24 / native complete')
     expect(windowsNative.if).toBe("github.event_name == 'pull_request'")
     expect(windowsNative.env).toMatchObject({
-      XHE_COVERAGE_TEST_TIMEOUT_MS: '30000',
+      CF_COVERAGE_TEST_TIMEOUT_MS: '30000',
     })
     const nativeSteps = windowsNative.steps as unknown[]
     const nativeCommandSteps = nativeSteps.filter((step): step is Record<string, unknown> & { run: string } => (
       isRecord(step) && typeof step.run === 'string'
     ))
-    expect(nativeCommandSteps.map(step => step.run)).toContain('pnpm run check:ci:windows-complete')
+    expect(nativeCommandSteps.map(step => step.run)).toContain('npm run check:ci:windows-complete')
 
     // wine-apt-cache: master-only, seeds the Wine apt cache, lives in ci-master.
     expect(wineAptCache.if).toBe("github.event_name == 'push' && github.ref == 'refs/heads/master'")
@@ -98,7 +96,7 @@ describe('CI workflow', () => {
 
     // serial-windows: master-only standby, self-hosted, non-blocking, lives in ci-master.
     expect(serialWindows.if).toBe("github.event_name == 'push' && github.ref == 'refs/heads/master'")
-    expect(serialWindows['runs-on']).toEqual(['self-hosted', 'xhe-win-ci', 'windows'])
+    expect(serialWindows['runs-on']).toEqual(['self-hosted', 'cf-win-ci', 'windows'])
     expect(serialWindows.name).toBe('serial / windows (self-hosted standby)')
 
     // Aggregate: Wine `windows` required, native `windows-native` excluded.
@@ -107,16 +105,16 @@ describe('CI workflow', () => {
     expect(aggregate.needs).not.toContain('serial-windows')
 
     // Linux failover is a separate switch: the three required Linux workers
-    // and the verdict job resolve their pool through XHE_CI_FAILOVER_LINUX,
+    // and the verdict job resolve their pool through CF_CI_FAILOVER_LINUX,
     // never the Windows switch.
     for (const [jobName, job] of [['node-24', node24], ['node-24-coverage', node24Coverage], ['node-24-consumers', node24Consumers]] as const) {
       expect(typeof job['runs-on']).toBe('string')
-      expect(job['runs-on'], `${jobName} runs-on must use the Linux failover switch`).toContain('XHE_CI_FAILOVER_LINUX')
-      expect(job['runs-on'], `${jobName} runs-on must not use the Windows failover switch`).not.toContain('XHE_CI_FAILOVER_WINDOWS')
+      expect(job['runs-on'], `${jobName} runs-on must use the Linux failover switch`).toContain('CF_CI_FAILOVER_LINUX')
+      expect(job['runs-on'], `${jobName} runs-on must not use the Windows failover switch`).not.toContain('CF_CI_FAILOVER_WINDOWS')
       expect(job['runs-on']).toContain('vm-backup')
     }
-    expect(aggregate['runs-on']).toContain('XHE_CI_FAILOVER_LINUX')
-    expect(aggregate['runs-on']).not.toContain('XHE_CI_FAILOVER_WINDOWS')
+    expect(aggregate['runs-on']).toContain('CF_CI_FAILOVER_LINUX')
+    expect(aggregate['runs-on']).not.toContain('CF_CI_FAILOVER_WINDOWS')
     expect(aggregate['runs-on']).toContain('vm-backup')
   })
 
@@ -268,8 +266,8 @@ describe('E2B e2e workflow', () => {
     expect(e2b).toMatchObject({
       env: {
         E2B_API_KEY: '${{ secrets.E2B_API_KEY_EXTERNAL }}',
-        XHE_E2E_MAX_WORKERS: '1',
-        XHE_EXAMPLE_MODE: 'lib',
+        CF_E2E_MAX_WORKERS: '1',
+        CF_EXAMPLE_MODE: 'lib',
       },
     })
     expect(e2b?.run).toContain('packages/e2b/e2b/tests/composition.e2e.ts')
@@ -393,15 +391,15 @@ describe('Python release workflows', () => {
     expect(manylinuxAddon).toMatchObject({ if: "runner.os == 'Linux'" })
     expect(JSON.stringify(manylinuxAddon)).toContain('manylinux_2_28_x86_64')
     expect(JSON.stringify(manylinuxAddon)).toContain('manylinux_2_28_aarch64')
-    expect(JSON.stringify(manylinuxAddon)).toContain('npm_config_build_from_source=true pnpm run install')
-    expect(JSON.stringify(manylinuxAddon)).toContain('$HOME/setup-pnpm:$HOME/setup-pnpm:ro')
+    expect(JSON.stringify(manylinuxAddon)).toContain('npm_config_build_from_source=true npm run install')
+    expect(JSON.stringify(manylinuxAddon)).not.toContain('setup-pnpm')
     expect(JSON.stringify(manylinuxAddon)).toContain('node-pty-glibc-versions.txt')
     expect(JSON.stringify(manylinuxAddon)).toContain('le 2.28')
     expect(macosCheck).toMatchObject({ if: "runner.os == 'macOS'" })
     expect(JSON.stringify(macosCheck)).toContain('scripts/check-macos-deployment-target.py')
     expect(JSON.stringify(macosCheck)).toContain('$EXE-spawn-helper')
     expect(manylinuxSmoke).toMatchObject({ if: "runner.os == 'Linux'" })
-    expect(JSON.stringify(manylinuxSmoke)).toContain('-e XHE_TELEMETRY_DISABLED')
+    expect(JSON.stringify(manylinuxSmoke)).toContain('-e CF_TELEMETRY_DISABLED')
   })
 
   it('uses the shared macOS deployment-target check in GitLab', () => {
@@ -482,7 +480,7 @@ describe('npm release workflows', () => {
 })
 
 describe('Documentation site publication', () => {
-  it('keeps Pages deployment dispatch-only from a xhe-v* tag', () => {
+  it('keeps Pages deployment dispatch-only from a cf-v* tag', () => {
     const workflow = loadWorkflow('.github/workflows/docs-pages.yml')
     const build = workflowJob(workflow, 'build')
     const deploy = workflowJob(workflow, 'deploy')
@@ -494,7 +492,7 @@ describe('Documentation site publication', () => {
     // publication must never appear as a PR check.
     expect(Object.keys(workflow.on)).toEqual(['workflow_dispatch'])
 
-    // RELEASE_PUBLISH makes release:verify reject every ref that is not a xhe-v*
+    // RELEASE_PUBLISH makes release:verify reject every ref that is not a cf-v*
     // tag naming this tree's version, so the site and the npm sequence share one
     // definition of a released version.
     const steps = build.steps.filter(isRecord)
@@ -504,7 +502,7 @@ describe('Documentation site publication', () => {
     )
     expect(verify).toMatchObject({
       env: { RELEASE_PUBLISH: 'true' },
-      run: 'pnpm run release:verify --family dsh',
+      run: 'npm run release:verify --family cf',
     })
     // Complete history: the release scripts read tags.
     expect(checkout).toMatchObject({ with: { 'fetch-depth': 0 } })

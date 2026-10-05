@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/jobs/tool-jobs"
   },
   "type": "module",
@@ -32,28 +32,28 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-output-retention": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-jobs": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-output-retention": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-jobs": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-output-retention": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-jobs": "workspace:^",
-    "@origin-ai/cf-jobs-local": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-output-retention": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-jobs": "*",
+    "@origin-ai/cf-jobs-local": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

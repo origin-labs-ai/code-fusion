@@ -5,7 +5,7 @@
  * while ensuring no chunk follows `finish`.
  *
  * Translate DeepSeek wire chunks into the harness `StreamChunk` protocol.
- * @module xhe-llm-deepseek/translate
+ * @module cf-llm-deepseek/translate
  */
 
 import { CallId, EMPTY_RESPONSE_CODE, LlmError } from '@origin-ai/cf-llm'

@@ -51,11 +51,11 @@ describe('LspConnection', () => {
     expect(conn.pid).toBeGreaterThan(0)
   })
 
-  it('forwards explicit XHE_* env entries to the child', async () => {
-    // A configured XHE_* fact must reach the child: the seam scrubs only the
+  it('forwards explicit CF_* env entries to the child', async () => {
+    // A configured CF_* fact must reach the child: the seam scrubs only the
     // ambient namespace, and the explicit entry merges after that scrub. The
     // fixture echoes the named variable back as hover text.
-    const conn = connect({ LSP_FAKE_ECHO_ENV: 'XHE_LSP_TEST_FACT', XHE_LSP_TEST_FACT: 'managed' })
+    const conn = connect({ LSP_FAKE_ECHO_ENV: 'CF_LSP_TEST_FACT', CF_LSP_TEST_FACT: 'managed' })
     await conn.request('initialize', { capabilities: {} })
     expect(await conn.request('textDocument/hover', {})).toEqual({ contents: 'managed' })
   })

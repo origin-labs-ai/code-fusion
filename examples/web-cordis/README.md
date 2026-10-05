@@ -7,13 +7,13 @@ Self-referential demonstration of [`@origin-ai/cf-tool-cordis`](../../packages/e
 Start the browser interface:
 
 ```sh
-pnpm run demo:cordis
+npm run demo:cordis
 ```
 
 Start the ACP automation server instead:
 
 ```sh
-pnpm run demo:cordis acp
+npm run demo:cordis acp
 ```
 
 Both commands require `DEEPSEEK_API_KEY`. The [Cordis tool reference](../../packages/extensions/tool-cordis/README.md) defines the tool arguments, lifetime, cleanup, and safety contracts.

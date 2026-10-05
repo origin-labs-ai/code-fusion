@@ -16,7 +16,7 @@ afterEach(() => {
   for (const root of temporaryRoots.splice(0)) rmSync(root, { recursive: true, force: true })
 })
 
-describe('model-driven xhe-tools generation', () => {
+describe('model-driven cf-tools generation', () => {
   it('round-trips the complete service and event structure through the runtime registry', { timeout: 30_000 }, async () => {
     const workspace = new WorkspaceAnalyzer({
       root: workspaceRoot,
@@ -24,7 +24,7 @@ describe('model-driven xhe-tools generation', () => {
       packages: ['@origin-ai/cf-tools'],
     }).analyze()
     const host = workspace.faces.find(candidate => candidate.face === 'host')
-    if (host === undefined) throw new Error('xhe-tools has no analyzed host face')
+    if (host === undefined) throw new Error('cf-tools has no analyzed host face')
     const artifact = new FaceModelEmitter(host).emit('@origin-ai/cf-tools')
 
     const root = mkdtempSync(join(import.meta.dirname, '.generated-tools-'))

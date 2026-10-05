@@ -12,11 +12,11 @@ The InputBar the panel replaces has always been capped (14 lines, then the texta
 
 The panel's justification and command move into one scroll region (`data-approval-scroll`) capped at the same height as the composer's draft area; the amber strip and the action row sit outside it, so both buttons are in the card at every content length.
 
-The cap is one value with two consumers, declared as `--xhe-composer-text-max-height: 336px` on `ConversationRoot`'s `.composerSeat` — the composer chain's only shared ancestor, since the fallback InputBar and an elected takeover render as siblings. `InputBar`'s draft scrollport and the panel's scroll region both read it, so the seat cannot cap its two states differently: what the designer asked for ("unify it with the input box's max height") is now a fact of the stylesheet rather than a number repeated in two files. The region is `box-sizing: border-box` so the cap is its outer height, the same box the composer's draft area occupies.
+The cap is one value with two consumers, declared as `--cf-composer-text-max-height: 336px` on `ConversationRoot`'s `.composerSeat` — the composer chain's only shared ancestor, since the fallback InputBar and an elected takeover render as siblings. `InputBar`'s draft scrollport and the panel's scroll region both read it, so the seat cannot cap its two states differently: what the designer asked for ("unify it with the input box's max height") is now a fact of the stylesheet rather than a number repeated in two files. The region is `box-sizing: border-box` so the cap is its outer height, the same box the composer's draft area occupies.
 
 The region is a tab stop (`tabIndex={0}`, named `role="group"`). Unlike the question composer's scroll body, whose option rows are focusable and pull the container along, this one holds nothing but text: without its own tab stop a keyboard-only user could reach the buttons and never the command's tail, and approve what they could not finish reading.
 
-The panel's card rebinds `--xhe-scrollbar-thumb{,-hover}` to the l2 pair, as every scrolling surface on an elevated background must ([scrollbar contract](../../../../packages/client/ui-theme/src/styles/scrollbar.css)).
+The panel's card rebinds `--cf-scrollbar-thumb{,-hover}` to the l2 pair, as every scrolling surface on an elevated background must ([scrollbar contract](../../../../packages/client/ui-theme/src/styles/scrollbar.css)).
 
 ## Alternatives considered
 
@@ -47,4 +47,4 @@ The geometry block and the golden are replay-only, so record mode reaches the fi
 
 The scenario keeps exactly one golden — the waiting panel — and asserts the answered state on the world instead (the decided outcome, the file the escalated command wrote, `DONE`, the panel gone, the composer re-enabled). An answered-transcript golden cannot hold: the denied first attempt renders the OS's own refusal, and that text is platform-specific (`bash: notes.txt: Operation not permitted` on macOS against `bash: line 1: notes.txt: Read-only file system` on Linux). Any scenario whose transcript contains a sandbox-denied command inherits that, so the denial belongs in assertions, never in a golden.
 
-The panel ships as a client-module bundle: `pnpm run build:web` alone does not pick up a change to `ApprovalPanel.module.css` or a new `data-` hook in `ApprovalPanel.tsx` — the package build must run first, or the browser lane asserts against an older client than the tree.
+The panel ships as a client-module bundle: `npm run build:web` alone does not pick up a change to `ApprovalPanel.module.css` or a new `data-` hook in `ApprovalPanel.tsx` — the package build must run first, or the browser lane asserts against an older client than the tree.

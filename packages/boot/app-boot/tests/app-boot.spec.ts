@@ -11,9 +11,9 @@ import {
   installFailLoud, loadEnv, loadLayeredEnv, loadOverlayPatches, resolveConfigPath, type FailLoudProcess,
 } from '../src/index.ts'
 
-const NAME = 'xhe-test-bin'
+const NAME = 'cf-test-bin'
 
-const tmp = (): string => mkdtempSync(join(tmpdir(), 'xhe-app-boot-'))
+const tmp = (): string => mkdtempSync(join(tmpdir(), 'cf-app-boot-'))
 
 describe('resolveConfigPath', () => {
   it('resolves relative to the given cwd outside replay mode', () => {
@@ -35,12 +35,12 @@ describe('resolveConfigPath', () => {
 describe('loadEnv', () => {
   it('loads variables from .env in the given dir', () => {
     const dir = tmp()
-    writeFileSync(join(dir, '.env'), 'XHE_APP_BOOT_SPEC_VAR=loaded\n')
+    writeFileSync(join(dir, '.env'), 'CF_APP_BOOT_SPEC_VAR=loaded\n')
     const warn = vi.fn()
     loadEnv(NAME, dir, warn)
-    expect(process.env['XHE_APP_BOOT_SPEC_VAR']).toBe('loaded')
+    expect(process.env['CF_APP_BOOT_SPEC_VAR']).toBe('loaded')
     expect(warn).not.toHaveBeenCalled()
-    delete process.env['XHE_APP_BOOT_SPEC_VAR']
+    delete process.env['CF_APP_BOOT_SPEC_VAR']
   })
 
   it('stays silent when no .env exists (ambient environment wins)', () => {
@@ -60,7 +60,7 @@ describe('loadEnv', () => {
 
   it('defaults dir to the process cwd and warn to a stderr write', () => {
     const dir = tmp()
-    writeFileSync(join(dir, '.env'), 'XHE_APP_BOOT_SPEC_DEFAULTS=yes\n')
+    writeFileSync(join(dir, '.env'), 'CF_APP_BOOT_SPEC_DEFAULTS=yes\n')
     const previous = process.cwd()
     process.chdir(dir)
     try {
@@ -68,8 +68,8 @@ describe('loadEnv', () => {
     } finally {
       process.chdir(previous)
     }
-    expect(process.env['XHE_APP_BOOT_SPEC_DEFAULTS']).toBe('yes')
-    delete process.env['XHE_APP_BOOT_SPEC_DEFAULTS']
+    expect(process.env['CF_APP_BOOT_SPEC_DEFAULTS']).toBe('yes')
+    delete process.env['CF_APP_BOOT_SPEC_DEFAULTS']
     // The default warn sink itself: point it at a broken .env with stderr
     // spied, so the arrow body runs without polluting the test output.
     const broken = tmp()
@@ -127,10 +127,10 @@ describe('loadLayeredEnv', () => {
   })
 
   it.each([
-    ['a harness switch', 'XHE_PERMISSION_MODE=danger-full-access\n'],
+    ['a harness switch', 'CF_PERMISSION_MODE=danger-full-access\n'],
     ['the executable search path', 'PATH=/tmp/evil\n'],
     ['a module preload', 'NODE_OPTIONS=--require /tmp/evil.js\n'],
-    ['a skill root', 'XHE_AGENTS_HOME=/tmp/injected\n'],
+    ['a skill root', 'CF_AGENTS_HOME=/tmp/injected\n'],
     ['a network proxy', 'HTTPS_PROXY=http://attacker.example\n'],
     ['a lowercase network proxy', 'https_proxy=http://attacker.example\n'],
     ['a browser command', 'BROWSER=./script\n'],
@@ -563,8 +563,8 @@ describe('boot', () => {
     const dir = tmp()
     const harness = tmp()
     const absolutePlugin = join(dir, 'absolute.mjs')
-    const shadow = join(dir, 'node_modules', '@deepseek-ai', 'xhe-system-prompt')
-    const harnessPlugin = join(harness, 'node_modules', '@deepseek-ai', 'xhe-system-prompt')
+    const shadow = join(dir, 'node_modules', '@deepseek-ai', 'cf-system-prompt')
+    const harnessPlugin = join(harness, 'node_modules', '@deepseek-ai', 'cf-system-prompt')
     mkdirSync(shadow, { recursive: true })
     mkdirSync(harnessPlugin, { recursive: true })
     writeFileSync(join(shadow, 'package.json'), JSON.stringify({
@@ -661,8 +661,8 @@ describe('boot', () => {
 
   it('exposes cfHomePath to Loader config expressions', async () => {
     const dir = tmp()
-    const dshHome = join(dir, 'home')
-    vi.stubEnv('CF_HOME', dshHome)
+    const cfHome = join(dir, 'home')
+    vi.stubEnv('CF_HOME', cfHome)
     writeFileSync(join(dir, 'capture.mjs'), [
       'export const name = "capture"',
       'export function apply(ctx, config) {',
@@ -680,7 +680,7 @@ describe('boot', () => {
     let ctx: Context | undefined
     try {
       ctx = await boot(NAME, join(dir, 'cordis.yml'))
-      expect(ctx.get('capturedPath')).toBe(join(dshHome, 'sessions'))
+      expect(ctx.get('capturedPath')).toBe(join(cfHome, 'sessions'))
     } finally {
       await ctx?.fiber.dispose()
       vi.unstubAllEnvs()

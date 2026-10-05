@@ -17,7 +17,7 @@ function writeManifest(root: string, file: string, manifest: Record<string, unkn
 }
 
 function createWorkspace(): string {
-  const root = mkdtempSync(join(tmpdir(), 'xhe-package-licenses-'))
+  const root = mkdtempSync(join(tmpdir(), 'cf-package-licenses-'))
   roots.push(root)
   writeManifest(root, 'package.json', {
     name: '@origin-ai/cf',

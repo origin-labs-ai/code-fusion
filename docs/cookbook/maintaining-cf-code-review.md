@@ -10,7 +10,7 @@ The operator invokes the wrapper manually, daily with a two-UTC-day overlap; a m
 2. It collects pre-merge human review feedback with commit anchors (inline comments and review submissions), then compares feedback-time and final landed PR patches. It does not acquire PR conversation comments because current GitHub state cannot give them a force-push-safe feedback-time baseline, and it excludes target-branch-only changes from adoption evidence.
 3. Two independently configured reviewer adapters classify who wrote each item and whether the change adopted it, then classify agreed-adopted items against the current skill.
 4. The primary adapter drafts a complete revised `SKILL.md`; both adapters review the same diff; blocking findings loop until both approve.
-5. `pnpm run doc-sync` and `pnpm run lint` run against the candidate before the tool declares success.
+5. `npm run doc-sync` and `npm run lint` run against the candidate before the tool declares success.
 
 Each run stores its artifacts on the operator's machine. The saved diff, candidate `SKILL.md`, and promotion manifest land under `~/cf-code-review-outputs/` named by timestamp. The manifest records the source master commit and skill blob, source feedback IDs and URLs, landed evidence ranges, adapter verdicts, and gate results; raw per-adapter I/O stays in a private temp directory whose path is written to the notification and to the daily log under `~/Library/Logs/cf-code-review-maintainer/`. The maintenance worktree itself is restored clean after every run so the operator is never tempted to edit the maintenance copy in place.
 
@@ -39,7 +39,7 @@ When a run produces a candidate, a macOS notification arrives with a `cf-code-re
    - **Promote.** From a clean `master` checkout of the repo, run the promote helper. It refreshes `master`, verifies that the current skill matches the recorded source blob, applies the saved diff, and opens a draft PR whose body lists the source feedback URLs or IDs, landed commit range, originating run, checks, and operator edits. It stops on skill drift rather than overwriting newer guidance; the operator still reviews the PR on GitHub and either merges it or closes it.
 
      ```sh
-     cd ~/path/to/xhe   # clean master
+     cd ~/path/to/cf   # clean master
      cf-code-review-promote 2026-07-16T02-00-00Z
      ```
 
@@ -53,7 +53,7 @@ That is the common case after every nonempty classification stage has produced a
 
 The mechanism lives on one machine. Interruptions the operator handles as they arise:
 
-- **Daily run missed.** The two-day overlap window catches one skipped day automatically; longer gaps recover by running the wrapper manually with `XHE_CODE_REVIEW_SINCE=<Nd>`. Overlapping windows are idempotent: guidance already in the current skill is classified `covered` and does not re-enter as a candidate.
+- **Daily run missed.** The two-day overlap window catches one skipped day automatically; longer gaps recover by running the wrapper manually with `CF_CODE_REVIEW_SINCE=<Nd>`. Overlapping windows are idempotent: guidance already in the current skill is classified `covered` and does not re-enter as a candidate.
 - **Adapter provider outage.** The tool refuses to run when the two reviewer commands resolve to byte-identical executables. A single batch whose adapter response fails schema or id validation is failed closed at the batch level (every item in the batch marked unclear) and the run continues; the raw output is preserved for debugging. If either adapter produces no valid result for any nonempty batch in an operation, the run fails, writes a failure record, and notifies the operator; it never collapses a total-provider outage into "no candidate."
 - **Handoff to another maintainer.** Open a follow-up Agent Note that supersedes the current one: either move the mechanism into the repository or record the new operator's private setup. Do not silently transfer the tool — the "single-maintainer bus factor" in the Agent Note's Risks section is the reason the handoff needs a documented decision.
 

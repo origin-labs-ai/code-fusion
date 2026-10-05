@@ -1,5 +1,5 @@
 /**
- * Profile machinery of `xhe-app-boot`: directory resolution and init,
+ * Profile machinery of `cf-app-boot`: directory resolution and init,
  * manifest round-trips, two-anchor bundle resolution, patch-layer loading,
  * empty-root composition, and the installation module-fallback healing.
  */
@@ -21,7 +21,7 @@ import {
   writeProfileManifest,
 } from '../src/index.ts'
 
-const tmp = (): string => mkdtempSync(join(tmpdir(), 'xhe-profile-'))
+const tmp = (): string => mkdtempSync(join(tmpdir(), 'cf-profile-'))
 
 /** Stage a fake installed app: package.json with deps and a node_modules holding bundles. */
 function stageInstallation(bundles: Record<string, { patch?: string; deps?: Record<string, string> }>): string {
@@ -56,14 +56,14 @@ describe('resolveProfileDir', () => {
 })
 
 describe('initProfile', () => {
-  it('creates manifest, user patch layer, and pnpm workspace once, never overwriting', () => {
+  it('creates manifest, user patch layer, and npm settings once, never overwriting', () => {
     const home = tmp()
     const dir = resolveProfileDir('tui', home)
     initProfile(dir, ['@origin-ai/cf-base'])
     const manifest = readProfileManifest('t', dir)
     expect(manifest.cf?.profile?.bundles).toEqual(['@origin-ai/cf-base'])
     expect(readFileSync(join(dir, PROFILE_PATCH_FILENAME), 'utf8')).toContain('[]')
-    expect(readFileSync(join(dir, 'pnpm-workspace.yaml'), 'utf8')).toContain('nodeLinker: hoisted')
+    expect(readFileSync(join(dir, '.npmrc'), 'utf8')).toContain('legacy-peer-deps=true')
     // Re-init keeps user edits.
     writeFileSync(join(dir, PROFILE_PATCH_FILENAME), '- id: x\n  config: {}\n')
     initProfile(dir, ['other'])
@@ -135,7 +135,7 @@ describe('loadProfile', () => {
       profile.patches,
     ])
     expect(entries).toEqual([{ id: 'a', name: 'pkg-a', config: { v: 3 } }])
-    // A hand-made profile without the user layer file or dsh section: empty layers, no throw.
+    // A hand-made profile without the user layer file or cf section: empty layers, no throw.
     rmSync(join(dir, PROFILE_PATCH_FILENAME))
     expect(loadProfile('t', 'demo', anchor, home).patches).toEqual([])
     writeProfileManifest(dir, { name: 'bare' })
@@ -230,7 +230,7 @@ describe('healProfilesModuleFallback', () => {
     const fallback = join(home, 'profiles', 'node_modules')
     // App deps, the bundle's own deps, and the bundle itself are linked; the
     // plain library is linked as an app dep (harmless), the app itself too.
-    for (const name of ['bundle-a', 'plain-lib', 'dep-of-a', 'xhe-app']) {
+    for (const name of ['bundle-a', 'plain-lib', 'dep-of-a', 'cf-app']) {
       expect(lstatSync(join(fallback, name)).isSymbolicLink(), name).toBe(true)
     }
     // Idempotent, and a moved target is re-pointed.
@@ -242,7 +242,7 @@ describe('healProfilesModuleFallback', () => {
   it('throws when a fallback entry is a real directory', () => {
     const anchor = stageInstallation({})
     const home = tmp()
-    mkdirSync(join(home, 'profiles', 'node_modules', 'xhe-app'), { recursive: true })
+    mkdirSync(join(home, 'profiles', 'node_modules', 'cf-app'), { recursive: true })
     expect(() => { healProfilesModuleFallback(anchor, home) }).toThrow('is not a symlink')
   })
 
@@ -251,9 +251,9 @@ describe('healProfilesModuleFallback', () => {
     const home = tmp()
     const fallback = join(home, 'profiles', 'node_modules')
     mkdirSync(fallback, { recursive: true })
-    symlinkSync(tmp(), join(fallback, 'xhe-app'), 'junction')
+    symlinkSync(tmp(), join(fallback, 'cf-app'), 'junction')
     healProfilesModuleFallback(anchor, home)
-    expect(readlinkSync(join(fallback, 'xhe-app'))).toContain('app')
+    expect(readlinkSync(join(fallback, 'cf-app'))).toContain('app')
   })
 
   it('tolerates losing the concurrent-heal race to an identical link and rejects a different one', () => {
@@ -267,6 +267,6 @@ describe('healProfilesModuleFallback', () => {
     healProfilesModuleFallback(anchor, home)
     healProfilesModuleFallback(anchor, home) // second healer sees the correct link
     const fallback = join(home, 'profiles', 'node_modules')
-    expect(lstatSync(join(fallback, 'xhe-app')).isSymbolicLink()).toBe(true)
+    expect(lstatSync(join(fallback, 'cf-app')).isSymbolicLink()).toBe(true)
   })
 })

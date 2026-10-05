@@ -2,7 +2,7 @@
  * Tests for the shared escalation vocabulary and choreography: the strictly-
  * wider ladder, the argument-pairing validation, the model-facing markers, and
  * {@link approveEscalation}'s ordered fail-closed sequence. Both enforcing tool
- * families (`xhe-tool-bash`, `xhe-tool-fs`) delegate here, so the ordering and
+ * families (`cf-tool-bash`, `cf-tool-fs`) delegate here, so the ordering and
  * verbatim texts are pinned once, next to the vocabulary that owns them.
  */
 

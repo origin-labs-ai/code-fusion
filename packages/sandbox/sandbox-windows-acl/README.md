@@ -15,7 +15,7 @@ import { join } from 'node:path'
 import { AclSandbox, tempWriteSid, workspaceWriteSid } from '@origin-ai/cf-sandbox-windows-acl'
 
 const workspaceRoot = process.cwd()
-const tempDir = mkdtempSync(join(tmpdir(), 'xhe-'))
+const tempDir = mkdtempSync(join(tmpdir(), 'cf-'))
 
 // mode selects the token's restricting-SID list (see Modes below) and must
 // match the grant shape. workspace-write requires distinct workspace and
@@ -71,7 +71,7 @@ The koffi struct definitions assert their sizes against the probe at module load
 ## Verified boundaries (inherent to restricted tokens, not this port)
 
 - **Everyone grants remain ambient write authority.** Everyone must stay in both restricting lists: removing it breaks early DLL initialization and CNG. An external NTFS object whose normal DACL grants Everyone a requested write right therefore clears both access checks and stays writable under both modes. The real runner suite provisions an external `Everyone:Modify` directory and pins that behavior; the provider reports `enforcement: 'partial'` so callers can reject or surface the weaker boundary.
-- **Hard links are file-object aliases, not path aliases.** An inheritable workspace ACE propagated onto an existing NTFS hard link changes the one underlying file security descriptor, so the same object is writable through an external alias. Rejecting every multiply-linked workspace file is not viable for ordinary pnpm installations, which use hard links into their content-addressable store; the native runner suite pins the gap and the provider's partial report names its consequence.
+- **Hard links are file-object aliases, not path aliases.** An inheritable workspace ACE propagated onto an existing NTFS hard link changes the one underlying file security descriptor, so the same object is writable through an external alias. Rejecting every multiply-linked workspace file is not viable for ordinary npm installations, which use hard links into their content-addressable store; the native runner suite pins the gap and the provider's partial report names its consequence.
 - **Writes are restricted; reads, network, and process visibility are not.** `WRITE_RESTRICTED` intersects write accesses only, so a confined child can read any caller-readable file and open sockets. `read-only` mode therefore cannot be expressed by this mechanism alone; pair it with a read-side policy or an AppContainer/`S-1-15-2` capability token for stronger confinement.
 - **Console isolation is unavailable.** Under the restricted token, children created with `CREATE_NO_WINDOW` / `CREATE_NEW_CONSOLE` die during DLL initialization with `STATUS_DLL_INIT_FAILED` (`0xC0000142`). The POC tried to fix this by adding the console logon SID (`S-1-2-1`) to the restricting list; on Windows 11 26200 `CreateWellKnownSid(WinLocalLogonSid)` fails with `ERROR_INVALID_PARAMETER` (87), the correct `WinConsoleLogonSid` yields a valid `S-1-2-1` but the child still dies, and the POC's final revision removed both the SID and console isolation. Children therefore share the host console; stdio redirection is pipe-based and unaffected.
 - **ACL grants are standing directory mutations.** They persist if the process dies mid-run; workspace ACEs are standing BY DESIGN (never revoked — the reuse cache), temp ACEs are revoked by `dispose()` (`init()` also revokes an already-applied temp grant when a later step fails). The POC's documented manual cleanup (`icacls <dir> /remove '*S-1-4-…'`) fails on this platform with `ERROR_NONE_MAPPED` (1332) — revoke through this module instead. An unclean shutdown needs no self-healing for the workspace ACE: the derived SID re-hits the standing ACE on the next provision (skipping the apply); the write-SID ACE never accumulates a second identity per restart because the identity IS the workspace.
@@ -82,7 +82,7 @@ The koffi struct definitions assert their sizes against the probe at module load
 
 ## Model Experience
 
-Indirectly, through [`xhe-bash-sandbox`](../../shell/bash-sandbox/README.md), [`xhe-pwsh-sandbox`](../../shell/pwsh-sandbox/README.md), and their tools, which render this backend's partial-enforcement and denial facts (the confined stderr the tool layer classifies through `denialSignatures`) while the [`xhe-sandbox`](../sandbox/README.md) seam owns the `SANDBOX_UNAVAILABLE` text and runner selection.
+Indirectly, through [`cf-bash-sandbox`](../../shell/bash-sandbox/README.md), [`cf-pwsh-sandbox`](../../shell/pwsh-sandbox/README.md), and their tools, which render this backend's partial-enforcement and denial facts (the confined stderr the tool layer classifies through `denialSignatures`) while the [`cf-sandbox`](../sandbox/README.md) seam owns the `SANDBOX_UNAVAILABLE` text and runner selection.
 
 #### KV Cache effect
 

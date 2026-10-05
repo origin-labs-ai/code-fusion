@@ -1,4 +1,4 @@
-/** DeepSeek Files API identifiers. @module xhe-llm-deepseek/file-id */
+/** DeepSeek Files API identifiers. @module cf-llm-deepseek/file-id */
 
 import type { Branded } from '@origin-ai/cf-brand'
 

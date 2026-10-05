@@ -1,4 +1,4 @@
-name: xhe-debug
+name: cf-debug
 description: Use when user wants to debug issues, analyze errors, or fix bugs. Provides intelligent debugging workflow with root cause analysis.
 ---
 
@@ -222,10 +222,10 @@ function best(user: User) {
 }
 ```
 
-### Pattern 4: Plugin Disposal Bug (XHE Specific)
+### Pattern 4: Plugin Disposal Bug (CF Specific)
 ```typescript
 // Symptom: "Service already registered" or memory leaks after reload
-// Common in XHE plugins:
+// Common in CF plugins:
 
 // Bad Plugin:
 export class BadPlugin {
@@ -284,13 +284,13 @@ Before declaring "fixed", verify:
 - [ ] Documentation updated if needed
 - [ ] Similar code audited for same pattern
 
-### XHE-Specific Checks
+### CF-Specific Checks
 - [ ] Session events properly emitted
 - [ ] Effects properly disposed
 - [ ] No type errors introduced
 - [ ] Conventions followed (AGENTS.md)
 
-## Integration with XHE Tools
+## Integration with CF Tools
 
 This skill uses:
 - `ctx.fs` for reading source files and logs
@@ -303,7 +303,7 @@ This skill uses:
 ```bash
 User: /debug --error "SessionEventMap member is required-on-read"
 
-XHE: 🐛 Starting debug session...
+CF: 🐛 Starting debug session...
      Analyzing error: SessionEventMap member is required-on-read
      
      Phase 1: Locating Error
@@ -326,7 +326,7 @@ XHE: 🐛 Starting debug session...
      
 User: Y
 
-XHE: ✅ Fix applied!
+CF: ✅ Fix applied!
      - Updated packages/core/session/src/types.ts
      - Added render function in packages/core/session/src/render.ts
      - Added snapshot test

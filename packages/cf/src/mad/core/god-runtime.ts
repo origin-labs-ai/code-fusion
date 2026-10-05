@@ -1111,7 +1111,7 @@ class EventBus {
 }
 
 // Predefined event types for CF system
-export const XHEEvents = {
+export const CFEvents = {
   // System Events
   SYSTEM: {
     INITIALIZED: 'system.initialized',
@@ -1191,7 +1191,7 @@ export const XHEEvents = {
   }
 } as const
 
-export type XHEEventType = typeof XHEEvents[keyof typeof XHEEvents][keyof typeof XHEEvents[keyof typeof XHEEvents]]
+export type CFEventType = typeof CFEvents[keyof typeof CFEvents][keyof typeof CFEvents[keyof typeof CFEvents]]
 
 // ============================================================================
 // R2-ROUND 5: RATE LIMITING & QUOTA MANAGEMENT
@@ -6103,7 +6103,7 @@ export function createGODRuntime(config?: Partial<GODRuntimeConfig>): GodRuntime
   return new GodRuntime(config)
 }
 
-export async function xheExecute(
+export async function cfExecute(
   task: string,
   mode: MADMode = 'PLAN',
   options?: Partial<GODRuntimeConfig>
@@ -6141,7 +6141,7 @@ type PluginHook =
   | 'on-error'
   | 'before-shutdown';
 
-interface XHEPluginManifest {
+interface CFPluginManifest {
   name: string;
   version: string;
   description?: string;
@@ -6160,8 +6160,8 @@ interface PluginContext {
   emit: (event: string, data: any) => void;
 }
 
-interface XHEPlugin {
-  manifest: XHEPluginManifest;
+interface CFPlugin {
+  manifest: CFPluginManifest;
   initialize?(context: PluginContext): Promise<void> | void;
   executeHook?(hook: PluginHook, context: PluginContext, data: any): Promise<any> | any;
   cleanup?(): Promise<void> | void;
@@ -6169,7 +6169,7 @@ interface XHEPlugin {
 }
 
 class PluginSystem {
-  private plugins: Map<string, XHEPlugin> = new Map();
+  private plugins: Map<string, CFPlugin> = new Map();
   private hookRegistry: Map<PluginHook, Set<string>> = new Map();
   private context: PluginContext | null = null;
   private initialized: boolean = false;
@@ -6196,7 +6196,7 @@ class PluginSystem {
   }
 
   // Plugin Management
-  register(plugin: XHEPlugin): void {
+  register(plugin: CFPlugin): void {
     if (this.plugins.has(plugin.manifest.name)) {
       throw new Error(`Plugin already registered: ${plugin.manifest.name}`);
     }
@@ -6287,7 +6287,7 @@ class PluginSystem {
   }
 
   // Utility Methods
-  getPlugin(name: string): XHEPlugin | undefined {
+  getPlugin(name: string): CFPlugin | undefined {
     return this.plugins.get(name);
   }
 
@@ -6444,8 +6444,8 @@ export {
   
   // R2-ROUND 4: Event Bus & Pub/Sub System
   EventBus,
-  // Note: XHEEvents and XHEEventType are already exported as const/type above
-  type XHEEventType,
+  // Note: CFEvents and CFEventType are already exported as const/type above
+  type CFEventType,
   
   // R2-ROUND 5: Rate Limiting & Quota Management
   RateLimiter,
@@ -6464,8 +6464,8 @@ export {
 
 // Export types for plugins and BYOK
 export type {
-  XHEPlugin,
-  XHEPluginManifest,
+  CFPlugin,
+  CFPluginManifest,
   PluginContext,
   PluginHook,
   // BYOK Types

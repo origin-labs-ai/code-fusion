@@ -4,7 +4,7 @@
 import { spawn } from 'node:child_process'
 
 const SURFACES = new Map([
-  // The browser surface with the cordis toolset layered on: `dsh web --config`
+  // The browser surface with the cordis toolset layered on: `cf web --config`
   // applies this overlay over the shipped web composition; it owns port 3081.
   ['web', ['--import', 'tsx', 'apps/cli/src/bin.ts', 'web', '--patch', 'examples/web-cordis/cordis.yml']],
   ['acp', ['--import', 'tsx', 'packages/examples/acp-demo/src/bin.ts', '--config', 'examples/acp-agent/cordis-tools.cordis.yml']],
@@ -13,7 +13,7 @@ const SURFACES = new Map([
 const surface = process.argv[2] ?? 'web'
 const args = SURFACES.get(surface)
 if (args === undefined || process.argv.length > 3) {
-  console.error('usage: pnpm run demo:cordis [web|acp]')
+  console.error('usage: npm run demo:cordis [web|acp]')
   process.exit(2)
 }
 

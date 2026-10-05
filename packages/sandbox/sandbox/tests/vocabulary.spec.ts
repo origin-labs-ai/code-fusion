@@ -2,8 +2,8 @@
  * Vocabulary-contract tests for the sandbox seam: the fail-closed error's
  * structured identity is what tool results and consumers key on, so its
  * shape is pinned here, next to the vocabulary that owns it. Provider
- * behavior is each implementation's suite (`xhe-sandbox-local`); consumer
- * behavior is each consumer's (`xhe-bash-sandbox`).
+ * behavior is each implementation's suite (`cf-sandbox-local`); consumer
+ * behavior is each consumer's (`cf-bash-sandbox`).
  */
 
 import { describe, expect, it } from 'vitest'

@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/host/directory-picker-browse"
   },
   "type": "module",
@@ -32,15 +32,15 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@origin-ai/cf-host-directory-picker": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@origin-ai/cf-host-directory-picker": "*",
+    "@deepseek-ai/schemastery": "*"
   },
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

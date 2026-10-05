@@ -4,8 +4,8 @@ import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   DEFAULT_CF_HOME_DISPLAY,
-  LEGACY_DSH_HOME_DIR_NAME,
-  LEGACY_DSH_HOME_DISPLAY,
+  LEGACY_CF_HOME_DIR_NAME,
+  LEGACY_CF_HOME_DISPLAY,
   CF_HOME_DIR_NAME,
   canonicalizeWatchPath,
   defaultCfHome,
@@ -21,18 +21,18 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-describe('dsh path helpers', () => {
+describe('cf path helpers', () => {
   it('owns the shared default CodeFusion home directory name', () => {
     expect(CF_HOME_DIR_NAME).toBe('.cf')
     expect(DEFAULT_CF_HOME_DISPLAY).toBe('~/.cf')
     expect(defaultCfHome()).toBe(join(homedir(), '.cf'))
-    expect(LEGACY_DSH_HOME_DIR_NAME).toBe('.dsh')
-    expect(LEGACY_DSH_HOME_DISPLAY).toBe('~/.dsh')
+    expect(LEGACY_CF_HOME_DIR_NAME).toBe('.dsh')
+    expect(LEGACY_CF_HOME_DISPLAY).toBe('~/.dsh')
     expect(legacyCfHome()).toBe(join(homedir(), '.dsh'))
   })
 
   it('migrates a legacy .dsh home into .cf without overwriting existing data', async () => {
-    const fakeHome = await mkdtemp(join(tmpdir(), 'xhe-home-migrate-'))
+    const fakeHome = await mkdtemp(join(tmpdir(), 'cf-home-migrate-'))
     try {
       const legacy = join(fakeHome, '.dsh')
       const fresh = join(fakeHome, '.cf')
@@ -50,7 +50,7 @@ describe('dsh path helpers', () => {
   })
 
   it('reports fresh when neither home exists', async () => {
-    const fakeHome = await mkdtemp(join(tmpdir(), 'xhe-home-fresh-'))
+    const fakeHome = await mkdtemp(join(tmpdir(), 'cf-home-fresh-'))
     try {
       expect(migrateLegacyCfHome(join(fakeHome, '.cf'), fakeHome)).toBe('fresh')
     } finally {
@@ -60,17 +60,17 @@ describe('dsh path helpers', () => {
 
   it('expands tilde paths without changing non-tilde paths', () => {
     expect(expandHomePath('~')).toBe(homedir())
-    expect(expandHomePath('~/.dsh')).toBe(join(homedir(), '.dsh'))
-    expect(expandHomePath('~\\.dsh')).toBe(join(homedir(), '.dsh'))
-    expect(expandHomePath('/tmp/.dsh')).toBe('/tmp/.dsh')
-    expect(expandHomePath('~other/.dsh')).toBe('~other/.dsh')
+    expect(expandHomePath('~/.cf')).toBe(join(homedir(), '.cf'))
+    expect(expandHomePath('~\\.cf')).toBe(join(homedir(), '.cf'))
+    expect(expandHomePath('/tmp/.cf')).toBe('/tmp/.cf')
+    expect(expandHomePath('~other/.cf')).toBe('~other/.cf')
   })
 
   it('resolves explicit path before CF_HOME and the default', () => {
-    const envHome = join(homedir(), 'env-dsh')
+    const envHome = join(homedir(), 'env-cf')
 
-    expect(resolveCfHome('/tmp/explicit-dsh', { CF_HOME: '~/env-dsh' })).toBe(resolve('/tmp/explicit-dsh'))
-    expect(resolveCfHome(undefined, { CF_HOME: '~/env-dsh' })).toBe(envHome)
+    expect(resolveCfHome('/tmp/explicit-cf', { CF_HOME: '~/env-cf' })).toBe(resolve('/tmp/explicit-cf'))
+    expect(resolveCfHome(undefined, { CF_HOME: '~/env-cf' })).toBe(envHome)
     expect(resolveCfHome(undefined, {})).toBe(defaultCfHome())
   })
 
@@ -80,9 +80,9 @@ describe('dsh path helpers', () => {
   })
 
   it('joins child segments onto the resolved CF_HOME', () => {
-    vi.stubEnv('CF_HOME', '~/env-dsh')
-    expect(cfHomePath()).toBe(join(homedir(), 'env-dsh'))
-    expect(cfHomePath('storages', 'cache')).toBe(join(homedir(), 'env-dsh', 'storages', 'cache'))
+    vi.stubEnv('CF_HOME', '~/env-cf')
+    expect(cfHomePath()).toBe(join(homedir(), 'env-cf'))
+    expect(cfHomePath('storages', 'cache')).toBe(join(homedir(), 'env-cf', 'storages', 'cache'))
   })
 
   it('labels a resolved home by whether it is the default root', () => {
@@ -91,7 +91,7 @@ describe('dsh path helpers', () => {
   })
 
   it('canonicalizes a watcher ancestor while preserving a missing suffix', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'xhe-watch-path-'))
+    const root = await mkdtemp(join(tmpdir(), 'cf-watch-path-'))
     const target = join(root, 'target')
     const alias = join(root, 'alias')
     try {

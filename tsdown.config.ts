@@ -4,7 +4,7 @@ import { typertPlugin } from './packages/typert/generator/lib/types/tsdown-plugi
 function isBuildFaceClient(value: unknown): boolean {
   if (value === undefined || value === 'host') return false
   if (value === 'client') return true
-  throw new Error(`tsdown: --env.XHE_BUILD_FACE must be host or client, received ${String(value)}`)
+  throw new Error(`tsdown: --env.CF_BUILD_FACE must be host or client, received ${String(value)}`)
 }
 
 /**
@@ -14,7 +14,7 @@ function isBuildFaceClient(value: unknown): boolean {
  * their Node loader entry and browser artifact.
  */
 export default defineConfig(({ env }) => {
-  const client = isBuildFaceClient(env?.XHE_BUILD_FACE)
+  const client = isBuildFaceClient(env?.CF_BUILD_FACE)
   return {
     // packages/cf and packages/mad/* are standalone source-first libs (own
     // src exports, not part of the host tsc project) — excluded so the

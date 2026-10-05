@@ -1,6 +1,6 @@
 # @origin-ai/cf-fs-e2b
 
-E2B implementation of the [`@origin-ai/cf-fs`](../../fs/fs/README.md) provider contract. It has no config: load [`@origin-ai/cf-e2b`](../e2b/README.md) first, then this service in place of `xhe-fs-local`. The provider uses the owner's remote cwd and SDK handle, so file tools observe the same world as E2B-backed Bash processes.
+E2B implementation of the [`@origin-ai/cf-fs`](../../fs/fs/README.md) provider contract. It has no config: load [`@origin-ai/cf-e2b`](../e2b/README.md) first, then this service in place of `cf-fs-local`. The provider uses the owner's remote cwd and SDK handle, so file tools observe the same world as E2B-backed Bash processes.
 
 ## Behavior
 
@@ -15,7 +15,7 @@ The provider does not copy, mount, or reconcile the host workspace. Giving it a 
 
 ## Model Experience
 
-Indirectly, through [`xhe-tool-fs`](../../fs/tool-fs/README.md), which renders remote UTF-8 content, directory results, mutation acknowledgements, and provider errors while E2B identity and transport remain internal.
+Indirectly, through [`cf-tool-fs`](../../fs/tool-fs/README.md), which renders remote UTF-8 content, directory results, mutation acknowledgements, and provider errors while E2B identity and transport remain internal.
 
 #### KV Cache effect
 

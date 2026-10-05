@@ -9,7 +9,7 @@ env:
   PRIMARY_NODE_VERSION: '24'
   # CI runs must never report to the production telemetry endpoint baked
   # into apps/cli/cordis.yml (AppCLIEntry disables the row when set).
-  XHE_TELEMETRY_DISABLED: '1'
+  CF_TELEMETRY_DISABLED: '1'
 
 # Cancel a superseded pull-request run on a new push so a fresh head does not
 # queue a second full 9-job run behind a stale one (paid enterprise runners
@@ -25,7 +25,7 @@ jobs:
   # all three jobs enter runner allocation independently.
   #
   # FAILOVER (Linux): each Linux enterprise job resolves its pool through the
-  # XHE_CI_FAILOVER_LINUX repository variable. Unset (normal), the expressions
+  # CF_CI_FAILOVER_LINUX repository variable. Unset (normal), the expressions
   # pick the hosted enterprise pools below. Setting the variable to
   # 'selfhosted' (repo Settings → Actions → Variables; writer-manageable
   # repository state — not PR-editable, no merge required) retargets all
@@ -34,18 +34,18 @@ jobs:
   # see .agents/notes/implemented/process/2026-07-26-ci-failover-runbook.md. The
   # in-house pool's readiness is re-proven on every master push by the
   # serial-linux-selfhosted standby lane in ci-master.yml. The Windows failover
-  # switch is the separate XHE_CI_FAILOVER_WINDOWS variable on the windows-native
+  # switch is the separate CF_CI_FAILOVER_WINDOWS variable on the windows-native
   # job below.
   node-24:
     if: github.event_name == 'pull_request'
     runs-on: >-
-      ${{ vars.XHE_CI_FAILOVER_LINUX == 'selfhosted'
+      ${{ vars.CF_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
-          || 'xhe-ubuntu-24-04-16core' }}
+          || 'cf-ubuntu-24-04-16core' }}
     name: node 24 / static
     env:
-      XHE_GATE_CONCURRENCY: '8'
+      CF_GATE_CONCURRENCY: '8'
     steps:
       # Fetch complete history so the archive gate can read the trusted PR base from a reused shallow checkout.
       - uses: actions/checkout@v6
@@ -53,90 +53,74 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure pnpm store path
-        id: pnpm-store
-        run: |
-          store_root="$HOME/.local/share/pnpm/store"
-          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
-          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
-          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+      - name: Configure npm cache path
+        id: npm-store
+        run: echo "path=$(npm config get cache)" >> "$GITHUB_OUTPUT"
 
       # Pull requests consume the default-branch cache but do not put cache
       # compression and upload on the paid latency-critical path. Skipped
       # under failover — see the coverage lane's identical rationale.
       - uses: actions/cache/restore@v4
-        if: vars.XHE_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
+        if: vars.CF_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
         with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.npm-store.outputs.path }}
+          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-
+            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-
 
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run static gates
         env:
-          XHE_ARCHIVE_BASE_REF: ${{ github.event.pull_request.base.sha }}
-        run: pnpm run check:ci:static
+          CF_ARCHIVE_BASE_REF: ${{ github.event.pull_request.base.sha }}
+        run: npm run check:ci:static
 
   node-24-coverage:
     if: github.event_name == 'pull_request'
     runs-on: >-
-      ${{ vars.XHE_CI_FAILOVER_LINUX == 'selfhosted'
+      ${{ vars.CF_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
-          || 'xhe-ubuntu-24-04-16core' }}
+          || 'cf-ubuntu-24-04-16core' }}
     name: node 24 / coverage
     env:
       # Partitioning replaces the instrumented share; this budget gives the
       # exempt-heavy gate two workers on both hosted and failover runners.
-      XHE_COVERAGE_MAX_WORKERS: '6'
-      XHE_COVERAGE_PARTITIONS: '4'
-      XHE_GATE_CONCURRENCY: '3'
+      CF_COVERAGE_MAX_WORKERS: '6'
+      CF_COVERAGE_PARTITIONS: '4'
+      CF_GATE_CONCURRENCY: '3'
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure pnpm store path
-        id: pnpm-store
-        run: |
-          store_root="$HOME/.local/share/pnpm/store"
-          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
-          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
-          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+      - name: Configure npm cache path
+        id: npm-store
+        run: echo "path=$(npm config get cache)" >> "$GITHUB_OUTPUT"
 
-      # Skipped under failover: the self-hosted VM's persistent pnpm store
+      # Skipped under failover: the self-hosted VM's persistent npm cache
       # already serves warm installs, while restoring the hosted archive
       # would spend ~52 s pulling ~180 MB into that populated store.
       - uses: actions/cache/restore@v4
-        if: vars.XHE_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
+        if: vars.CF_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
         with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.npm-store.outputs.path }}
+          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-
+            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-
 
       - name: Install dependencies and prepare bubblewrap
         run: |
-          pnpm install --frozen-lockfile &
+          npm ci &
           install_pid=$!
           bash scripts/prepare-ci-bubblewrap.sh &
           sandbox_pid=$!
@@ -148,70 +132,62 @@ jobs:
           exit "$sandbox_status"
 
       - name: Run exhaustive coverage
-        run: pnpm run check:ci:coverage
+        run: npm run check:ci:coverage
 
   node-24-consumers:
     if: github.event_name == 'pull_request'
     runs-on: >-
-      ${{ vars.XHE_CI_FAILOVER_LINUX == 'selfhosted'
+      ${{ vars.CF_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
-          || 'xhe-ubuntu-24-04-16core' }}
+          || 'cf-ubuntu-24-04-16core' }}
     name: node 24 / snapshots and artifacts
     env:
-      XHE_GATE_CONCURRENCY: '8'
-      XHE_NODE_COMPAT_SKIP_TYPECHECK: '1'
-      XHE_OXLINT_THREADS: '8'
-      XHE_PUBLINT_CONCURRENCY: '8'
-      XHE_WEB_SNAPSHOT_WORKERS: '6'
+      CF_GATE_CONCURRENCY: '8'
+      CF_NODE_COMPAT_SKIP_TYPECHECK: '1'
+      CF_OXLINT_THREADS: '8'
+      CF_PUBLINT_CONCURRENCY: '8'
+      CF_WEB_SNAPSHOT_WORKERS: '6'
       # Failover halves snapshot concurrency for the shared 64-core VM.
-      XHE_SNAPSHOT_MAX_CONCURRENCY: ${{ vars.XHE_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '12' || '32' }}
+      CF_SNAPSHOT_MAX_CONCURRENCY: ${{ vars.CF_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]' && '12' || '32' }}
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure pnpm store path
-        id: pnpm-store
-        run: |
-          store_root="$HOME/.local/share/pnpm/store"
-          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
-          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
-          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+      - name: Configure npm cache path
+        id: npm-store
+        run: echo "path=$(npm config get cache)" >> "$GITHUB_OUTPUT"
 
-      # Pull requests restore the pnpm store and Playwright caches without paying
+      # Pull requests restore the npm cache and Playwright caches without paying
       # compression and upload on the required path. No master job saves these
       # hosted cache keys, so each restore-keys fallback hits the matching archived
       # entry until it evicts, after which the store is cold. Skipped under failover
       # — the self-hosted VM's persistent store is already warm.
       - uses: actions/cache/restore@v4
-        if: vars.XHE_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
+        if: vars.CF_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
         with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.npm-store.outputs.path }}
+          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-
+            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-
 
       # Skipped under failover: the VM's persistent browser cache is already warm.
       - uses: actions/cache/restore@v4
-        if: vars.XHE_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
+        if: vars.CF_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
       - name: Install dependencies and prepare bubblewrap
         run: |
-          pnpm install --frozen-lockfile &
+          npm ci &
           install_pid=$!
           bash scripts/prepare-ci-bubblewrap.sh &
           sandbox_pid=$!
@@ -223,17 +199,17 @@ jobs:
           exit "$sandbox_status"
 
       - name: Install Playwright Chromium and hosted dependencies
-        if: vars.XHE_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
-        run: pnpm --filter @origin-ai/cf-web-frontend exec playwright install --with-deps chromium
+        if: vars.CF_CI_FAILOVER_LINUX != 'selfhosted' || github.event.pull_request.user.login == 'dependabot[bot]'
+        run: npm exec --workspace @origin-ai/cf-web-frontend -- playwright install --with-deps chromium
 
       # The persistent VM image owns Playwright's Linux system packages; do
       # not mutate the shared host with apt on every failover run.
       - name: Install Playwright Chromium on the failover VM
-        if: vars.XHE_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]'
-        run: pnpm --filter @origin-ai/cf-web-frontend exec playwright install chromium
+        if: vars.CF_CI_FAILOVER_LINUX == 'selfhosted' && github.event.pull_request.user.login != 'dependabot[bot]'
+        run: npm exec --workspace @origin-ai/cf-web-frontend -- playwright install chromium
 
       - name: Run compatibility, snapshot, and artifact gates
-        run: pnpm run check:ci:consumers
+        run: npm run check:ci:consumers
 
 
   node-compat:
@@ -242,8 +218,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     name: ${{ matrix.name }}
     env:
-      XHE_GATE_CONCURRENCY: ${{ matrix.gate_concurrency }}
-      XHE_NODE_COMPAT_SKIP_TYPECHECK: '1'
+      CF_GATE_CONCURRENCY: ${{ matrix.gate_concurrency }}
+      CF_NODE_COMPAT_SKIP_TYPECHECK: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -259,22 +235,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
-          cache: pnpm
+          cache: npm
 
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run compatibility smokes
         env:
-          XHE_BUILD_CLIENT_PROFILE: official
-        run: pnpm run check:node-compat
+          CF_BUILD_CLIENT_PROFILE: official
+        run: npm run check:node-compat
 
   python-sdk:
     if: github.event_name == 'pull_request'
@@ -313,7 +285,7 @@ jobs:
   # including the observational portability gates this lane does not run —
   # on real Windows. This job only provisions runner state (caches,
   # apt); scripts/wine-windows-gates.sh owns the gate logic and is the same
-  # script the optional local gate `pnpm run check:windows-wine` runs.
+  # script the optional local gate `npm run check:windows-wine` runs.
   # Current topology and fidelity limits live in
   # .agents/notes/implemented/process/2026-08-08-native-windows-pull-request-ci.md
   windows:
@@ -326,28 +298,20 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure pnpm store path
-        id: pnpm-store
-        run: |
-          store_root="$HOME/.local/share/pnpm/store"
-          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
-          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
-          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+      - name: Configure npm cache path
+        id: npm-store
+        run: echo "path=$(npm config get cache)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache/restore@v4
         with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.npm-store.outputs.path }}
+          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-
+            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-
 
       # Master's wine-apt-cache job in ci-master.yml seeds the default-branch
       # scope every pull request can read; a save from this job only reaches
@@ -400,29 +364,29 @@ jobs:
   # its own unmasked conclusion but is deliberately absent from
   # all-checks-passed.needs, so it never delays or changes that required
   # verdict. Under normal operation it runs on the hosted larger runner; under
-  # Windows failover (XHE_CI_FAILOVER_WINDOWS=selfhosted) it retargets onto the
+  # Windows failover (CF_CI_FAILOVER_WINDOWS=selfhosted) it retargets onto the
   # in-house self-hosted Windows pool. Dependabot PRs are excluded from the
   # self-hosted pool and stay queued for the hosted runner — see the failover
   # runbook. This Windows switch is independent of the Linux
-  # XHE_CI_FAILOVER_LINUX variable that retargets the three required Linux jobs
+  # CF_CI_FAILOVER_LINUX variable that retargets the three required Linux jobs
   # and the all-checks-passed verdict above.
   windows-native:
     if: github.event_name == 'pull_request'
     runs-on: >-
-      ${{ vars.XHE_CI_FAILOVER_WINDOWS == 'selfhosted'
+      ${{ vars.CF_CI_FAILOVER_WINDOWS == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
-          && fromJSON('["self-hosted", "xhe-win-ci", "windows"]')
-          || 'xhe-windows-2025-16core' }}
+          && fromJSON('["self-hosted", "cf-win-ci", "windows"]')
+          || 'cf-windows-2025-16core' }}
     name: windows node 24 / native complete
     timeout-minutes: 120
     env:
-      XHE_COVERAGE_MAX_WORKERS: '6'
-      XHE_COVERAGE_PARTITIONS: '8'
+      CF_COVERAGE_MAX_WORKERS: '6'
+      CF_COVERAGE_PARTITIONS: '8'
       # Instrumented process and polling fixtures can exceed Vitest's defaults
       # under the complete lane's concurrent gate load.
-      XHE_COVERAGE_TEST_TIMEOUT_MS: '30000'
-      XHE_GATE_CONCURRENCY: '4'
-      XHE_PUBLINT_CONCURRENCY: '8'
+      CF_COVERAGE_TEST_TIMEOUT_MS: '30000'
+      CF_GATE_CONCURRENCY: '4'
+      CF_PUBLINT_CONCURRENCY: '8'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -434,25 +398,21 @@ jobs:
           reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
           /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm-js
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      # Extracting the many-file pnpm store cache is slower than a clean
+      # Extracting the many-file npm cache cache is slower than a clean
       # install on hosted Windows runners, and saving it adds latency after
       # the gates. The self-hosted VM's persistent store makes caching
       # redundant.
       - name: Install (immutable)
         shell: pwsh
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run complete native Windows gate inventory
         shell: pwsh
-        run: pnpm run check:ci:windows-complete
+        run: npm run check:ci:windows-complete
 
   # Single stable required check for branch protection: require "all checks
   # passed" instead of enumerating matrix legs whose names change as lanes and
@@ -471,10 +431,10 @@ jobs:
     # provisioning — and under Linux failover it follows the same selector as
     # the worker jobs it aggregates, so a standard-hosted outage cannot strand
     # the branch-protection verdict either. It retargets with the Linux switch
-    # (XHE_CI_FAILOVER_LINUX), not the Windows one, because it aggregates the
+    # (CF_CI_FAILOVER_LINUX), not the Windows one, because it aggregates the
     # required Linux workers and runs on the vm-backup pool.
     runs-on: >-
-      ${{ vars.XHE_CI_FAILOVER_LINUX == 'selfhosted'
+      ${{ vars.CF_CI_FAILOVER_LINUX == 'selfhosted'
           && github.event.pull_request.user.login != 'dependabot[bot]'
           && fromJSON('["self-hosted", "linux", "x64", "vm-backup"]')
           || 'ubuntu-latest' }}

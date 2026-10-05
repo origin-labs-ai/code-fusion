@@ -1,6 +1,6 @@
 /**
- * Generated scoped-event routing-subject resolvers for xhe-scope invariants.
- * Do not edit by hand; run `pnpm run gen-scoped-events`.
+ * Generated scoped-event routing-subject resolvers for cf-scope invariants.
+ * Do not edit by hand; run `npm run gen-scoped-events`.
  *
  * @module @origin-ai/cf-scope/scoped-events.generated
  */

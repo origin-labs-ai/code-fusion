@@ -1,4 +1,4 @@
-/** Unified JSON-value schema DSL, inference, compilation, and typed tool helper. @module xhe-tools/schema */
+/** Unified JSON-value schema DSL, inference, compilation, and typed tool helper. @module cf-tools/schema */
 
 import { HarnessError } from '@origin-ai/cf-llm'
 import type { ContentBlock } from '@origin-ai/cf-llm'

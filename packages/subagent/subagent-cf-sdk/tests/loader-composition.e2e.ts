@@ -65,9 +65,9 @@ describe('SDK subagent cwd inheritance through a real cordis.yml', () => {
       // 30s window.
       processTimeoutMs: 120_000,
       env: {
-        XHE_TEST_CHILD_COMMAND: childLaunch.command,
-        XHE_TEST_CHILD_ARGS: JSON.stringify(childLaunch.args),
-        XHE_TEST_CHILD_ENV: JSON.stringify({
+        CF_TEST_CHILD_COMMAND: childLaunch.command,
+        CF_TEST_CHILD_ARGS: JSON.stringify(childLaunch.args),
+        CF_TEST_CHILD_ENV: JSON.stringify({
           ...Object.fromEntries(Object.entries(childLaunch.env).filter(([, value]) => value !== undefined)),
         }),
       },

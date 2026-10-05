@@ -1,6 +1,6 @@
-# xhe-atomic-write
+# cf-atomic-write
 
-Zero-dependency atomic file replacement shared by file-backed stores that must never leave partial, symlink-hijacked, or wider-than-intended content on disk — the user-settings document (`xhe-settings-file`) and the credentials store (`xhe-credentials-local`).
+Zero-dependency atomic file replacement shared by file-backed stores that must never leave partial, symlink-hijacked, or wider-than-intended content on disk — the user-settings document (`cf-settings-file`) and the credentials store (`cf-credentials-local`).
 
 ## Surface
 
@@ -10,11 +10,11 @@ import { withFileLock, writeFileAtomic } from '@origin-ai/cf-atomic-write'
 declare const text: string
 declare const render: (previous: string) => string
 
-await writeFileAtomic('/home/u/.dsh/settings.yaml', text, { mode: 0o600 })
+await writeFileAtomic('/home/u/.cf/settings.yaml', text, { mode: 0o600 })
 
 // Read-modify-write against the same file from several processes.
-await withFileLock('/home/u/.dsh/settings.yaml', async () => {
-  await writeFileAtomic('/home/u/.dsh/settings.yaml', render(text), { mode: 0o600 })
+await withFileLock('/home/u/.cf/settings.yaml', async () => {
+  await writeFileAtomic('/home/u/.cf/settings.yaml', render(text), { mode: 0o600 })
 })
 ```
 

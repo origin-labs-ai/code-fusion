@@ -6,13 +6,13 @@
 
 ## ① 
 
-> This document describes the architecture of the Xee Harness Enhanced — the foundation of **DeepSeek Code**. The governing principle, from the microkernel design discussion: **everything is a plugin**. The core is deliberately tiny — a handful of abstract services plus one concrete loop plugin (`xhe-agent-loop`) — and every product feature is a plugin against the extension API described here, without modifying the loop.
+> This document describes the architecture of the CodeFusion — the foundation of **DeepSeek Code**. The governing principle, from the microkernel design discussion: **everything is a plugin**. The core is deliberately tiny — a handful of abstract services plus one concrete loop plugin (`cf-agent-loop`) — and every product feature is a plugin against the extension API described here, without modifying the loop.
 
- Xee Harness Enhanced ， **DeepSeek Code** 。：****。，， `xhe-agent-loop`。，。
+ CodeFusion ， **DeepSeek Code** 。：****。，， `cf-agent-loop`。，。
 
-> Dependency rule: extension plugins depend on interfaces, never on `xhe-agent-loop` (the loop is swappable); the sanctioned exception is the composition bundle `xhe-agent-spine-demo`, whose job is assembling the concrete spine.
+> Dependency rule: extension plugins depend on interfaces, never on `cf-agent-loop` (the loop is swappable); the sanctioned exception is the composition bundle `cf-agent-spine-demo`, whose job is assembling the concrete spine.
 
-：， `xhe-agent-loop`（）； `xhe-agent-spine-demo`，。
+：， `cf-agent-loop`（）； `cf-agent-spine-demo`，。
 
 > This document covers **behavior**; type definitions live in [subsystems/](../subsystems/core.md), the per-event/service reference lives in the generated regions of [subsystems/](../subsystems/core.md), and package contracts in the package READMEs state each package's required configuration and behavior ([map](../../packages/README.md)).
 
@@ -34,9 +34,9 @@
 
 ## ③ 
 
-> **Coverage gate** (`pnpm run test:coverage`): the gating run, per-file 100% on `packages/*/*/src`. An uncovered line is often dead code the gate is correctly flagging for deletion, not a missing test to bolt on. Line coverage is necessary, never sufficient — it proves lines ran, not that the feature works as shipped.
+> **Coverage gate** (`npm run test:coverage`): the gating run, per-file 100% on `packages/*/*/src`. An uncovered line is often dead code the gate is correctly flagging for deletion, not a missing test to bolt on. Line coverage is necessary, never sufficient — it proves lines ran, not that the feature works as shipped.
 
-（`pnpm run test:coverage`）：， `packages/*/*/src`  100%。，，。，：，。
+（`npm run test:coverage`）：， `packages/*/*/src`  100%。，，。，：，。
 
 > We are DeepSeek — do not ration real-API tests. A no-key test proves the plumbing; only a with-key run proves the agent works against a real model. Write many: real prompts that write files, multi-turn conversations, tool use, cancellation mid-stream. Cheapest and highest-value are **smoke tests** that boot the real example, send one real prompt, and check the world — they catch the "green unit tests, broken product" class that mocks structurally cannot. The self-skip exists only so secretless CI and keyless contributors aren't blocked; it is not a cost signal.
 
@@ -84,4 +84,4 @@
 - ，；。
 - ：。
 -  [terminology.md](terminology.md) ，：（ agent、mock、LLM ，cancellation 「」）。
-- （ `agent/status`、 `running`、 `xhe-bash-local` ） code span ，；Pass 2 。
+- （ `agent/status`、 `running`、 `cf-bash-local` ） code span ，；Pass 2 。

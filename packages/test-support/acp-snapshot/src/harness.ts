@@ -160,7 +160,7 @@ export interface RunOptions {
   /**
    * Recorded SUBAGENT child-session fixture paths (replay). A nested-agent
    * scenario ships one per child (`session.1.jsonl`, …); the harness forwards
-   * them to `xhe-llm-replay` via `$XHE_SNAPSHOT_CHILD_FILES` so each child
+   * them to `cf-llm-replay` via `$CF_SNAPSHOT_CHILD_FILES` so each child
    * session replays from its own recorded script. Empty for single-session
    * scenarios. Ignored in record mode (children are harvested, not replayed).
    */
@@ -212,7 +212,7 @@ export function snapshotSpillRoot(
   const scenario = basename(dirname(fixtureFile))
   const key = createHash('sha256').update(scenario).digest('hex').slice(0, 9)
   const root = platform === 'win32' ? '/t' : '/tmp'
-  return `${root}/xhe-acp-snap-${key}`
+  return `${root}/cf-acp-snap-${key}`
 }
 
 /**
@@ -248,15 +248,15 @@ export async function runScenario(input: InputScript, opts: RunOptions): Promise
     await opts.prepareWorkspace?.(cwd)
     const env: NodeJS.ProcessEnv = {
       ...opts.env,
-      XHE_SNAPSHOT: opts.mode,
-      XHE_SNAPSHOT_FILE: opts.fixtureFile,
-      XHE_SNAPSHOT_SESSIONS_ROOT: sessionsRoot,
-      XHE_SNAPSHOT_SPILL_ROOT: spillRoot,
-      CF_HOME: join(cwd, '.dsh'),
-      XHE_AGENTS_HOME: join(cwd, '.agents'),
-      ...opts.overrideFile !== undefined ? { XHE_SNAPSHOT_OVERRIDE: opts.overrideFile } : {},
+      CF_SNAPSHOT: opts.mode,
+      CF_SNAPSHOT_FILE: opts.fixtureFile,
+      CF_SNAPSHOT_SESSIONS_ROOT: sessionsRoot,
+      CF_SNAPSHOT_SPILL_ROOT: spillRoot,
+      CF_HOME: join(cwd, '.cf'),
+      CF_AGENTS_HOME: join(cwd, '.agents'),
+      ...opts.overrideFile !== undefined ? { CF_SNAPSHOT_OVERRIDE: opts.overrideFile } : {},
       ...opts.childFiles !== undefined && opts.childFiles.length > 0
-        ? { XHE_SNAPSHOT_CHILD_FILES: opts.childFiles.join(delimiter) }
+        ? { CF_SNAPSHOT_CHILD_FILES: opts.childFiles.join(delimiter) }
         : {},
     }
 
@@ -772,7 +772,7 @@ async function harvestSessionLogs(root: string): Promise<HarvestedLog[]> {
   // synchronously and strictly sequentially, so their createdAt values are
   // strictly ordered; the recordedId tiebreak only keeps a degenerate
   // same-millisecond collision (unreachable here) deterministic. This harvest
-  // order must match the replay load order in xhe-llm-replay's loadSessionScripts
+  // order must match the replay load order in cf-llm-replay's loadSessionScripts
   // so session.<n>.jsonl maps to the same child on record and replay — replay
   // re-sorts childFiles by the same key, so the two stay consistent.
   logs.sort((a, b) => {

@@ -48,11 +48,11 @@ The [Agent Note](../../../.agents/notes/implemented/architecture/2026-07-29-proj
 - name: '@origin-ai/cf-compaction-basic'
 ```
 
-Both plugins have usable defaults. The meter remains independent of model routing and optional compaction. A deployment configures capacity on its LLM adapter and compaction policy on `xhe-compaction-basic`.
+Both plugins have usable defaults. The meter remains independent of model routing and optional compaction. A deployment configures capacity on its LLM adapter and compaction policy on `cf-compaction-basic`.
 
 ## Model Experience
 
-Indirectly, through consumers such as `xhe-compaction-basic`; the service itself adds no prompt, message, schema, tool, or model call.
+Indirectly, through consumers such as `cf-compaction-basic`; the service itself adds no prompt, message, schema, tool, or model call.
 
 #### KV Cache effect
 

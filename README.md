@@ -1,31 +1,21 @@
-# Xee Harness Enhanced (XHE)
+# CodeFusion (CF)
 
 <p align="center">
-  <strong>Xee Harness Enhanced</strong> — The Evolution of AI Agent Orchestration
+  <strong>CodeFusion</strong> — The Evolution of AI Agent Orchestration
 </p>
 
 <p align="center">
-  <img src="infinity.svg" alt="XHE Infinity Logo" width="200" height="100"/>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/version-0.1.1--rc.2-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" />
   <img src="https://img.shields.io/badge/status-production%20ready-brightgreen.svg" alt="Status" />
-  <a href="https://github.com/origin-labs-ai/xhe"><img src="https://img.shields.io/badge/coverage-95%25-orange" alt="Coverage" /></a>
+  <a href="https://github.com/origin-labs-ai/code-fusion"><img src="https://img.shields.io/badge/coverage-95%25-orange" alt="Coverage" /></a>
 </p>
 
 ---
 
 ## Overview
 
-**Xee Harness Enhanced (XHE)** is a production-ready, enterprise-grade AI agent orchestration framework. This project is a **fork and significant enhancement** of the original **DSH/SeepSeek Harness**, reimagined with modern architecture, enhanced capabilities, and a focus on scalability.
-
-### Also Known As
-
-- **XeeCode** / **XCode** — Developer-friendly aliases
-- **@origin-ai/cf** — Package registry identifier
-- **XHE** — Concise abbreviation for "Xee Harness Enhanced"
+**CodeFusion** is a production-ready, enterprise-grade AI agent orchestration framework, distributed as the npm package `@origin-ai/cf` and driven by the `cf` CLI. It is built on a plugin-based architecture, enhanced agent capabilities, and a focus on scalability.
 
 ### The Core Philosophy
 
@@ -37,7 +27,7 @@ This is not just multi-model execution. This is **coordinated intelligence** thr
 
 ## 🚀 MAD (Multi-Agent Deployment) System
 
-The **flagship feature** of XHE is the **MAD (Multi-Agent Deployment)** system — a revolutionary approach to orchestrating multiple AI agents in parallel, with intelligent task distribution, conflict resolution, and result aggregation.
+The **flagship feature** of CF is the **MAD (Multi-Agent Deployment)** system — a revolutionary approach to orchestrating multiple AI agents in parallel, with intelligent task distribution, conflict resolution, and result aggregation.
 
 ### Architecture Overview
 
@@ -206,26 +196,26 @@ git clone https://github.com/origin-labs-ai/code-fusion.git
 cd code-fusion
 
 # Install dependencies
-pnpm install
+npm install
 
 # Set up environment variables
 cp .env.example .env
 # Edit .env with your API keys
 
 # Build the project
-pnpm run build:lib
+npm run build:lib
 
 # Run CLI help
-pnpm run xhe --help
+npm run cf --help
 ```
 
 ### Basic Usage
 
 ```typescript
-import { createXHE, xheExecute } from '@origin-ai/cf/mad'
+import { createCF, cfExecute } from '@origin-ai/cf/mad'
 
 // Option 1: Full control
-const xhe = createXHE({
+const cf = createCF({
   mode: 'BUILD',
   providers: [
     {
@@ -243,7 +233,7 @@ const xhe = createXHE({
 })
 
 // Initialize and run
-await xhe.initializeTask({
+await cf.initializeTask({
   id: 'task-1',
   description: 'Build a REST API with authentication',
   mode: 'BUILD',
@@ -252,11 +242,11 @@ await xhe.initializeTask({
   priority: 'high'
 })
 
-const report = xhe.finalize()
+const report = cf.finalize()
 console.log(report.result.finalDecision)
 
 // Option 2: Quick execute
-const result = await xheExecute(
+const result = await cfExecute(
   'Debug the login flow issue',
   'DEBUG',
   { verificationPolicy: { level: 'STRICT' } }
@@ -271,9 +261,8 @@ const result = await xheExecute(
 xhee-harness-enhanced/
 ├── README.md                    # This file - Project documentation
 ├── AGENTS.md                    # Agent guidelines and protocols
-├── BRAND_GUIDELINES.md          # XHE branding rules
-├── package.json                 # Main package config (@origin-ai/cf)
-├── pnpm-workspace.yaml          # Monorepo workspace definition
+├── BRAND_GUIDELINES.md          # CF branding rules
+├── package.json                 # Main package config (@origin-ai/cf) and monorepo workspace definition
 ├── .gitignore                   # Git ignore rules
 ├── .env                         # Environment variables
 │
@@ -286,7 +275,7 @@ xhee-harness-enhanced/
 │
 ├── archive/
 │   ├── TRANSCRIPT.md            # Original design specification
-│   └── XHE/                     # Archived XHE source code
+│   └── CF/                     # Archived CF source code
 │       └── src/
 │           └── mad.ts           # Original MAD implementation
 │
@@ -308,7 +297,7 @@ xhee-harness-enhanced/
 │   └── acp-agent/              # Agent examples
 │
 ├── docs/                        # Additional documentation
-└── infinity.svg                 # XHE brand logo
+└── infinity.svg                 # CF brand logo
 ```
 
 ---
@@ -396,7 +385,7 @@ Example workflow:
 | Document | Description |
 |----------|-------------|
 | [AGENTS.md](./AGENTS.md) | Agent development guidelines |
-| [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md) | XHE branding rules |
+| [BRAND_GUIDELINES.md](./BRAND_GUIDELINES.md) | CF branding rules |
 | [archive/TRANSCRIPT.md](./archive/TRANSCRIPT.md) | Original design specification |
 | [examples/README.md](./examples/README.md) | Usage examples |
 
@@ -416,22 +405,22 @@ We welcome contributions! Please see our contributing guidelines:
 
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Type check
-pnpm run typecheck
+npm run typecheck
 
 # Lint
-pnpm run lint:fix
+npm run lint:fix
 
 # Run tests
-pnpm run test
+npm run test
 
 # Build
-pnpm run build:lib
+npm run build:lib
 
 # Verify mermaid diagrams
-pnpm run verify-mermaid
+npm run verify-mermaid
 ```
 
 ---
@@ -444,7 +433,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- **DSH/SeepSeek Harness** — The foundation upon which XHE was built (internal reference)
+- **CodeFusion** — The foundation upon which CF was built (internal reference)
 - **Origin AI Team** — Core development and maintenance
 - **Open Source Community** — Contributors and supporters
 - **Matt Shumer** — Gauntlet Loop methodology inspiration
@@ -453,8 +442,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/origin-labs-ai/xhe/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/origin-labs-ai/xhe/discussions)
+- **Issues**: [GitHub Issues](https://github.com/origin-labs-ai/cf/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/origin-labs-ai/cf/discussions)
 - **Email**: support@origin-ai.dev
 
 ---
@@ -464,9 +453,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 </p>
 
 <p align="center">
-  <sub>Xee Harness Enhanced — Empowering AI Agents to Work Together</sub>
+  <sub>CodeFusion — Empowering AI Agents to Work Together</sub>
 </p>
 
 <p align="center">
-  <em>Fork of DSH/SeepSeek Harness • Package: @origin-ai/cf • Also known as: XeeCode, XCode</em>
+  <em>Fork of CodeFusion • Package: @origin-ai/cf • Also known as: CodeFusion, CodeFusion</em>
 </p>

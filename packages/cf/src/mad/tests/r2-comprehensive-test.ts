@@ -721,7 +721,7 @@ async function testStress(): Promise<void> {
 async function main(): Promise<void> {
   console.log('╔══════════════════════════════════════════════════════════╗')
   console.log('║                                                          ║')
-  console.log('║     🔬 XHE R2 COMPREHENSIVE TEST SUITE                   ║')
+  console.log('║     🔬 CF R2 COMPREHENSIVE TEST SUITE                   ║')
   console.log('║     Testing ALL 8 Rounds of R2 Improvements             ║')
   console.log('║                                                          ║')
   console.log('╚══════════════════════════════════════════════════════════╝')

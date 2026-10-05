@@ -1,5 +1,5 @@
 /**
- * Type definitions for XH Popular Skills
+ * Type definitions for CF Popular Skills
  */
 
 export interface SkillCommand {

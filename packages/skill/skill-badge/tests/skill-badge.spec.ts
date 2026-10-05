@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import SkillRegistry from '@origin-ai/cf-skill'
 import * as SkillBadge from '@origin-ai/cf-skill-badge'
 
-describe('xhe-skill-badge', () => {
+describe('cf-skill-badge', () => {
   it('registers and disposes the bundled badge skill', async () => {
     const ctx = new Context()
     await ctx.plugin(SkillRegistry)

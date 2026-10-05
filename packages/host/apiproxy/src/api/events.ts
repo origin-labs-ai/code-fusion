@@ -18,7 +18,7 @@ import type { JobView } from './jobs.ts'
 import type { WorkspaceView } from './workspace.ts'
 
 // Client-side consumers take the render-intent vocabulary from the contract;
-// xhe-tools remains its owner.
+// cf-tools remains its owner.
 export type { ToolCallView, ToolResultView } from '@origin-ai/cf-tools/presentation'
 
 /**

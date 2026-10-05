@@ -9,7 +9,7 @@ Each tool is registered independently; a product that wants only one disables th
 | Tool | Args | Behavior |
 |---|---|---|
 | `web_search` | `queries` (required string[]) | Discovery. Returns an optional answer plus source URLs. It runs one to `searchMaxQueries` distinct searches concurrently and merges their sources in round-robin order before applying the combined `searchMaxResults` cap. A one-item array performs one search. Exact duplicate queries run once. Any failed search aborts the remaining batch, which settles before the call returns an error. Neither bound is model-facing. |
-| `web_fetch` | `url` (string) | Retrieves a specific URL. HTML bodies are rendered to markdown (turndown with GFM tables/strikethrough); text bodies pass through. A non-2xx status is reported, not an error. The tool-call timeout is deployment policy (`xhe-tool-call-timeout-policy`), not a model argument. |
+| `web_fetch` | `url` (string) | Retrieves a specific URL. HTML bodies are rendered to markdown (turndown with GFM tables/strikethrough); text bodies pass through. A non-2xx status is reported, not an error. The tool-call timeout is deployment policy (`cf-tool-call-timeout-policy`), not a model argument. |
 
 Both tools opt into concurrent scheduling because provider reads return content without mutating parent-agent state.
 

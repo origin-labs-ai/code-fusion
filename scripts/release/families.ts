@@ -1,7 +1,7 @@
 /**
  * The three independent publish sequences this repository releases from
  * (`packages/` + `apps/`, `vendor/`, and `native/`) and the two this module
- * owns: `dsh` and `vendor`. Each family carries its own version baseline, tag
+ * owns: `cf` and `vendor`. Each family carries its own version baseline, tag
  * naming, and publish set, so releasing one never republishes another
  * ([rationale](../../.agents/notes/implemented/process/2026-08-10-npm-release-sequences.md)).
  *
@@ -317,10 +317,10 @@ export abstract class ReleaseFamily {
 }
 
 /** Release packages and apps: one shared version across the whole family. */
-class DshFamily extends ReleaseFamily {
-  readonly id = 'dsh'
+class CfFamily extends ReleaseFamily {
+  readonly id = 'cf'
   readonly patterns = ['packages/!(experimental)/*/package.json', 'apps/*/package.json'] as const
-  readonly tagPrefix = 'xhe-v'
+  readonly tagPrefix = 'cf-v'
 
   /** Require current artifacts from a complete official client build. */
   override verifyBuildArtifacts(root: string): void {
@@ -335,13 +335,13 @@ class DshFamily extends ReleaseFamily {
     const versions = new Set(members.map(member => member.version))
     if (versions.size !== 1) {
       const detail = members.map(member => `${member.directory}: ${member.version}`).join('\n')
-      throw new Error(`dsh release members must share one version:\n${detail}`)
+      throw new Error(`cf release members must share one version:\n${detail}`)
     }
   }
 
   /**
    * The single family prefix: every member shares one version, so one tag names it.
-   * @returns `xhe-v`.
+   * @returns `cf-v`.
    */
   tagPrefixFor(): string {
     return this.tagPrefix
@@ -394,7 +394,7 @@ class VendorFamily extends ReleaseFamily {
    * export `./src/*` for source navigation, so dropping `src` would publish a
    * package whose export map points at absent files. What must hold instead is
    * that every path the manifest selects is present, which `files` already
-   * decides and `pnpm pack` already enforces.
+   * decides and `npm pack` already enforces.
    * @param member - the packed member.
    * @param files - every path inside its tarball.
    */
@@ -408,7 +408,7 @@ class VendorFamily extends ReleaseFamily {
 
 /** Every release family this module owns, in workflow order. */
 function releaseFamilies(): readonly ReleaseFamily[] {
-  return [new DshFamily(), new VendorFamily()]
+  return [new CfFamily(), new VendorFamily()]
 }
 
 /**
@@ -426,7 +426,7 @@ export function releaseFamily(id: string): ReleaseFamily {
 }
 
 /**
- * The npm tarball filename `pnpm pack` writes for a member.
+ * The npm tarball filename `npm pack` writes for a member.
  * @param member - the packed member.
  * @returns The tarball filename.
  */

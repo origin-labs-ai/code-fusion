@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/client/ui-slots"
   },
   "type": "module",
@@ -27,9 +27,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
+    "@origin-ai/cf-invariants": "*",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis": "*"
   },
   "files": [
     "lib/index.js",
@@ -37,7 +37,7 @@
     "lib/types/**/*.d.ts"
   ],
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

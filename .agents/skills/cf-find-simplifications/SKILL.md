@@ -1,9 +1,9 @@
 ---
 name: cf-find-simplifications
-description: 'Use when working in the xhe repo to find non-obvious simplification candidates, write proposed Agent Notes or inline TODO/FIXME/XXX notes, audit or coalesce superseded Agent Notes, or fold worthwhile simplification ideas from another PR; especially for dead, duplicated, speculative, over-built, added-then-removed, or hand-rolled-where-a-dependency-exists surfaces.'
+description: 'Use when working in the cf repo to find non-obvious simplification candidates, write proposed Agent Notes or inline TODO/FIXME/XXX notes, audit or coalesce superseded Agent Notes, or fold worthwhile simplification ideas from another PR; especially for dead, duplicated, speculative, over-built, added-then-removed, or hand-rolled-where-a-dependency-exists surfaces.'
 ---
 
-# Finding Xee Harness Enhanced Simplifications
+# Finding CodeFusion Simplifications
 
 This skill helps turn a broad "find things to simplify" request into evidence-backed Agent Notes that remove or collapse existing harness surface area. It is guidance, not a checklist: follow the code, keep judgment active, and prefer a few well-proven candidates over a pile of thin guesses.
 
@@ -132,7 +132,7 @@ Diff the sibling branch against `origin/master`, not against the current PR bran
 
 ## Validation And PR Hygiene
 
-For docs-only Agent Note work, run at least `pnpm run doc-sync`, `pnpm run lint`, and `git diff --check`. For code comments or skill changes, also run the relevant validator when one exists. Select any other evidence from the outgoing diff; the pre-push hook contributes typecheck only.
+For docs-only Agent Note work, run at least `npm run doc-sync`, `npm run lint`, and `git diff --check`. For code comments or skill changes, also run the relevant validator when one exists. Select any other evidence from the outgoing diff; the pre-push hook contributes typecheck only.
 
 When opening or updating a PR, summarize:
 

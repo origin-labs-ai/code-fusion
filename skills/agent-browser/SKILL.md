@@ -27,8 +27,8 @@ agent-browser install --with-deps
 ```bash
 git clone https://github.com/vercel-labs/agent-browser
 cd agent-browser
-pnpm install
-pnpm build
+npm install
+npm run build
 agent-browser install
 ```
 

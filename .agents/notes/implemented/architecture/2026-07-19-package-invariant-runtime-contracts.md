@@ -21,7 +21,7 @@ Every workspace package publishes a separately built `./invariant` companion and
 
 The empty form is an explicit architectural conclusion, not a generated placeholder. A future package change that introduces mutable state or an event protocol must replace the explanation with the corresponding check.
 
-The central `xhe-invariants` service owns only configuration, registration uniqueness, child-fiber lifecycle, rollback, disposal, and package-attributed failure. It exposes no generic plugin-shape, service-shape, or startup-assertion helpers and imports no product package.
+The central `cf-invariants` service owns only configuration, registration uniqueness, child-fiber lifecycle, rollback, disposal, and package-attributed failure. It exposes no generic plugin-shape, service-shape, or startup-assertion helpers and imports no product package.
 
 ### Implemented checks
 
@@ -29,27 +29,27 @@ The current 103-package workspace has 21 executable companions and 82 justified 
 
 | Owner | Runtime relationship |
 |---|---|
-| `xhe-session` | Strict sequence growth, turn/step enclosure, and same-step tool call/result pairing. |
-| `xhe-agent` | Non-repeating agent status and terminal disposal transitions. |
-| `xhe-scope` | Scoped-event carrier presence and routed-subject consistency. |
-| `xhe-agent-loop` | Explicitly marked, frozen loop request reconstruction from the session event log. |
-| `xhe-llm` | Stream block grammar, delta type/index matching, single usage, closed blocks, and terminal finish. |
-| `xhe-llm-retry` | Durable retry records identify the open turn's latest closed step, remain unique per step, increase monotonically, and stay within retry and non-negative timer bounds. |
-| `xhe-tools` | Monotonic pre/execute/post stages and immutable final execution/result snapshots. |
-| `xhe-system-prompt` | Authoritative assembly section, tool, and variable data constraints. |
-| `xhe-compaction` | Compaction start/summary/end pairing, range endpoints, token counts, and successful-summary presence. |
-| `xhe-hook-protocol` | Hook invocation/result correlation, dialect, identity, and duration constraints. |
-| `xhe-sandbox-policy` | Durable `sandbox/mode` events use the closed sandbox-mode vocabulary. |
-| `xhe-fs` | Filesystem decision/observation events carry usable target and version identities. |
-| `xhe-goal` | Durable goal snapshots preserve source attribution, rendered content, revisions, lifecycle and timestamp relationships, and sequential admitted rounds. |
-| `xhe-goal-round-driver` | Goal-sourced continuation messages match the prompt reconstructed from the preceding durable goal state. |
-| `xhe-subagent` | Provider add/remove and child start/end events preserve identity and pairing. |
-| `xhe-permission-presets` | Durable permission decisions name a preset in the active permission table. |
-| `xhe-user-approval` | Approval asked/decided records pair by call and use valid outcomes and policies. |
-| `xhe-workflow` | Workflow and child-agent start/end events preserve run metadata, identity, outcome, count, and error relations. |
-| `xhe-jobs` | Current and terminal task snapshots preserve id/kind, owner, status, and timestamp relationships. |
-| `xhe-tool-todo` | Durable whole-list snapshots use unique trimmed items and closed statuses. |
-| `xhe-time-context` | Plugin-attributed clock readings agree with the session's open turn, next pre-step position, and elapsed baseline; rendered time parses and does not postdate its event. |
+| `cf-session` | Strict sequence growth, turn/step enclosure, and same-step tool call/result pairing. |
+| `cf-agent` | Non-repeating agent status and terminal disposal transitions. |
+| `cf-scope` | Scoped-event carrier presence and routed-subject consistency. |
+| `cf-agent-loop` | Explicitly marked, frozen loop request reconstruction from the session event log. |
+| `cf-llm` | Stream block grammar, delta type/index matching, single usage, closed blocks, and terminal finish. |
+| `cf-llm-retry` | Durable retry records identify the open turn's latest closed step, remain unique per step, increase monotonically, and stay within retry and non-negative timer bounds. |
+| `cf-tools` | Monotonic pre/execute/post stages and immutable final execution/result snapshots. |
+| `cf-system-prompt` | Authoritative assembly section, tool, and variable data constraints. |
+| `cf-compaction` | Compaction start/summary/end pairing, range endpoints, token counts, and successful-summary presence. |
+| `cf-hook-protocol` | Hook invocation/result correlation, dialect, identity, and duration constraints. |
+| `cf-sandbox-policy` | Durable `sandbox/mode` events use the closed sandbox-mode vocabulary. |
+| `cf-fs` | Filesystem decision/observation events carry usable target and version identities. |
+| `cf-goal` | Durable goal snapshots preserve source attribution, rendered content, revisions, lifecycle and timestamp relationships, and sequential admitted rounds. |
+| `cf-goal-round-driver` | Goal-sourced continuation messages match the prompt reconstructed from the preceding durable goal state. |
+| `cf-subagent` | Provider add/remove and child start/end events preserve identity and pairing. |
+| `cf-permission-presets` | Durable permission decisions name a preset in the active permission table. |
+| `cf-user-approval` | Approval asked/decided records pair by call and use valid outcomes and policies. |
+| `cf-workflow` | Workflow and child-agent start/end events preserve run metadata, identity, outcome, count, and error relations. |
+| `cf-jobs` | Current and terminal task snapshots preserve id/kind, owner, status, and timestamp relationships. |
+| `cf-tool-todo` | Durable whole-list snapshots use unique trimmed items and closed statuses. |
+| `cf-time-context` | Plugin-attributed clock readings agree with the session's open turn, next pre-step position, and elapsed baseline; rendered time parses and does not postdate its event. |
 
 Session-backed companions validate existing durable events when they load, using the prefix preceding each candidate where the relationship depends on event order. Other checks observe the authoritative live event boundary or mutable service result. Validation runs before publication where accepting an invalid event would otherwise commit bad state.
 

@@ -6,9 +6,9 @@ import { clientBuildEnvironmentDefines } from '../../scripts/client-build-enviro
 
 const src = (rel: string): string => fileURLToPath(new URL(rel, import.meta.url))
 const STANDALONE_ERROR = 'apps/web is not a standalone application: bare Vite cannot inject window.__CF_BOOT__. '
-  + 'From a repository checkout, run `pnpm xhe web`; an installed package uses `dsh web`. '
-  + 'For client-plugin HMR, run `pnpm xhe web` together with `pnpm run dev:web`.'
-const DEFAULT_CLIENT_TITLE = 'DSH Local Build'
+  + 'From a repository checkout, run `npm run cf web`; an installed package uses `cf web`. '
+  + 'For client-plugin HMR, run `npm run cf web` together with `npm run dev:web`.'
+const DEFAULT_CLIENT_TITLE = 'CF Local Build'
 
 /** Escape build-time text before placing it in the HTML title element. */
 function escapeHtmlText(value: string): string {
@@ -17,11 +17,11 @@ function escapeHtmlText(value: string): string {
 
 /** Project the public build title into the initial HTML document. */
 function clientDocumentTitle(): Plugin {
-  const title = escapeHtmlText(process.env.XHE_CLIENT_TITLE ?? DEFAULT_CLIENT_TITLE)
+  const title = escapeHtmlText(process.env.CF_CLIENT_TITLE ?? DEFAULT_CLIENT_TITLE)
   return {
-    name: 'xhe-client-document-title',
+    name: 'cf-client-document-title',
     transformIndexHtml(html) {
-      return html.replace('<title>DSH Local Build</title>', `<title>${title}</title>`)
+      return html.replace('<title>CF Local Build</title>', `<title>${title}</title>`)
     },
   }
 }
@@ -29,7 +29,7 @@ function clientDocumentTitle(): Plugin {
 /** Fail before a Vite dev or preview server can expose the boot-manifest-free shell. */
 function rejectStandaloneServe(): Plugin {
   return {
-    name: 'xhe-reject-standalone-web-serve',
+    name: 'cf-reject-standalone-web-serve',
     config(_config, env) {
       if (env.command === 'serve') throw new Error(STANDALONE_ERROR)
     },
@@ -96,13 +96,13 @@ const FONT_EXTENSIONS: readonly string[] = ['.woff2', '.woff', '.ttf']
 
 /**
  * npm package name of a resolved module id: the segment after the last
- * `node_modules/`. pnpm nests the real package under an inner node_modules.
+ * `node_modules/`. npm nests the real package under an inner node_modules.
  */
 function npmPackageOf(id: string): string | undefined {
   const parts = id.split('/node_modules/')
   if (parts.length === 1) return undefined
   const [first, second] = parts[parts.length - 1].split('/')
-  if (first.startsWith('.')) return undefined // .pnpm store segment, not a package
+  if (first.startsWith('.')) return undefined // .npm cache segment, not a package
   if (first.startsWith('@')) return second === undefined ? undefined : `${first}/${second}`
   return first
 }
@@ -151,7 +151,7 @@ export default defineConfig({
     // react/jsx-runtime and react-dom/client — and resolve from this package's
     // node_modules, so react must stay a devDependency here and any watcher must
     // run vite from this directory (scripts/dev-web.ts). Workspace packages need
-    // no entry: pnpm links each of them to a single directory.
+    // no entry: npm links each of them to a single directory.
     dedupe: ['react', 'react-dom'],
     // Workspace packages are consumed as built lib products: each resolves
     // through its own package.json exports from the importer's directory, and

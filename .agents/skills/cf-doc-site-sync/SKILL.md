@@ -1,9 +1,9 @@
 ---
 name: cf-doc-site-sync
-description: Use when publishing, updating, moving, or removing Xee Harness Enhanced documentation website pages; editing website/docs.ts mappings or navigation; diagnosing a page missing from the VitePress site; fixing projected documentation links; or running the docs:dev, docs:check, and doc-sync workflow after website-content changes.
+description: Use when publishing, updating, moving, or removing CodeFusion documentation website pages; editing website/docs.ts mappings or navigation; diagnosing a page missing from the VitePress site; fixing projected documentation links; or running the docs:dev, docs:check, and doc-sync workflow after website-content changes.
 ---
 
-# Synchronizing the Xee Harness Enhanced Documentation Site
+# Synchronizing the CodeFusion Documentation Site
 
 Keep repository Markdown as the only editable content source. Treat the website as a tested projection: [website/docs.ts](../../../website/docs.ts) selects public pages, [scripts/project-doc-site.ts](../../../scripts/project-doc-site.ts) rewrites them into the disposable `website/.generated/` tree, and VitePress builds that tree. The build additionally emits a raw-Markdown twin of every route (page URL minus any trailing slash, plus `.md`; index routes also get a parent-level alias) and a root `llms.txt` index; both derive from the same manifest and projector, so publishing, moving, or removing a page updates them automatically and `docs:build` fails when one is missing.
 
@@ -58,7 +58,7 @@ Do not write website-specific routes into canonical Markdown just to satisfy Vit
 Run local preview while editing:
 
 ```sh
-pnpm docs:dev
+npm run docs:dev
 ```
 
 The dev server watches mapped source files and reprojects them. Restart it after changing the manifest if the new source is not picked up automatically.
@@ -66,7 +66,7 @@ The dev server watches mapped source files and reprojects them. Restart it after
 Run the focused website gate before treating the mapping as valid:
 
 ```sh
-pnpm docs:check
+npm run docs:check
 ```
 
 If Markdown link checks pass but the site build reports a missing fragment, follow the `verify-doc-site-fragments` source and target paths. Preserve the English GitHub id with an explicit alias in authored Markdown or in the owning generator.
@@ -74,8 +74,8 @@ If Markdown link checks pass but the site build reports a missing fragment, foll
 Before committing a documentation-site change, run:
 
 ```sh
-pnpm run doc-sync
-pnpm run lint
+npm run doc-sync
+npm run lint
 git diff --check
 ```
 

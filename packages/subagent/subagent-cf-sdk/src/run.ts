@@ -21,7 +21,7 @@ import { scrubbedParentEnv } from '@origin-ai/cf-subprocess'
 
 /** Resolved spawn spec for an SDK runtime child process (no defaults — see Config). */
 export interface SdkRunSpec {
-  /** The executable to spawn (the child runtime — a `xhe-jsonrpc-agent` bin or packaged exe). */
+  /** The executable to spawn (the child runtime — a `cf-jsonrpc-agent` bin or packaged exe). */
   command: string
   /** Arguments passed to {@link command} (typically the child's `cordis.yml` path). */
   args: string[]
@@ -39,9 +39,9 @@ export interface SdkRunSpec {
   maxTokens?: number
   /**
    * Extra environment variables to ADD for the child (e.g. the child
-   * runtime's own `DEEPSEEK_API_KEY`, or `XHE_CORDIS_CONFIG`). Merged after
+   * runtime's own `DEEPSEEK_API_KEY`, or `CF_CORDIS_CONFIG`). Merged after
    * the seam's `scrubbedParentEnv()` base, so an explicit credential or
-   * current `XHE_*` fact survives while ambient namesakes never leak.
+   * current `CF_*` fact survives while ambient namesakes never leak.
    */
   env: Record<string, string>
   /** Bound (ms) on the protocol `shutdown` exchange during dispose. */

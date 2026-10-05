@@ -80,11 +80,11 @@ if (existsSync(manifestPath)) {
     errors.push(`archived/manifest.json: ${error instanceof Error ? error.message : String(error)}`)
   }
 } else if (!writeMode) {
-  errors.push('archived/manifest.json is required; seal new artifacts with `pnpm run verify-archived-agent-notes --write`')
+  errors.push('archived/manifest.json is required; seal new artifacts with `npm run verify-archived-agent-notes --write`')
 }
 
 // CI supplies its trusted pre-change commit; local writes compare with committed HEAD.
-const baselineRef = process.env.XHE_ARCHIVE_BASE_REF ?? 'HEAD'
+const baselineRef = process.env.CF_ARCHIVE_BASE_REF ?? 'HEAD'
 try {
   const baseline = readBaselineManifest(baselineRef)
   errors.push(...validateArchiveManifestExtension(baseline, manifest))

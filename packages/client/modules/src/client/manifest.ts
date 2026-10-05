@@ -43,7 +43,7 @@ declare module '@deepseek-ai/cordis' {
  * One composed client entry pushed by the host (a graph row). Wire
  * single source: the host node half (package root) produces this same shape.
  * `immediately` marks stage-one prefetch; `inject` is informational graph
- * metadata (the authoritative edges live in each package's `dsh.client`
+ * metadata (the authoritative edges live in each package's `cf.client`
  * declaration and reach fibers through entry creation). `external` carries
  * module-graph edges: unlike `inject`, they constrain code arrival because
  * `require` is synchronous (see {@link WebBootGraph.entries}).
@@ -108,7 +108,7 @@ export interface BootManifest {
 }
 
 /**
- * Validate an optional string-array field read from a `dsh.client` declaration
+ * Validate an optional string-array field read from a `cf.client` declaration
  * or from the boot wire.
  * @param subject - diagnostic prefix naming the package or the wire row.
  * @param field - field name as it appears in the diagnostic.
@@ -230,7 +230,7 @@ export interface ClientModuleLoaderTarget {
 }
 
 /** Window API of the web boot protocol: the host-injected graph and registration facade. */
-export interface DshWindow {
+export interface CfWindow {
   /** Host-composed entry graph, injected before the shell bundle runs; wire-boundary raw until {@link parseBootManifest}. */
   __CF_BOOT__?: unknown
   /** HTML-installed facade: a pending registration queue, then the live module-system target. */

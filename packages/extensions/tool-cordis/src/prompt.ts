@@ -81,7 +81,7 @@ return {
 
 ### Data: do not serialize live data
 
-- Services, Events, Slots, Sessions, and their derived Cordis/DSH objects are internal live data, not ordinary JSON that can be dumped.
+- Services, Events, Slots, Sessions, and their derived Cordis/CF objects are internal live data, not ordinary JSON that can be dumped.
 - Do not apply JSON.stringify, structuredClone, recursive enumeration, full copying, or whole-object display to live data.
 - Read only the leaf fields required by the task, then construct the smallest owned data object without Host references.
 

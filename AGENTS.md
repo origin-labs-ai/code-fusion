@@ -1,4 +1,4 @@
-# AGENTS.md - Xee Harness Enhanced (XHE) Agent Guidelines
+# AGENTS.md - CodeFusion (CF) Agent Guidelines
 
 <p align="center">
   <strong>Agent Development & Operation Protocols</strong>
@@ -10,14 +10,14 @@
 
 ## Overview
 
-This document defines the guidelines, protocols, and best practices for agents operating within the **Xee Harness Enhanced (XHE)** Multi-Agent Deployment (MAD) system.
+This document defines the guidelines, protocols, and best practices for agents operating within the **CodeFusion (CF)** Multi-Agent Deployment (MAD) system.
 
 ### Identity
 
-- **Project:** Xee Harness Enhanced (XHE)
-- **Also Known As:** XeeCode, XCode
+- **Project:** CodeFusion (CF)
+- **Also Known As:** CodeFusion, CodeFusion
 - **Package Scope:** `@origin-ai/cf`
-- **Fork Origin:** DSH/SeepSeek Harness (internal reference)
+- **Fork Origin:** CodeFusion (internal reference)
 
 ---
 
@@ -371,6 +371,6 @@ The goal is to produce the **best collective outcome** through structured collab
 
 ---
 
-*Last Updated: XHE v1.0.0*
+*Last Updated: CF v1.0.0*
 *Part of @origin-ai/cf ecosystem*
-*Fork of DSH/SeepSeek Harness*
+*Fork of CodeFusion*

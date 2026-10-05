@@ -103,7 +103,7 @@ export const USER_GLOBAL_FILE = 'AGENTS.md'
  * @returns `user-global`, `.`, or the containing project-relative directory.
  */
 export function scopeForDisplayPath(displayPath: string): string {
-  if (displayPath === '~/.dsh/AGENTS.md' || displayPath === '~/.cf/AGENTS.md' || displayPath === '$CF_HOME/AGENTS.md') return USER_GLOBAL_DIRECTORY
+  if (displayPath === '~/.cf/AGENTS.md' || displayPath === '~/.cf/AGENTS.md' || displayPath === '$CF_HOME/AGENTS.md') return USER_GLOBAL_DIRECTORY
   return dirname(displayPath)
 }
 

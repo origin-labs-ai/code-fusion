@@ -10,13 +10,13 @@ When a capability is general enough to need replaceable providers, such as Bash 
 
 The Bash execution capability consists of:
 
-- **Service Definition** (`xhe-shell`) — defines the Cordis service and Bash request and result types
-- **Service Provider** (`xhe-bash-local`) — executes commands on the local machine
-- **Consumer** (`xhe-tool-bash`) — exposes the capability as a model-callable tool
+- **Service Definition** (`cf-shell`) — defines the Cordis service and Bash request and result types
+- **Service Provider** (`cf-bash-local`) — executes commands on the local machine
+- **Consumer** (`cf-tool-bash`) — exposes the capability as a model-callable tool
 
 ```
 ┌─────────────┐     ┌──────────────────┐     ┌──────────────┐
-│  xhe-shell   │────▶│  xhe-bash-local  │     │ xhe-tool-bash│
+│  cf-shell   │────▶│  cf-bash-local  │     │ cf-tool-bash│
 │(definition) │     │    (provider)     │     │(consumer/tool)│
 └─────────────┘     └──────────────────┘     └──────────────┘
        ▲                                            │

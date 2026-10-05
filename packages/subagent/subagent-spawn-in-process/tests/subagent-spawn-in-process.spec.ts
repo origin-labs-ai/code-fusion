@@ -64,7 +64,7 @@ function disposeChildLifecycle(parent: Agent): void {
   void lifecycle()
 }
 
-describe('xhe-subagent-spawn-in-process', () => {
+describe('cf-subagent-spawn-in-process', () => {
   it('runs a fresh child to completion and returns its final assistant output', async () => {
     // One model call for the child: a plain text answer.
     const { ctx, parent } = await setup([textResponse('child answer')])

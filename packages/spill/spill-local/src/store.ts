@@ -2,7 +2,7 @@
  * Cordis-free storage mechanics for the local spill backend: private
  * session-scoped directory selection, safe-name derivation, path-traversal
  * protection, and the exclusive owner-only write. Kept out of the service class
- * (like `xhe-bash-local`'s `run.ts`) so the filesystem behavior is unit-testable
+ * (like `cf-bash-local`'s `run.ts`) so the filesystem behavior is unit-testable
  * without a `ctx` and without the OS temp dir.
  *
  * @module @origin-ai/cf-spill-local/store
@@ -25,7 +25,7 @@ let defaultRoot: string | undefined
  * @returns The lazily-created private spill root.
  */
 export function privateRoot(): string {
-  defaultRoot ??= mkdtempSync(join(tmpdir(), 'xhe-spill-'))
+  defaultRoot ??= mkdtempSync(join(tmpdir(), 'cf-spill-'))
   return defaultRoot
 }
 

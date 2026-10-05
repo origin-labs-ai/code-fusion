@@ -1,6 +1,6 @@
 /**
- * Shared rendering helpers for the shell tools (`xhe-tool-bash`,
- * `xhe-tool-pwsh`): the exit-status marker contract the tools' renderers
+ * Shared rendering helpers for the shell tools (`cf-tool-bash`,
+ * `cf-tool-pwsh`): the exit-status marker contract the tools' renderers
  * emit and the presentation layer parses back.
  * @module @origin-ai/cf-shell/render
  */

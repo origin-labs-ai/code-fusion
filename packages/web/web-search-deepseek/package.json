@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/web/web-search-deepseek"
   },
   "type": "module",
@@ -32,27 +32,27 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-credentials": "workspace:^",
-    "@origin-ai/cf-launch-environment": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-web": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-settings": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-credentials": "*",
+    "@origin-ai/cf-launch-environment": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-web": "*",
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-settings": "*"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-credentials": "workspace:^",
-    "@origin-ai/cf-credentials-local": "workspace:^",
-    "@origin-ai/cf-launch-environment": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-web": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-settings": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-credentials": "*",
+    "@origin-ai/cf-credentials-local": "*",
+    "@origin-ai/cf-launch-environment": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-web": "*",
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-settings": "*"
   }
 }

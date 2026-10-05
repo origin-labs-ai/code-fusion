@@ -3,9 +3,9 @@
  * execution the policy needs to derive the owning session for a spill artifact.
  *
  * `@origin-ai/cf-tools`' `ToolExecution` satisfies this shape, so the policy
- * reads `exec` straight through without importing `xhe-tools` or `xhe-agent`.
+ * reads `exec` straight through without importing `cf-tools` or `cf-agent`.
  * Only the session HEADER id is read — the same identity every other subsystem
- * keys off (see `xhe-tool-bash`'s owner derivation).
+ * keys off (see `cf-tool-bash`'s owner derivation).
  *
  * @module @origin-ai/cf-spill-policy/types
  */

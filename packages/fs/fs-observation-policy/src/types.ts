@@ -15,7 +15,7 @@
  * an observed-state owner. `@origin-ai/cf-tools`' `ToolExecution` contains
  * these fields, so the tool passes its `exec` straight through as the opaque
  * `object` actor on the `fs/*` events; this plugin narrows that actor to
- * `FsObservationActor` without importing `xhe-tools`, `xhe-agent`, or `xhe-session`.
+ * `FsObservationActor` without importing `cf-tools`, `cf-agent`, or `cf-session`.
  *
  * The owner is `agent.session` when present. It is treated as an opaque object
  * identity (a `WeakMap` key); this package never reads any of its fields.

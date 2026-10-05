@@ -14,7 +14,6 @@ import {
   parseVendoredRows,
   render,
   tierExternalDeps,
-  virtualManifest,
 } from './gen-third-party-notices.ts'
 
 const root = resolve(import.meta.dirname, '..')
@@ -27,7 +26,7 @@ describe('THIRD_PARTY_NOTICES.md', () => {
   it('matches what the generator produces from the current manifests', () => {
     const generated = render()
     expect(generated).toContain('It depends on the third-party software listed below.')
-    expect(readFileSync(resolve(root, 'THIRD_PARTY_NOTICES.md'), 'utf8'), 'stale notices — run `pnpm run gen-third-party-notices`').toBe(generated)
+    expect(readFileSync(resolve(root, 'THIRD_PARTY_NOTICES.md'), 'utf8'), 'stale notices — run `npm run gen-third-party-notices`').toBe(generated)
   })
 })
 
@@ -51,7 +50,7 @@ describe('tierExternalDeps', () => {
       'website/package.json': { devDependencies: { 'site-tool': '^1' } },
       // A plugin package's runtime dependency ships even when no app mounts it by default.
       'packages/mcp/mcp-client/package.json': { name: '@origin-ai/cf-mcp-client', dependencies: { 'protocol-sdk': '^1' }, devDependencies: { 'protocol-fixture-server': '^1' } },
-      'apps/cli/package.json': { name: '@origin-ai/cf-cli', dependencies: { 'cli-lib': '^1', '@origin-ai/cf-mcp-client': 'workspace:^' } },
+      'apps/cli/package.json': { name: '@origin-ai/cf', dependencies: { 'cli-lib': '^1', '@origin-ai/cf-mcp-client': '*' } },
     })
 
     expect(tierExternalDeps(manifests, names)).toEqual(new Map([
@@ -70,62 +69,12 @@ describe('tierExternalDeps', () => {
   it('keeps a package runtime when any shipping area declares it, and excludes workspace links', () => {
     const { manifests, names } = workspace({
       'package.json': { devDependencies: { shared: '^1' } },
-      'packages/interaction/tui/package.json': { name: '@origin-ai/cf-tui', dependencies: { shared: '^1', '@origin-ai/cf-cli': 'workspace:^' } },
-      'apps/cli/package.json': { name: '@origin-ai/cf-cli' },
+      'packages/interaction/tui/package.json': { name: '@origin-ai/cf-tui', dependencies: { shared: '^1', '@origin-ai/cf': '*' } },
+      'apps/cli/package.json': { name: '@origin-ai/cf' },
     })
 
     expect(tierExternalDeps(manifests, names).get('shared')).toBe(true)
-    expect(tierExternalDeps(manifests, names).has('@origin-ai/cf-cli')).toBe(false)
-  })
-})
-
-describe('virtualManifest', () => {
-  it('resolves a manifest from an ordinary prefix-matching store directory', () => {
-    const root = mkdtempSync(join(tmpdir(), 'xhe-notices-prefix-'))
-    try {
-      const name = '@scope/pkg'
-      const version = '1.0.0'
-      const store = join(root, 'store')
-      const manifestDir = join(store, `${name.replace('/', '+')}@${version}`, 'node_modules', name)
-      mkdirSync(manifestDir, { recursive: true })
-      writeFileSync(join(manifestDir, 'package.json'), JSON.stringify({ name, version, license: 'MIT' }))
-
-      expect(virtualManifest(store, name)).toMatchObject({ name, version, license: 'MIT' })
-    } finally {
-      rmSync(root, { recursive: true, force: true })
-    }
-  })
-
-  it('falls back to a content scan when pnpm 11 truncates the store directory name', () => {
-    const root = mkdtempSync(join(tmpdir(), 'xhe-notices-truncated-'))
-    try {
-      const name = '@scope/pkg'
-      const version = '2.0.0'
-      const store = join(root, 'store')
-      // The truncated name no longer starts with `@scope+pkg@`, so only the
-      // whole-store content scan can find the package.
-      const manifestDir = join(store, '@scope+pkg_9f1c2d3e4a5b6c7d8e9f0a1b2c3d4e5f', 'node_modules', name)
-      mkdirSync(manifestDir, { recursive: true })
-      writeFileSync(join(manifestDir, 'package.json'), JSON.stringify({ name, version, license: 'Apache-2.0' }))
-
-      expect(virtualManifest(store, name)).toMatchObject({ name, version, license: 'Apache-2.0' })
-    } finally {
-      rmSync(root, { recursive: true, force: true })
-    }
-  })
-
-  it('returns undefined when neither the prefix nor the content scan finds the package', () => {
-    const root = mkdtempSync(join(tmpdir(), 'xhe-notices-miss-'))
-    try {
-      const store = join(root, 'store')
-      const other = join(store, 'other-pkg@1.0.0', 'node_modules', 'other-pkg')
-      mkdirSync(other, { recursive: true })
-      writeFileSync(join(other, 'package.json'), JSON.stringify({ name: 'other-pkg', version: '1.0.0' }))
-
-      expect(virtualManifest(store, '@scope/missing')).toBeUndefined()
-    } finally {
-      rmSync(root, { recursive: true, force: true })
-    }
+    expect(tierExternalDeps(manifests, names).has('@origin-ai/cf')).toBe(false)
   })
 })
 
@@ -230,8 +179,8 @@ describe('parsePyprojectRequirements', () => {
 describe('collectPythonDependencies', () => {
   it('excludes normalized local project names without exempting a third-party prefix', () => {
     const pyprojects = [
-      '[project]\nname = "xhe-runtime-bin"\ndependencies = ["pydantic"]\n',
-      '[project]\nname = "xhe-sdk"\ndependencies = ["DeepSeek.Harness_Runtime-Bin", "deepseek-unrelated"]\n',
+      '[project]\nname = "deepseek-harness-runtime-bin"\ndependencies = ["pydantic"]\n',
+      '[project]\nname = "deepseek-harness-sdk"\ndependencies = ["DeepSeek.Harness_Runtime-Bin", "deepseek-unrelated"]\n',
     ]
     expect(() => collectPythonDependencies(pyprojects)).toThrow(
       'python dependency deepseek-unrelated is missing from PYTHON_METADATA',

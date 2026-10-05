@@ -2,22 +2,22 @@
  * Watch-build for the web dev loop: rebuilds every artifact the browser reads
  * from a source edit. Reload signaling is not this script's business — the host
  * webserver stat-polls the bundles it serves and broadcasts `rebuilt` frames
- * itself (`dsh web`), so any process that rewrites `lib/client.js` files
+ * itself (`cf web`), so any process that rewrites `lib/client.js` files
  * triggers reloads; this script is merely the convenient way to keep them all
  * rebuilt on source change.
  *
  * Three stages, because the compile shell links built lib products rather than
  * sources: `tsc -b tsconfig.client.json` emits `lib/types` (the tsdown lib
  * entries are that emit, not `src`), tsdown bundles `lib/index.js` and
- * `lib/client.js`, and `vite build` rewrites `apps/web/dist`, which `dsh web`
+ * `lib/client.js`, and `vite build` rewrites `apps/web/dist`, which `cf web`
  * serves. A missing stage does not fail — it silently shows the previous
  * artifact, so an edit appears to do nothing.
  *
- * MUST NOT run concurrently with `pnpm run build`: both write the same
+ * MUST NOT run concurrently with `npm run build`: both write the same
  * `lib/` and `apps/web/dist/` trees.
  *
- * Usage: `pnpm exec tsx scripts/dev-web.ts [--poll[=ms]]`. Requires one prior
- * `pnpm run build`: every stage is incremental over the previous stage's output
+ * Usage: `npx tsx scripts/dev-web.ts [--poll[=ms]]`. Requires one prior
+ * `npm run build`: every stage is incremental over the previous stage's output
  * and none of them bootstraps a missing tree. `--poll` switches the source
  * watchers to polling (default 500ms): network mounts (weka) deliver no inotify
  * events, so native watching sees the initial build only and never a source
@@ -40,7 +40,7 @@ const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 /** Client-face type emit feeding every tsdown lib entry in the watch set. */
 const CLIENT_TYPE_PROGRAM = 'tsconfig.client.json'
 
-/** Compile-shell workspace whose dist `dsh web` serves. */
+/** Compile-shell workspace whose dist `cf web` serves. */
 const SHELL_PACKAGE = '@origin-ai/cf-web-frontend'
 
 /**
@@ -51,7 +51,7 @@ const TEST_INFRASTRUCTURE_PREFIX = 'packages/test-support/'
 
 /**
  * Discover the watch workspace by declaration: every packages/<group>/<name>
- * whose package.json carries `dsh.client` with platform "web" is a client
+ * whose package.json carries `cf.client` with platform "web" is a client
  * plugin bundle emitter. Scanned once at startup — a package added while
  * watching means restarting this script.
  * @param root - repository root containing the grouped package directories.
@@ -61,9 +61,9 @@ export function discoverPluginDirs(root = repoRoot): string[] {
   const dirs: string[] = []
   for (const manifestPath of globSync('packages/*/*/package.json', { cwd: root }).sort()) {
     const manifest = JSON.parse(readFileSync(join(root, manifestPath), 'utf8')) as {
-      dsh?: { client?: { platform?: unknown } }
+      cf?: { client?: { platform?: unknown } }
     }
-    if (manifest.dsh?.client?.platform === 'web') dirs.push(dirname(manifestPath).split(sep).join('/'))
+    if (manifest.cf?.client?.platform === 'web') dirs.push(dirname(manifestPath).split(sep).join('/'))
   }
   return dirs
 }
@@ -71,7 +71,7 @@ export function discoverPluginDirs(root = repoRoot): string[] {
 /**
  * Discover the statically linked library packages: the other half of the same
  * partition {@link discoverPluginDirs} takes. A package that builds through the
- * client preset without declaring `dsh.client` has no loader-delivered browser
+ * client preset without declaring `cf.client` has no loader-delivered browser
  * half, so the compile shell links its `lib/index.js` instead — and an edit to
  * its source reaches the browser only once that bundle is rewritten. Deriving
  * the set from the build preset rather than a hand list keeps it correct when
@@ -87,15 +87,15 @@ export function discoverLibraryDirs(root = repoRoot): string[] {
     if (dir.startsWith(TEST_INFRASTRUCTURE_PREFIX)) continue
     if (!readFileSync(join(root, configPath), 'utf8').includes('tsdown.client.ts')) continue
     const manifest = JSON.parse(readFileSync(join(root, dir, 'package.json'), 'utf8')) as {
-      dsh?: { client?: unknown }
+      cf?: { client?: unknown }
     }
-    if (manifest.dsh?.client === undefined) dirs.push(dir)
+    if (manifest.cf?.client === undefined) dirs.push(dir)
   }
   return dirs
 }
 
 /**
- * Start the tsdown watch build used by `pnpm run dev:web`.
+ * Start the tsdown watch build used by `npm run dev:web`.
  * @param root - repository or fixture root passed to tsdown.
  * @param pluginDirs - workspace-relative package directories to watch.
  * @param pollInterval - optional source-watcher polling interval in milliseconds.
@@ -178,7 +178,7 @@ if (isMain) {
   const pluginDirs = discoverPluginDirs()
   const libraryDirs = discoverLibraryDirs()
   if (pluginDirs.length === 0) {
-    console.error('dev-web: no dsh.client (platform "web") packages found under packages/')
+    console.error('dev-web: no cf.client (platform "web") packages found under packages/')
     process.exit(1)
   }
   if (libraryDirs.length === 0) {
@@ -226,10 +226,10 @@ if (isMain) {
   // working directory — `resolve.dedupe` resolves react from that root, so
   // running vite from anywhere but apps/web silently switches which react copy
   // the bundle gets.
-  spawnStage('vite build --watch', 'pnpm', ['--filter', SHELL_PACKAGE, 'run', 'watch'], false)
+  spawnStage('vite build --watch', 'npm', ['run', 'watch', '--workspace', SHELL_PACKAGE], false)
 
   console.log(
-    `dev-web: watching ${String(pluginDirs.length)} dsh.client plugin packages`
+    `dev-web: watching ${String(pluginDirs.length)} cf.client plugin packages`
     + ` and ${String(libraryDirs.length)} statically linked library packages`
     + (pollInterval !== undefined ? ` (polling ${String(pollInterval)}ms)` : '')
     + `, plus tsc -b ${CLIENT_TYPE_PROGRAM} and the ${SHELL_PACKAGE} dist build:\n  `

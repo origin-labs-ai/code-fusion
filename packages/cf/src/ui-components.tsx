@@ -1,4 +1,4 @@
-/** UI Components for XH Popular Skills */
+/** UI Components for CF Popular Skills */
 import React from 'react'
 
 export function IWINProgress({ progress }: any) {

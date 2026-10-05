@@ -1,5 +1,5 @@
-# The xhe-web-app bundle patch: the browser surface over the xhe-base layer.
-# Applied after xhe-base's insert; rows here override base rows by id, with
+# The cf-web-app bundle patch: the browser surface over the cf-base layer.
+# Applied after cf-base's insert; rows here override base rows by id, with
 # the profile's own cordis.patch.yml and any --patch overlays still to come.
 #
 # A patch replaces the targeted row's whole `config`, so each row below
@@ -9,7 +9,7 @@
 # ordinary Cordis service. Rows configured from flags inject that service, so
 # Loader resolves their expressions only after it exists. The web runtime then
 # provides bind-dependent `webRuntime` values to the trust fence.
-# `dsh --profile web --help` provides neither service, so no server binds.
+# `cf --profile web --help` provides neither service, so no server binds.
 
 # ── surface-specific values the base deliberately omits ─────────────────────
 
@@ -34,15 +34,15 @@
 
 - id: tools
   config:
-    # TEMPORARY workaround: XHE_TOOLS_MODE (native|code|both) opts a whole dsh
+    # TEMPORARY workaround: CF_TOOLS_MODE (native|code|both) opts a whole cf
     # process into Code Mode while per-session tool-presentation selection is being
     # designed; unset keeps the schema default (native). Remove the env seam
     # once the web UI owns the choice per session.
-    mode: !!js process.env.XHE_TOOLS_MODE
+    mode: !!js process.env.CF_TOOLS_MODE
 
 # ── web-only host rows, the transport layer, and the browser roster ─────────
 
-# `dsh.client` rows are the browser roster the modules node half scans into
+# `cf.client` rows are the browser roster the modules node half scans into
 # window.__CF_BOOT__; the modules row is simultaneously a host row.
 - insert:
     - id: code-runtime
@@ -126,7 +126,7 @@
         port: !!js ctx.webStartup.port ?? 3080
 
     # Web glue owned by this bundle: resolves the built frontend dist (an
-    # assembly fact of xhe-web-app, never user config), mounts the
+    # assembly fact of cf-web-app, never user config), mounts the
     # frontend-static fallback owner, registers the web-surface prompt
     # section and the bash runtime variable, prints the URL line, and opens the
     # canonical local URL after the full tree settles. The webStartup provider
@@ -144,13 +144,13 @@
         trustedHosts: !!js ctx.webStartup.trustedHosts
 
     # The client-plugin reload chain, always mounted: it is idle until a
-    # rebuild watcher (pnpm run dev:web) actually rewrites client bundles. It
+    # rebuild watcher (npm run dev:web) actually rewrites client bundles. It
     # is a row rather than a child of web-runtime because its node half is a
     # client-side package, which a host-side bundle cannot import.
     - id: client-hmr
       name: '@origin-ai/cf-client-hmr'
 
-    # ── browser plugin roster (dsh.client rows; node halves are layer-2 hosts) ──
+    # ── browser plugin roster (cf.client rows; node halves are layer-2 hosts) ──
 
     # Dual-face: the node half scans this tree, composes window.__CF_BOOT__,
     # and serves /plugins/<id>/client.js; the browser half is the module table
@@ -306,7 +306,7 @@
 # the composition.
 
 # `shell-env` STAYS in the host plane: `apps/cli/src/web.ts` injects it to
-# publish `XHE_WEB_URL`/`XHE_WEB_MODE`, and a host row that injects a service is
+# publish `CF_WEB_URL`/`CF_WEB_MODE`, and a host row that injects a service is
 # the criterion for host-plane ownership — injection resolves before any session
 # exists, so there is no agent to key by. Behind a preset realm those variables
 # would never reach the model's shell at all.
@@ -436,7 +436,7 @@
 # Only the SHIPPED root is an assembly fact: it sits beside the installed app's
 # own config, so `apps/cli`'s `composeProfile` resolves and patches it in — the
 # same treatment `distIndex` gets on the webserver row. The writable root is
-# `xhe-agent-presets`' own default (`includeUserRoot`), so a composition that
+# `cf-agent-presets`' own default (`includeUserRoot`), so a composition that
 # never reaches that patch still finds a person's presets.
 - insert:
     - id: agent-presets

@@ -1,5 +1,5 @@
 /**
- * Command handlers for XH Popular Skills
+ * Command handlers for CF Popular Skills
  * 25+ slash commands with model behavior enforcement
  */
 
@@ -126,7 +126,7 @@ export async function helpHandler(ctx: CommandContext, args?: string[]): Promise
     else console.log(`❌ Unknown: ${topic}`)
   } else {
     console.log('╔══════════════════════════════════════════╗')
-    console.log('║  🚀 XH POPULAR SKILLS - ALL COMMANDS     ║')
+    console.log('║  🚀 CF POPULAR SKILLS - ALL COMMANDS     ║')
     console.log('╚══════════════════════════════════════════╝')
     Array.from(commands.values()).forEach(cmd => 
       console.log(`   ${cmd.name.padEnd(20)} ${cmd.description}`))

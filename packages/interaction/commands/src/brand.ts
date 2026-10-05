@@ -1,11 +1,11 @@
 /**
- * xhe-commands' owned branded id: command lifecycle pairing across the
+ * cf-commands' owned branded id: command lifecycle pairing across the
  * session log, the wire admission response, and client-side flow pairing.
  *
  * The `Branded<B>` primitive lives in `@origin-ai/cf-brand`; this module
  * is a pure type/constructor outlet (no cordis imports, no module
  * augmentation) so wire and client programs can name the brand without
- * loading the host plugin's Context merges — the `xhe-llm/brand` shape.
+ * loading the host plugin's Context merges — the `cf-llm/brand` shape.
  *
  * @module @origin-ai/cf-commands/brand
  */

@@ -26,7 +26,7 @@
 // ============================================================================
 
 export {
-  XHEError,
+  CFError,
   ErrorCategory,
   ErrorSeverity,
   RetryConfig,
@@ -49,7 +49,7 @@ export {
 } from './error-handling'
 
 export type {
-  XHEError as XHEErrorType,
+  CFError as CFErrorType,
   ErrorCategory as ErrorCategoryType,
   ErrorSeverity as ErrorSeverityType,
   RetryConfig as RetryConfigType,

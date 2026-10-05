@@ -1,11 +1,11 @@
 /**
- * Invariant checks for XH Popular Skills
+ * Invariant checks for CF Popular Skills
  * Ensures system integrity and validates states
  */
 
 export function invariant(condition: unknown, message: string): asserts condition {
   if (!condition) {
-    throw new Error(`[DSH-Popular-Skills] Invariant violation: ${message}`)
+    throw new Error(`[CF-Popular-Skills] Invariant violation: ${message}`)
   }
 }
 

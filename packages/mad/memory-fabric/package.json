@@ -1,6 +1,6 @@
 {
   "name": "@origin-ai/cf-memory-fabric",
-  "description": "HOT/WARM/COLD memory fabric for XH with SHA-256 content addressing, sqlite/vector index stubs, and compaction",
+  "description": "HOT/WARM/COLD memory fabric for CF with SHA-256 content addressing, sqlite/vector index stubs, and compaction",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
@@ -26,13 +26,13 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

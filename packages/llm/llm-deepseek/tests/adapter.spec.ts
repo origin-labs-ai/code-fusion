@@ -28,7 +28,7 @@ const TEST_USER_ID = '00000000-0000-4000-8000-000000000001' as AnonymousUserId
 let testHome: string
 
 beforeEach(() => {
-  testHome = mkdtempSync(join(tmpdir(), 'xhe-llm-deepseek-'))
+  testHome = mkdtempSync(join(tmpdir(), 'cf-llm-deepseek-'))
   vi.stubEnv('CF_HOME', testHome)
 })
 
@@ -176,12 +176,12 @@ describe('DeepSeekAdapter against a mock server', () => {
     })
     // App attribution and DeepSeek request identity are independent wire facts.
     expect(server.headers[0]?.['user-agent']).toBe(userAgent())
-    expect(server.headers[0]?.['x-xhe-user-id']).toBe(getOrCreateAnonymousUserId())
-    expect(server.headers[0]).not.toHaveProperty('x-xhe-session-id')
+    expect(server.headers[0]?.['x-cf-user-id']).toBe(getOrCreateAnonymousUserId())
+    expect(server.headers[0]).not.toHaveProperty('x-cf-session-id')
     expect(server.headers[0]).not.toHaveProperty('http-referer')
     expect(server.headers[0]).not.toHaveProperty('x-openrouter-title')
     expect(server.headers[0]).not.toHaveProperty('x-openrouter-categories')
-    expect(server.headers[0]).not.toHaveProperty('x-xhe-compact')
+    expect(server.headers[0]).not.toHaveProperty('x-cf-compact')
   })
 
   it('uploads a durable image once and sends only its Files API id to the vision model', async () => {
@@ -221,7 +221,7 @@ describe('DeepSeekAdapter against a mock server', () => {
     expect(server.fileRequests).toEqual([{
       method: 'POST',
       path: '/files',
-      filename: `xhe-${'a'.repeat(16)}-${'b'.repeat(8)}.png`,
+      filename: `cf-${'a'.repeat(16)}-${'b'.repeat(8)}.png`,
       bytes: 3,
     }])
     expect(signalSeen[0]).toBeInstanceOf(AbortSignal)
@@ -529,7 +529,7 @@ describe('DeepSeekAdapter against a mock server', () => {
       { messages: [{ content: [expect.objectContaining({ type: 'text' }), { file_id: 'file-api-1' }] }] },
       { messages: [{ content: [expect.objectContaining({ type: 'text' }), { file_id: 'file-api-1' }] }] },
     ])
-    expect(server.headers[1]?.['x-xhe-compact']).toBe('1')
+    expect(server.headers[1]?.['x-cf-compact']).toBe('1')
   })
 
   it('explains a provider rejection of a normalized image and retains the raw response as cause', async () => {
@@ -952,8 +952,8 @@ describe('DeepSeekAdapter against a mock server', () => {
       sessionId: SessionId('child-session'),
     })
 
-    expect(server.headers[0]?.['x-xhe-session-id']).toBe('child-session')
-    expect(server.headers[0]?.['x-xhe-user-id']).toBe(getOrCreateAnonymousUserId())
+    expect(server.headers[0]?.['x-cf-session-id']).toBe('child-session')
+    expect(server.headers[0]?.['x-cf-user-id']).toBe(getOrCreateAnonymousUserId())
   })
 
   it('marks the auxiliary compaction call on the wire', async () => {
@@ -969,7 +969,7 @@ describe('DeepSeekAdapter against a mock server', () => {
       purpose: 'compaction',
     })
 
-    expect(server.headers[0]?.['x-xhe-compact']).toBe('1')
+    expect(server.headers[0]?.['x-cf-compact']).toBe('1')
   })
 
   it('switches dynamically from the configured low default through off to max', async () => {
@@ -1959,7 +1959,7 @@ describe('plugin registration and config', () => {
 
   it('takes DEEPSEEK_BASE_URL from any environment layer, with explicit config still on top', () => {
     const trusted = createLaunchEnvironmentSnapshot([
-      { source: 'user-env', path: '/home/.dsh/.env', values: { DEEPSEEK_BASE_URL: 'https://user.example' } },
+      { source: 'user-env', path: '/home/.cf/.env', values: { DEEPSEEK_BASE_URL: 'https://user.example' } },
     ])
     expect(resolveAdapterOptions({}, trusted).baseURL).toBe('https://user.example')
     // The product trusts the project it is launched in, so a checkout can

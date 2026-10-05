@@ -8,7 +8,7 @@ import LocalSubprocessRuntime from '@origin-ai/cf-subprocess-local'
 import { MAX_TIMER_DELAY_MS } from '@origin-ai/cf-timeout'
 import type { ShellProcess } from '@origin-ai/cf-shell'
 
-const spillDir = mkdtempSync(join(tmpdir(), 'xhe-bash-exec-spec-'))
+const spillDir = mkdtempSync(join(tmpdir(), 'cf-bash-exec-spec-'))
 
 async function setup(config: ConstructorParameters<typeof LocalBashExecutor>[1] = {}) {
   const ctx = new Context()
@@ -130,7 +130,7 @@ describe('LocalBashExecutor.run', () => {
 
   it('rejects on spawn failure (bad workdir)', async () => {
     const { bash } = await setup()
-    await expect(bash.run(bash.resolve({ command: 'true', workdir: '/nonexistent-dsh' }))).rejects.toThrow(/ENOENT/)
+    await expect(bash.run(bash.resolve({ command: 'true', workdir: '/nonexistent-cf' }))).rejects.toThrow(/ENOENT/)
   })
 
   it('resolve() carries stdin/env/cfEnv onto the spec, and run() threads them to the command', async () => {
@@ -139,14 +139,14 @@ describe('LocalBashExecutor.run', () => {
       command: 'cat; echo "[$SEAM_VAR][$CF_SEAM_VAR]"',
       stdin: 'piped\n',
       env: { SEAM_VAR: 'env-ok' },
-      cfEnv: { CF_SEAM_VAR: 'xhe-ok' },
+      cfEnv: { CF_SEAM_VAR: 'cf-ok' },
     })
     // resolve() keeps the optional input/environment fields verbatim.
     expect(spec.stdin).toBe('piped\n')
     expect(spec.env).toEqual({ SEAM_VAR: 'env-ok' })
-    expect(spec.cfEnv).toEqual({ CF_SEAM_VAR: 'xhe-ok' })
+    expect(spec.cfEnv).toEqual({ CF_SEAM_VAR: 'cf-ok' })
     const result = await bash.run(spec)
-    expect(result.stdout.text).toBe('piped\n[env-ok][xhe-ok]\n')
+    expect(result.stdout.text).toBe('piped\n[env-ok][cf-ok]\n')
   })
 
   it('resolve() omits stdin/env/cfEnv when the request supplies none', async () => {
@@ -176,9 +176,9 @@ describe('LocalBashExecutor.start (background process handles)', () => {
       command: 'cat; echo "[$BG_VAR][$CF_BG_VAR]"',
       stdin: 'bg-stdin\n',
       env: { BG_VAR: 'bg-env' },
-      cfEnv: { CF_BG_VAR: 'bg-xhe-env' },
+      cfEnv: { CF_BG_VAR: 'bg-cf-env' },
     }))
-    const output = await readUntil(proc, '[bg-env][bg-xhe-env]')
+    const output = await readUntil(proc, '[bg-env][bg-cf-env]')
     expect(output).toContain('bg-stdin')
     await proc.done
     expect(proc.exitCode).toBe(0)
@@ -290,7 +290,7 @@ describe('LocalBashExecutor.start (background process handles)', () => {
 
   it('a background spawn failure settles as killed with the error readable on stderr', async () => {
     const { bash } = await setup()
-    const proc = bash.start(bash.resolve({ command: 'true', workdir: '/nonexistent-dsh' }))
+    const proc = bash.start(bash.resolve({ command: 'true', workdir: '/nonexistent-cf' }))
     // done resolves (never rejects) even though the process never ran.
     await expect(proc.done).resolves.toBeUndefined()
     expect(proc.status).toBe('killed')

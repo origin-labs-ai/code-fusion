@@ -13,7 +13,7 @@ import { canonicalPath, writableRoots } from '@origin-ai/cf-sandbox'
 
 describe('canonicalPath', () => {
   it('resolves symlinks (an existing path realpaths)', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'xhe-roots-'))
+    const dir = mkdtempSync(join(tmpdir(), 'cf-roots-'))
     expect(canonicalPath(dir)).toBe(realpathSync.native(dir))
   })
 
@@ -28,7 +28,7 @@ describe('writableRoots', () => {
   })
 
   it('workspace-write grants the workspace root plus the platform temp areas, canonical and deduplicated', () => {
-    const ws = mkdtempSync(join(tmpdir(), 'xhe-ws-'))
+    const ws = mkdtempSync(join(tmpdir(), 'cf-ws-'))
     const roots = writableRoots({ mode: 'workspace-write', workspaceRoot: ws })
     expect(roots).toContain(realpathSync.native(ws))
     expect(roots).toContain(canonicalPath('/tmp'))

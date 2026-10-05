@@ -64,7 +64,7 @@
   name: '@origin-ai/cf-session-persistence-jsonl'
   config:
     root: './.sessions'
-    compression: !!js "process.env.XHE_SNAPSHOT === undefined ? 'zstd' : 'none'"
+    compression: !!js "process.env.CF_SNAPSHOT === undefined ? 'zstd' : 'none'"
 
 - id: checkpoint-policy
   name: '@origin-ai/cf-session-checkpoint-policy'

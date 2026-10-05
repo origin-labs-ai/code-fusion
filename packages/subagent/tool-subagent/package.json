@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/subagent/tool-subagent"
   },
   "type": "module",
@@ -32,33 +32,33 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-jobs": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-jobs": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-persistence": "workspace:^",
-    "@origin-ai/cf-session-persistence-jsonl": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-subagent-spawn-in-process": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-jobs": "workspace:^",
-    "@origin-ai/cf-jobs-local": "workspace:^",
-    "@origin-ai/cf-tool-jobs": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-persistence": "*",
+    "@origin-ai/cf-session-persistence-jsonl": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-subagent-spawn-in-process": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-jobs": "*",
+    "@origin-ai/cf-jobs-local": "*",
+    "@origin-ai/cf-tool-jobs": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

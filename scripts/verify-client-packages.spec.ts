@@ -124,7 +124,7 @@ describe('package modes', () => {
     }))
     expect(found).toHaveLength(2)
     expect(found.join('\n')).toContain('does not use the staticLinked preset')
-    expect(found.join('\n')).toContain('has no dynamic dsh.client row')
+    expect(found.join('\n')).toContain('has no dynamic cf.client row')
   })
 
   it('requires every preloaded external to have a parser preload row', () => {
@@ -183,7 +183,7 @@ describe('dependency sections', () => {
     })
     const found = collectClientPackageViolations(facts([slots, subject]))
     expect(found).toHaveLength(2)
-    expect(found.join('\n')).toContain('peer-installed XHE relationship')
+    expect(found.join('\n')).toContain('peer-installed CF relationship')
     expect(found.join('\n')).toContain('static client input')
   })
 
@@ -257,7 +257,7 @@ describe('module requests', () => {
       declarations: [ui],
       platformModules: ['react'],
     }))).toEqual([
-      ui.manifest + ': dsh.client.external repeats baseline module "react"; remove the explicit declaration',
+      ui.manifest + ': cf.client.external repeats baseline module "react"; remove the explicit declaration',
     ])
   })
 
@@ -268,8 +268,8 @@ describe('module requests', () => {
     })
     const found = collectClientPackageViolations(facts([], { declarations: [ui] }))
     expect(found).toHaveLength(6)
-    expect(found.join('\n')).toContain('dsh.client.external contains an empty value')
-    expect(found.join('\n')).toContain('dsh.client.inject contains an empty value')
+    expect(found.join('\n')).toContain('cf.client.external contains an empty value')
+    expect(found.join('\n')).toContain('cf.client.inject contains an empty value')
     expect(found.join('\n')).toContain('names its own row')
     expect(found.join('\n')).toContain('has no supplier')
   })
@@ -285,7 +285,7 @@ describe('module requests', () => {
     })
     const found = collectClientPackageViolations(facts([], { declarations: [a, b] }))
     expect(found).toHaveLength(1)
-    expect(found[0]).toContain('synchronous dsh.client.external cycle')
+    expect(found[0]).toContain('synchronous cf.client.external cycle')
   })
 })
 
@@ -295,9 +295,9 @@ describe('manifest declarations', () => {
     roots.push(root)
     const files: Record<string, unknown> = {
       'packages/g/a/package.json': {
-        name: '@f/a', dsh: { client: { external: 'react', inject: ['@f/b', 1] } },
+        name: '@f/a', cf: { client: { external: 'react', inject: ['@f/b', 1] } },
       },
-      'packages/g/b/package.json': { name: '@f/b', dsh: { client: {} } },
+      'packages/g/b/package.json': { name: '@f/b', cf: { client: {} } },
     }
     for (const [path, value] of Object.entries(files)) {
       mkdirSync(dirname(join(root, path)), { recursive: true })
@@ -307,8 +307,8 @@ describe('manifest declarations', () => {
     const result = readClientDeclarations(root)
     expect(result.declarations).toHaveLength(2)
     expect(result.malformed).toEqual([
-      'packages/g/a/package.json: @f/a dsh.client.external must be a string array',
-      'packages/g/a/package.json: @f/a dsh.client.inject must be a string array',
+      'packages/g/a/package.json: @f/a cf.client.external must be a string array',
+      'packages/g/a/package.json: @f/a cf.client.inject must be a string array',
     ])
   })
 
@@ -335,7 +335,7 @@ describe('manifest declarations', () => {
     const slots = declaration('ui-slots', { dynamic: false })
     const manifest = {
       name: subject.name,
-      dsh: { client: { external: subject.external, inject: subject.inject, platform: 'web' } },
+      cf: { client: { external: subject.external, inject: subject.inject, platform: 'web' } },
       dependencies: subject.dependencies,
       peerDependencies: subject.peerDependencies,
       devDependencies: subject.devDependencies,
@@ -351,12 +351,12 @@ describe('manifest declarations', () => {
     }))).toEqual([subject.manifest])
 
     const fixed = JSON.parse(readFileSync(join(root, subject.manifest), 'utf8')) as {
-      dsh: { client: { external: string[]; inject: string[] } }
+      cf: { client: { external: string[]; inject: string[] } }
       dependencies?: Record<string, string>
       peerDependencies: Record<string, string>
       devDependencies: Record<string, string>
     }
-    expect(fixed.dsh.client).toMatchObject({
+    expect(fixed.cf.client).toMatchObject({
       external: ['@origin-ai/cf-missing'],
       inject: ['@origin-ai/cf-agent'],
     })

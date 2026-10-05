@@ -30,7 +30,7 @@ const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 const acpBin = join(repoRoot, 'packages/examples/acp-demo/lib/bin.js')
 const decompress = promisify(zstdDecompress)
 
-const dshPackages = [
+const cfPackages = [
   'examples/agent-spine-demo', 'core/agent', 'core/session', 'core/system-prompt',
   'core/tools', 'core/agent-loop', 'llm/llm', 'shell/shell',
   'shell/bash-local', 'shell/tool-bash', 'subprocess/subprocess', 'subprocess/subprocess-local', 'context/agent-instructions', 'runtime-diagnostics/invariants', 'boot/app-boot',
@@ -42,7 +42,7 @@ const vendorPackages = [
   'cordis', 'loader', 'include', 'timer', 'hmr', 'logger-console',
   'schemastery', 'cosmokit',
 ]
-// Resolve ACP's declared third-party dependencies from that package, not this test: pnpm's strict
+// Resolve ACP's declared third-party dependencies from that package, not this test: npm's strict
 // layout need not hoist them. Symlink those exact paths into the plain-Node consumer.
 const npmDeps = ['@agentclientprotocol/sdk']
 const acpPkgDir = join(repoRoot, 'packages/acp/acp')
@@ -62,7 +62,7 @@ async function link(target: string, name: string, nm: string): Promise<void> {
 async function makeConsumer(): Promise<string> {
   const dir = await mkdtemp(join(tmpdir(), 'acp-built-bin-'))
   const nm = join(dir, 'node_modules')
-  for (const rel of dshPackages) {
+  for (const rel of cfPackages) {
     const abs = join(repoRoot, 'packages', rel)
     await link(abs, await pkgName(abs), nm)
   }
@@ -131,15 +131,15 @@ afterEach(async () => {
   consumer = undefined
 })
 
-describe.skipIf(!existsSync(acpBin))('xhe-acp-demo BUILT bin (node lib/bin.js, no tsx)', () => {
+describe.skipIf(!existsSync(acpBin))('cf-acp-demo BUILT bin (node lib/bin.js, no tsx)', () => {
   it('boots the published bin, completes a turn, and writes default Zstandard persistence', async () => {
     consumer = await makeConsumer()
     child = spawn(process.execPath, [acpBin, '--config', './cordis.yml'], {
       cwd: consumer,
       env: {
         ...process.env,
-        CF_HOME: join(consumer, '.dsh'),
-        XHE_AGENTS_HOME: join(consumer, '.agents'),
+        CF_HOME: join(consumer, '.cf'),
+        CF_AGENTS_HOME: join(consumer, '.agents'),
       },
       stdio: ['pipe', 'pipe', 'pipe'],
     })
@@ -218,8 +218,8 @@ async function runBinExpectingExit(configArg: string, cwd: string = tmpdir()): P
   const result = await execa(process.execPath, [acpBin, '--config', configArg], {
     cwd,
     env: {
-      CF_HOME: join(cwd, '.dsh'),
-      XHE_AGENTS_HOME: join(cwd, '.agents'),
+      CF_HOME: join(cwd, '.cf'),
+      CF_AGENTS_HOME: join(cwd, '.agents'),
     },
     input: '',
     timeout: 25_000,

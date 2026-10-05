@@ -1,6 +1,6 @@
 # @origin-ai/cf-session-log-export
 
-Web Session-log download control over the host-streamed ZIP endpoint owned by `xhe-host-apiproxy`. The Host half registers `/export`; the browser half owns a 111×32 `Session log` action in the Session Header, one download controller, and one modal shared by that button and the slash command. ZIP generation, raw JSONL/zstd reads, descendants, attachments, backpressure, and HTTP error semantics remain owned by the [ApiProxy download implementation](../../host/apiproxy/README.md).
+Web Session-log download control over the host-streamed ZIP endpoint owned by `cf-host-apiproxy`. The Host half registers `/export`; the browser half owns a 111×32 `Session log` action in the Session Header, one download controller, and one modal shared by that button and the slash command. ZIP generation, raw JSONL/zstd reads, descendants, attachments, backpressure, and HTTP error semantics remain owned by the [ApiProxy download implementation](../../host/apiproxy/README.md).
 
 ## Command contract
 
@@ -22,7 +22,7 @@ The modal reports preparation, download start, or failure. Closing it does not c
   name: '@origin-ai/cf-session-log-export'
 ```
 
-The Web bundle mounts the package beside `xhe-host-apiproxy`, `xhe-commands`, `xhe-client-ui-commands`, and `xhe-client-ui-conversation`. The package contributes its button and modal to the right-aligned `conversation.session.header.utilities` list, independently of the title-adjacent mode, Subagent, and Task entries in `conversation.session.header.actions`; Trajectory carries no export control.
+The Web bundle mounts the package beside `cf-host-apiproxy`, `cf-commands`, `cf-client-ui-commands`, and `cf-client-ui-conversation`. The package contributes its button and modal to the right-aligned `conversation.session.header.utilities` list, independently of the title-adjacent mode, Subagent, and Task entries in `conversation.session.header.actions`; Trajectory carries no export control.
 
 ## Model Experience
 

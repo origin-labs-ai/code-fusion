@@ -1,5 +1,5 @@
 /**
- * XH Verification — general verifier with proof gate and 6-way adversarial
+ * CF Verification — general verifier with proof gate and 6-way adversarial
  * cross-check.
  *
  * Verifier modes: reproduce / tests / static / runtime / bench / security /

@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/client/ui-theme"
   },
   "type": "module",
@@ -44,29 +44,29 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-api-remotes": "workspace:^",
-    "@origin-ai/cf-client-connection": "workspace:^",
-    "@origin-ai/cf-client-locale": "workspace:^",
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-settings": "workspace:^",
-    "@origin-ai/cf-host-webserver": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-settings": "workspace:^"
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-api-remotes": "*",
+    "@origin-ai/cf-client-connection": "*",
+    "@origin-ai/cf-client-locale": "*",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-ui-settings": "*",
+    "@origin-ai/cf-host-webserver": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-settings": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-api-remotes": "workspace:^",
-    "@origin-ai/cf-client-connection": "workspace:^",
-    "@origin-ai/cf-client-locale": "workspace:^",
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-test-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-primitives": "workspace:^",
-    "@origin-ai/cf-client-ui-settings": "workspace:^",
-    "@origin-ai/cf-client-ui-slots": "workspace:^",
-    "@origin-ai/cf-host-webserver": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-settings": "workspace:^",
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-api-remotes": "*",
+    "@origin-ai/cf-client-connection": "*",
+    "@origin-ai/cf-client-locale": "*",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-test-runtime": "*",
+    "@origin-ai/cf-client-ui-primitives": "*",
+    "@origin-ai/cf-client-ui-settings": "*",
+    "@origin-ai/cf-client-ui-slots": "*",
+    "@origin-ai/cf-host-webserver": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-settings": "*",
     "@types/react": "~18.3.1",
     "react": "^18.2.0"
   },
@@ -83,6 +83,6 @@
   },
   "dependencies": {
     "clsx": "^2.0.0",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   }
 }

@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/typert/generator"
   },
   "type": "module",
@@ -41,14 +41,14 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-tool-cordis": "workspace:^",
-    "@origin-ai/cf-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-tool-cordis": "*",
+    "@origin-ai/cf-typert-registry": "*",
+    "@deepseek-ai/cordis": "*",
     "zod": "^4.4.3"
   }
 }

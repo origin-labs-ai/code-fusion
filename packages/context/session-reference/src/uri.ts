@@ -4,13 +4,13 @@ import { SessionId, type SessionId as SessionIdType } from '@origin-ai/cf-sessio
 import { SessionReferenceError } from './config.ts'
 import type { SessionReferenceInput } from './types.ts'
 
-/** URI scheme reserved for Xee Harness Enhanced session snapshots. */
-export const SESSION_REFERENCE_SCHEME = 'xhe-session:'
+/** URI scheme reserved for CodeFusion session snapshots. */
+export const SESSION_REFERENCE_SCHEME = 'cf-session:'
 
 /**
  * Encode any JavaScript session-id string as a canonical lossless URI.
  * @param sessionId - opaque session id to serialize.
- * @returns canonical `xhe-session:` URI.
+ * @returns canonical `cf-session:` URI.
  */
 export function encodeSessionReferenceUri(sessionId: SessionIdType): string {
   const payload = Buffer.from(JSON.stringify(sessionId), 'utf8').toString('base64url')
@@ -67,7 +67,7 @@ export interface ParsedSessionReferenceText {
  */
 export function parseSessionReferenceText(text: string): ParsedSessionReferenceText {
   const references: SessionReferenceInput[] = []
-  const pattern = /@\[((?:\\.|[^\\\]])*)\]\((xhe-session:[^\s)]*)\)|(xhe-session:[A-Za-z0-9_-]+)/gu
+  const pattern = /@\[((?:\\.|[^\\\]])*)\]\((cf-session:[^\s)]*)\)|(cf-session:[A-Za-z0-9_-]+)/gu
   const rendered = text.replace(pattern, (
     _match,
     rawLabel: string | undefined,

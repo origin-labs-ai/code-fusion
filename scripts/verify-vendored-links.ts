@@ -1,7 +1,7 @@
 /**
- * Verify that pnpm-lock.yaml resolves every vendored package name to its
+ * Verify that package-lock.json resolves every vendored package name to its
  * workspace `link:` — never a registry copy. `linkWorkspacePackages: true`
- * (pnpm-workspace.yaml) makes matching upstream semver ranges resolve to the
+ * (package.json `workspaces`) makes matching upstream semver ranges resolve to the
  * pinned vendored sources; a registry copy of the same name coexisting with
  * the vendored one silently forks the framework layer (vendor/README.md).
  */
@@ -34,7 +34,7 @@ interface Lockfile {
 
 const names = await vendoredNames()
 if (names.size === 0) throw new Error('verify-vendored-links: no vendored package manifests found under vendor/')
-const lockfile = yaml.load(await readFile(join(root, 'pnpm-lock.yaml'), 'utf8')) as Lockfile
+const lockfile = yaml.load(await readFile(join(root, 'package-lock.json'), 'utf8')) as Lockfile
 
 const violations: string[] = []
 

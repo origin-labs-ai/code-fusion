@@ -7,7 +7,7 @@ import type { RunHookOptions } from '@origin-ai/cf-hook-protocol'
  * A minimal stand-in for the bits of {@link ShellExecutor} that {@link runHook}
  * actually calls (`resolve` then `run`). `runHook` is pure plumbing over those
  * two methods, so a duck-typed recorder is the right test hook — the REAL
- * executor (xhe-bash-local) is exercised end-to-end by the hook-bridge plugins
+ * executor (cf-bash-local) is exercised end-to-end by the hook-bridge plugins
  * that consume this library, not here.
  */
 function recordingBash(run: (spec: ShellExecSpec) => Promise<ShellRunResult>): {
@@ -18,7 +18,7 @@ function recordingBash(run: (spec: ShellExecSpec) => Promise<ShellRunResult>): {
   const bash = {
     resolve(request: ShellExecRequest): ShellExecSpec {
       // Carry the request through verbatim, defaulting the required spec fields —
-      // exactly what xhe-bash-local's resolve does for the fields runHook sets.
+      // exactly what cf-bash-local's resolve does for the fields runHook sets.
       return {
         command: request.command,
         workdir: request.workdir ?? '/stub',

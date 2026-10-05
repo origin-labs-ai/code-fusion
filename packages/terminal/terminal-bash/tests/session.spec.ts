@@ -202,7 +202,7 @@ describe('LocalPtySession readiness and output', () => {
     const inspector = new FakeInspector()
     const session = makeSession(terminal, inspector, config())
     await initialize(session, terminal)
-    expect(session.motd).toBe('dsh> ')
+    expect(session.motd).toBe('cf> ')
 
     inspector.waiting = true
     const operation = session.startSend({ text: 'python3', submit: true })
@@ -806,10 +806,10 @@ describe('LocalPtySession readiness and output', () => {
     await vi.advanceTimersByTimeAsync(20)
     expect(settled).toBe(false)
 
-    terminal.emitData('dsh> ')
+    terminal.emitData('cf> ')
     await vi.advanceTimersByTimeAsync(10)
     await initializing
-    expect(session.motd).toBe('dsh> ')
+    expect(session.motd).toBe('cf> ')
   })
 
   it('does not attribute a delayed prior prompt to the current send', async () => {

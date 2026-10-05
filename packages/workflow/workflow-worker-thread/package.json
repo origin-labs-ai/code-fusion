@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/workflow/workflow-worker-thread"
   },
   "type": "module",
@@ -37,33 +37,33 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-workflow": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-workflow": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-loop": "workspace:^",
-    "@origin-ai/cf-agent-loop-testkit": "workspace:^",
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-subagent-spawn-in-process": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-workflow": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-loop": "*",
+    "@origin-ai/cf-agent-loop-testkit": "*",
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-subagent-spawn-in-process": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-workflow": "*",
+    "@deepseek-ai/cordis": "*",
     "tsx": "^4.19.2"
   }
 }

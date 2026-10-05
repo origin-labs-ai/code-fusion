@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/plan/plan-mode"
   },
   "type": "module",
@@ -41,16 +41,16 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-commands": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-projection": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-user-questions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-commands": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-projection": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-user-questions": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "peerDependenciesMeta": {
     "@origin-ai/cf-commands": {
@@ -61,17 +61,17 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-loop": "workspace:^",
-    "@origin-ai/cf-code-runtime": "workspace:^",
-    "@origin-ai/cf-commands": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-projection": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-user-questions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-loop": "*",
+    "@origin-ai/cf-code-runtime": "*",
+    "@origin-ai/cf-commands": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-projection": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-user-questions": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

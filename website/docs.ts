@@ -108,7 +108,7 @@ const homeAndGuide = pairedPages([
   {
     source: 'docs/user/index.md',
     route: 'index.md',
-    label: { root: 'Xee Harness Enhanced', en: 'Xee Harness Enhanced' },
+    label: { root: 'CodeFusion', en: 'CodeFusion' },
     sidebar: { root: null, en: null },
     section: { root: '首页', en: 'Home' },
     order: 0,

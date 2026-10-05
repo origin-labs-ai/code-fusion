@@ -10,7 +10,7 @@ import LocalAttachmentStore, { requestImageDimensions } from '../src/index.ts'
 const homes: string[] = []
 
 async function store(): Promise<LocalAttachmentStore> {
-  const cfHome = await mkdtemp(join(tmpdir(), 'xhe-request-image-'))
+  const cfHome = await mkdtemp(join(tmpdir(), 'cf-request-image-'))
   homes.push(cfHome)
   return new LocalAttachmentStore(new Context(), { cfHome })
 }

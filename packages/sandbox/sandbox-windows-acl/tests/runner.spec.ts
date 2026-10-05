@@ -1,6 +1,6 @@
 /**
  * End-to-end runner tests: spawn the REAL runner entry through tsx (exactly
- * the argv shape xhe-sandbox-local's confine() builds), with piped stdio
+ * the argv shape cf-sandbox-local's confine() builds), with piped stdio
  * inherited through the runner into the confined child — the same chain a
  * production confined execution walks.
  */
@@ -48,10 +48,10 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
   let publicProbeDir: string | undefined
 
   beforeAll(() => {
-    scratchRoot = mkdtempSync(join(tmpdir(), 'xhe-acl-runner-'))
+    scratchRoot = mkdtempSync(join(tmpdir(), 'cf-acl-runner-'))
     writableDir = join(scratchRoot, 'writable')
     mkdirSync(writableDir)
-    isolatedTemp = mkdtempSync(join(tmpdir(), 'xhe-acl-runner-temp-'))
+    isolatedTemp = mkdtempSync(join(tmpdir(), 'cf-acl-runner-temp-'))
     secretFile = join(scratchRoot, 'secret.txt')
     writeFileSync(secretFile, 'top secret - must stay readable to prove the read boundary')
     escapeFile = join(scratchRoot, 'escaped.txt')
@@ -62,7 +62,7 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
       throw new Error(`icacls Everyone grant failed: ${worldGrant.stdout}\n${worldGrant.stderr}`)
     }
     try {
-      publicProbeDir = mkdtempSync(join(process.env.PUBLIC ?? 'C:\\Users\\Public', 'xhe-acl-public-'))
+      publicProbeDir = mkdtempSync(join(process.env.PUBLIC ?? 'C:\\Users\\Public', 'cf-acl-public-'))
     } catch {
       publicProbeDir = undefined
     }
@@ -414,7 +414,7 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
   it('partial boundary: a workspace hard link lets the grant reach an external file object', () => {
     // NTFS ACLs belong to the file object, not one pathname. Propagating the
     // workspace write-SID ACE through an existing hard-link alias therefore
-    // grants the external alias too. pnpm workspaces commonly contain hard
+    // grants the external alias too. npm workspaces commonly contain hard
     // links, so rejecting every multiply-linked file is not a viable profile.
     const hardlinkWorkspace = join(scratchRoot, 'hardlink-workspace')
     const hardlinkTemp = join(scratchRoot, 'hardlink-temp')

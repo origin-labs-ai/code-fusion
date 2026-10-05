@@ -27,7 +27,7 @@ afterEach(() => {
 })
 
 function fixture(): { root: string; pages: DocsPage[] } {
-  const root = mkdtempSync(join(tmpdir(), 'xhe-doc-site-'))
+  const root = mkdtempSync(join(tmpdir(), 'cf-doc-site-'))
   roots.push(root)
   mkdirSync(join(root, 'docs'), { recursive: true })
   mkdirSync(join(root, 'packages'), { recursive: true })
@@ -81,7 +81,7 @@ describe('publishableImage', () => {
     // Publication copies the bytes onto the site, so a reference reaching a
     // build-machine file must not be treated as an image the repository owns.
     const { root } = fixture()
-    const outside = mkdtempSync(join(tmpdir(), 'xhe-doc-site-outside-'))
+    const outside = mkdtempSync(join(tmpdir(), 'cf-doc-site-outside-'))
     roots.push(outside)
     writeFileSync(join(outside, 'secret.png'), 'not really a png\n')
     symlinkSync(join(outside, 'secret.png'), join(root, 'packages/linked.png'))
@@ -119,7 +119,7 @@ describe('rewriteMarkdown', () => {
       repositoryRef: 'abc123',
     })).toBe(
       '[B](./reference/b.md#part) '
-      + '[source](https://github.com/deepseek-ai/xhe/blob/abc123/packages/tool.ts#L2) '
+      + '[source](https://github.com/deepseek-ai/cf/blob/abc123/packages/tool.ts#L2) '
       + '[web](https://example.com)\n',
     )
   })
@@ -145,7 +145,7 @@ describe('rewriteMarkdown', () => {
       pages,
       repoRoot: root,
       repositoryRef: 'abc123',
-    })).toBe('![logo](https://raw.githubusercontent.com/deepseek-ai/xhe/abc123/packages/logo.svg)\n')
+    })).toBe('![logo](https://raw.githubusercontent.com/deepseek-ai/cf/abc123/packages/logo.svg)\n')
   })
 
   it('hands an image to the placer and uses the URL it returns', () => {
@@ -224,7 +224,7 @@ describe('rewriteMarkdown', () => {
       repositoryRef: 'abc123',
     })).toBe(
       '[title](./reference/b.md "b.md") '
-      + '[escaped](https://github.com/deepseek-ai/xhe/blob/abc123/docs/x(y).md)\n',
+      + '[escaped](https://github.com/deepseek-ai/cf/blob/abc123/docs/x(y).md)\n',
     )
   })
 
@@ -288,7 +288,7 @@ describe('docsPages locale routes', () => {
       expect(projected).toContain('layout: false')
       expect(projected).toContain('http-equiv: refresh')
       expect(projected).toContain('content: 0; url=./guide/quickstart')
-      expect(projected).not.toContain('# Xee Harness Enhanced')
+      expect(projected).not.toContain('# CodeFusion')
     }
   })
 
@@ -546,7 +546,7 @@ describe('projectedPageContent', () => {
   })
 
   it('drops the repository badge every page links from its footer', () => {
-    const badge = '[![](https://img.shields.io/badge/powered_by-xhe-4D6BFE?style=flat-square)](https://github.com/deepseek-ai/xhe)'
+    const badge = '[![](https://img.shields.io/badge/powered_by-cf-4D6BFE?style=flat-square)](https://github.com/deepseek-ai/cf)'
     expect(projectedPageContent(`# Guide\n\nBody.\n\n${badge}\n`, page('zh-guide')))
       .toBe('# Guide\n\nBody.\n')
   })
@@ -572,7 +572,7 @@ describe('rawMarkdownPageContent', () => {
   })
 
   it('drops the language switcher and repository badge like the rendered site', () => {
-    const badge = '[![](https://img.shields.io/badge/powered_by-xhe-4D6BFE?style=flat-square)](https://github.com/deepseek-ai/xhe)'
+    const badge = '[![](https://img.shields.io/badge/powered_by-cf-4D6BFE?style=flat-square)](https://github.com/deepseek-ai/cf)'
     expect(rawMarkdownPageContent(`# Guide\n\nEnglish\n\nBody.\n\n${badge}\n`, 'docs/guide.md'))
       .toBe('# Guide\n\nBody.\n')
   })
@@ -587,7 +587,7 @@ describe('rawMarkdownPageContent', () => {
 
 describe('emitRawMarkdownPages', () => {
   function mirrorDir(): string {
-    const out = mkdtempSync(join(tmpdir(), 'xhe-doc-mirror-'))
+    const out = mkdtempSync(join(tmpdir(), 'cf-doc-mirror-'))
     roots.push(out)
     return out
   }
@@ -673,7 +673,7 @@ describe('raw Markdown projection of the published manifest', () => {
   // Coverage instrumentation on a loaded CI runner stretches the full-manifest
   // emission and the 181-file link walk past vitest's 5s default.
   beforeAll(() => {
-    mirror = mkdtempSync(join(tmpdir(), 'xhe-doc-mirror-real-'))
+    mirror = mkdtempSync(join(tmpdir(), 'cf-doc-mirror-real-'))
     emitRawMarkdownPages(mirror, { pages: docsPages, repoRoot: repositoryRoot, repositoryRef: 'master' })
   }, 60_000)
 
@@ -691,7 +691,7 @@ describe('raw Markdown projection of the published manifest', () => {
     for (const route of ['index.md', 'en/index.md']) {
       const home = readFileSync(join(mirror, route), 'utf8')
       expect(home.startsWith('---'), route).toBe(false)
-      expect(home, route).toContain('# Xee Harness Enhanced')
+      expect(home, route).toContain('# CodeFusion')
     }
   })
 
@@ -728,7 +728,7 @@ function relativeTargets(markdown: string): string[] {
 }
 
 describe('llmsTxt', () => {
-  const site = { base: '/x/', title: 'Xee Harness Enhanced', description: '插件化 SDK' }
+  const site = { base: '/x/', title: 'CodeFusion', description: '插件化 SDK' }
 
   it('lists every sidebar page as a base-prefixed raw-Markdown link', () => {
     const text = llmsTxt(site)
@@ -746,7 +746,7 @@ describe('llmsTxt', () => {
 
   it('carries the site identity and the raw-Markdown convention', () => {
     const text = llmsTxt(site)
-    expect(text.startsWith('# Xee Harness Enhanced\n')).toBe(true)
+    expect(text.startsWith('# CodeFusion\n')).toBe(true)
     expect(text).toContain('> 插件化 SDK')
     expect(text).toMatch(/`\.md`/)
   })

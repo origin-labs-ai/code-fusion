@@ -301,7 +301,7 @@ export const LINK_MAP: Readonly<Record<string, string>> = {
   ShellExecSpec: 'shell.md',
   ShellProcess: 'shell.md',
   ShellRunResult: 'shell.md',
-  DshEnvironment: 'subprocess.md',
+  CfEnvironment: 'subprocess.md',
   SubprocessHandle: 'subprocess.md',
   SubprocessOutcome: 'subprocess.md',
   SubprocessOutputRead: 'subprocess.md',
@@ -975,7 +975,7 @@ export function main(): void {
       console.log(`gen-cordis-catalog: ${outputs.length} generated file(s)/region(s) are up to date.`)
       process.exit(0)
     }
-    console.error(`gen-cordis-catalog: stale — ${stale.join(', ')}. Run \`pnpm run gen-cordis-catalog\` and commit the result.`)
+    console.error(`gen-cordis-catalog: stale — ${stale.join(', ')}. Run \`npm run gen-cordis-catalog\` and commit the result.`)
     process.exit(1)
   }
 

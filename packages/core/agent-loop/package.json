@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/core/agent-loop"
   },
   "type": "module",
@@ -31,31 +31,31 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-scope": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-persistence": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-settings": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-scope": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-persistence": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-settings": "*"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-scope": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-persistence": "workspace:^",
-    "@origin-ai/cf-session-persistence-jsonl": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-settings": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-scope": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-persistence": "*",
+    "@origin-ai/cf-session-persistence-jsonl": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-settings": "*"
   }
 }

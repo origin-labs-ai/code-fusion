@@ -1,7 +1,7 @@
 /**
  * Tool-independent shell environment plugin: owns the `ctx.shellEnv` registry of
  * trusted, per-execution `CF_*` variables consumed by the model-facing shell
- * tools (`xhe-tool-bash`, `xhe-tool-pwsh`). Built-in shell facts are owned by
+ * tools (`cf-tool-bash`, `cf-tool-pwsh`). Built-in shell facts are owned by
  * the registry itself while plugins can register additional, enumerable facts
  * with effect-scoped disposal.
  *
@@ -27,7 +27,7 @@ export const inject: string[] = []
 
 /** Plugin config (all optional — the built-in facts resolve without defaults). */
 export interface Config {
-  /** Xee Harness Enhanced home directory exposed as `CF_HOME`; defaults to `$CF_HOME` or `~/.cf`. */
+  /** CodeFusion home directory exposed as `CF_HOME`; defaults to `$CF_HOME` or `~/.cf`. */
   cfHome?: string
 }
 

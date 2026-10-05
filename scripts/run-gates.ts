@@ -17,7 +17,7 @@ import {
   coverageTestTimeoutArgs,
   parseCoveragePartitionCount,
 } from './coverage-partitions.ts'
-import { pnpmInvocation } from './pnpm-invocation.ts'
+import { npmInvocation } from './npm-invocation.ts'
 
 /** A named aggregate exposed by the gate runner. */
 export type Mode =
@@ -95,11 +95,11 @@ async function main(args: string[]): Promise<number> {
   const mode = parseMode(args[0])
   const gates = gatesForMode(mode)
   const concurrencyDefault = defaultConcurrency(mode, gates.length)
-  const concurrencyOverride = process.env.XHE_GATE_CONCURRENCY
-  const maxConcurrency = concurrencyFromEnv('XHE_GATE_CONCURRENCY', concurrencyDefault.workers)
+  const concurrencyOverride = process.env.CF_GATE_CONCURRENCY
+  const maxConcurrency = concurrencyFromEnv('CF_GATE_CONCURRENCY', concurrencyDefault.workers)
   const concurrencySource = concurrencyOverride === undefined || concurrencyOverride === ''
     ? concurrencyDefault.source
-    : '$XHE_GATE_CONCURRENCY'
+    : '$CF_GATE_CONCURRENCY'
   const startedAt = performance.now()
   console.log(`run-gates: ${mode} running ${gates.length} gate(s) with ${maxConcurrency} worker(s) from ${concurrencySource}.`)
 
@@ -170,30 +170,30 @@ function concurrencyFromEnv(name: string, fallback: number): number {
   return parsed
 }
 
-function pnpmScript(id: string, script: string, options: Partial<Gate> = {}): Gate {
+function npmScript(id: string, script: string, options: Partial<Gate> = {}): Gate {
   return {
     id,
     label: options.label ?? script,
-    displayCommand: `pnpm run ${script}`,
-    ...pnpmInvocation(['run', script]),
+    displayCommand: `npm run ${script}`,
+    ...npmInvocation(['run', script]),
     ...options,
   }
 }
 
 /** Build official client artifacts inside a CI aggregate without changing sibling gate environments. */
 function ciBuildGate(id = 'build', options: Partial<Gate> = {}): Gate {
-  return pnpmScript(id, 'build', {
+  return npmScript(id, 'build', {
     ...options,
     env: { ...options.env, [CLIENT_BUILD_PROFILE_SELECTOR]: 'official' },
   })
 }
 
-function pnpmExec(id: string, args: string[], options: Partial<Gate> = {}): Gate {
+function npmExec(id: string, args: string[], options: Partial<Gate> = {}): Gate {
   return {
     id,
-    label: options.label ?? `pnpm exec ${args.join(' ')}`,
-    displayCommand: `pnpm exec ${args.join(' ')}`,
-    ...pnpmInvocation(['exec', ...args]),
+    label: options.label ?? `npx ${args.join(' ')}`,
+    displayCommand: `npx ${args.join(' ')}`,
+    ...npmInvocation(['exec', ...args]),
     ...options,
   }
 }
@@ -214,7 +214,7 @@ export function gatesForMode(selected: Mode): Gate[] {
     case 'ci-lint-contracts-ready':
       return [
         lintGate(),
-        pnpmScript('duplication', 'duplication'),
+        npmScript('duplication', 'duplication'),
       ]
     case 'ci-coverage':
       return coverageGates()
@@ -234,29 +234,29 @@ export function gatesForMode(selected: Mode): Gate[] {
       return nodeCompatGates()
     case 'check-all':
       return [
-        pnpmScript('runtime-closure', 'verify-runtime-closure', { label: 'runtime closure' }),
-        pnpmScript('cordis-config', 'verify-cordis-config', { label: 'Cordis config' }),
-        pnpmScript('client-domain-graph', 'verify-client-domain-graph', { label: 'client domain graph' }),
-        pnpmScript('test', 'test'),
-        pnpmScript('issue-management', 'test:issue-management', { label: 'Issue management policy' }),
-        pnpmScript('duplication', 'duplication'),
+        npmScript('runtime-closure', 'verify-runtime-closure', { label: 'runtime closure' }),
+        npmScript('cordis-config', 'verify-cordis-config', { label: 'Cordis config' }),
+        npmScript('client-domain-graph', 'verify-client-domain-graph', { label: 'client domain graph' }),
+        npmScript('test', 'test'),
+        npmScript('issue-management', 'test:issue-management', { label: 'Issue management policy' }),
+        npmScript('duplication', 'duplication'),
         snapshotGate(),
-        pnpmScript('build', 'build'),
-        pnpmScript('build:web', 'build:web'),
+        npmScript('build', 'build'),
+        npmScript('build:web', 'build:web'),
         ...hygieneLeafGates({ artifactNeeds: ['build'] }),
         ...docSyncLeafGates({
           docTypecheckNeeds: ['build'],
-          docTypecheckEnv: { XHE_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1' },
+          docTypecheckEnv: { CF_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1' },
           docTypecheckScript: 'doc-typecheck:contracts-ready',
         }),
-        pnpmScript('module-graph', 'verify-module-graph', { label: 'module graph' }),
+        npmScript('module-graph', 'verify-module-graph', { label: 'module graph' }),
       ]
     case 'hygiene':
       return [
         ...hygieneLeafGates(),
-        pnpmScript('cordis-config', 'verify-cordis-config', { label: 'Cordis config' }),
-        pnpmScript('runtime-closure', 'verify-runtime-closure', { label: 'runtime closure' }),
-        pnpmScript('vendored-links', 'verify-vendored-links', { label: 'vendored links' }),
+        npmScript('cordis-config', 'verify-cordis-config', { label: 'Cordis config' }),
+        npmScript('runtime-closure', 'verify-runtime-closure', { label: 'runtime closure' }),
+        npmScript('vendored-links', 'verify-vendored-links', { label: 'vendored links' }),
       ]
     case 'doc-sync':
       return docSyncLeafGates()
@@ -265,16 +265,16 @@ export function gatesForMode(selected: Mode): Gate[] {
 
 function ciSharedStaticGates(): Gate[] {
   return [
-    pnpmScript('runtime-closure', 'verify-runtime-closure', { label: 'runtime closure' }),
-    pnpmScript('constraints', 'constraints'),
-    pnpmScript('cf-package-licenses', 'verify-cf-package-licenses', { label: 'CF package licenses' }),
-    pnpmScript('package-invariants', 'verify-package-invariants', { label: 'package invariants' }),
-    pnpmScript('cordis-config', 'verify-cordis-config', { label: 'Cordis config' }),
-    pnpmScript('optional-dependency-imports', 'verify-optional-dependency-imports', {
+    npmScript('runtime-closure', 'verify-runtime-closure', { label: 'runtime closure' }),
+    npmScript('constraints', 'constraints'),
+    npmScript('cf-package-licenses', 'verify-cf-package-licenses', { label: 'CF package licenses' }),
+    npmScript('package-invariants', 'verify-package-invariants', { label: 'package invariants' }),
+    npmScript('cordis-config', 'verify-cordis-config', { label: 'Cordis config' }),
+    npmScript('optional-dependency-imports', 'verify-optional-dependency-imports', {
       label: 'optional dependency imports',
     }),
-    pnpmScript('client-packages', 'verify-client-packages', { label: 'client packages' }),
-    pnpmScript('issue-management', 'test:issue-management', { label: 'Issue management policy' }),
+    npmScript('client-packages', 'verify-client-packages', { label: 'client packages' }),
+    npmScript('issue-management', 'test:issue-management', { label: 'Issue management policy' }),
   ]
 }
 
@@ -282,9 +282,9 @@ function ciPrimaryGates(): Gate[] {
   return [
     ...ciSharedStaticGates(),
     typertContractsGate(),
-    pnpmScript('typecheck', 'typecheck:contracts-ready', { needs: ['typert-contracts'] }),
+    npmScript('typecheck', 'typecheck:contracts-ready', { needs: ['typert-contracts'] }),
     lintGate({ needs: ['typert-contracts'] }),
-    pnpmScript('duplication', 'duplication'),
+    npmScript('duplication', 'duplication'),
     ...coverageGates(),
     ...nodeCompatSmokeGates(),
     snapshotGate(),
@@ -292,14 +292,14 @@ function ciPrimaryGates(): Gate[] {
       docTypecheckNeeds: ['typert-contracts'],
       docTypecheckScript: 'doc-typecheck:contracts-ready',
     }),
-    pnpmScript('module-graph', 'verify-module-graph', { label: 'module graph' }),
-    pnpmScript('knip', 'knip'),
+    npmScript('module-graph', 'verify-module-graph', { label: 'module graph' }),
+    npmScript('knip', 'knip'),
     // The prepared typecheck and build both drive Client tsc, while build also
     // repeats the Host contract pass. Wait for all three consumers so build
     // neither races tsbuildinfo nor replaces declarations while they are read.
     ciBuildGate('build', { needs: ['typecheck', 'lint', 'doc-typecheck'] }),
-    pnpmScript('publint', 'publint', { needs: ['build'] }),
-    pnpmScript('node-next-types', 'verify-node-next-types', {
+    npmScript('publint', 'publint', { needs: ['build'] }),
+    npmScript('node-next-types', 'verify-node-next-types', {
       label: 'node-next types',
       needs: ['build'],
     }),
@@ -309,18 +309,18 @@ function ciPrimaryGates(): Gate[] {
 }
 
 function nodeCompatGates(): Gate[] {
-  const typecheck = flagEnabled('XHE_NODE_COMPAT_SKIP_TYPECHECK')
+  const typecheck = flagEnabled('CF_NODE_COMPAT_SKIP_TYPECHECK')
     ? []
-    : [pnpmScript('typecheck', 'typecheck')]
+    : [npmScript('typecheck', 'typecheck')]
   if (runningNodeMajor() !== 22) {
     return [...typecheck, ...nodeCompatSmokeGates()]
   }
   return [
     ...typecheck,
-    pnpmScript('build', 'build', {
+    npmScript('build', 'build', {
       ...typecheck.length === 0 ? {} : { needs: ['typecheck'] },
     }),
-    pnpmScript('build:web', 'build:web', {
+    npmScript('build:web', 'build:web', {
       label: 'Web frontend build',
       needs: ['build'],
     }),
@@ -330,22 +330,22 @@ function nodeCompatGates(): Gate[] {
 
 function nodeCompatSmokeGates(options: { cliSmoke?: boolean } = {}): Gate[] {
   const gates: Gate[] = [
-    pnpmExec('source-worker-smoke', [
+    npmExec('source-worker-smoke', [
       'vitest',
       'run',
       'packages/workflow/workflow-worker-thread/tests/source-worker.compat.spec.ts',
     ], { label: 'source worker smoke' }),
-    pnpmExec('jsonl-zstd-smoke', [
+    npmExec('jsonl-zstd-smoke', [
       'vitest',
       'run',
       'packages/session/session-persistence-jsonl/tests/zstd.compat.spec.ts',
     ], { label: 'JSONL Zstandard smoke' }),
-    pnpmExec('xhe-source-launch-smoke', [
+    npmExec('cf-source-launch-smoke', [
       'vitest',
       'run',
       'apps/cli/tests/source-launch.compat.spec.ts',
-    ], { label: 'dsh source-launch smoke' }),
-    pnpmExec('vitest-jsdom-smoke', [
+    ], { label: 'cf source-launch smoke' }),
+    npmExec('vitest-jsdom-smoke', [
       'vitest',
       'run',
       'scripts/vitest-environment.compat.spec.ts',
@@ -353,13 +353,13 @@ function nodeCompatSmokeGates(options: { cliSmoke?: boolean } = {}): Gate[] {
   ]
   if (options.cliSmoke) {
     gates.push(
-      pnpmExec('cli-lazy-search-startup-smoke', [
+      npmExec('cli-lazy-search-startup-smoke', [
         'vitest',
         'run',
         'apps/cli/tests/lazy-search-startup.compat.spec.ts',
       ], {
         label: 'CLI lazy-search startup smoke',
-        env: { XHE_REQUIRE_BUILT_CLI_SMOKE: '1' },
+        env: { CF_REQUIRE_BUILT_CLI_SMOKE: '1' },
         needs: ['build:web'],
       }),
     )
@@ -385,22 +385,22 @@ function ciStaticGates(options: { ownsBuild: boolean }): Gate[] {
       ...options.ownsBuild
         ? {
           docTypecheckNeeds: ['build'],
-          docTypecheckEnv: { XHE_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1' },
+          docTypecheckEnv: { CF_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1' },
           docTypecheckScript: 'doc-typecheck:contracts-ready',
         }
         : {},
       docsBuildScript: 'docs:build:mpa',
     }),
-    pnpmScript('module-graph', 'verify-module-graph', { label: 'module graph' }),
-    pnpmScript('knip', 'knip'),
+    npmScript('module-graph', 'verify-module-graph', { label: 'module graph' }),
+    npmScript('knip', 'knip'),
   ]
 }
 
 function ciArtifactGates(): Gate[] {
   return [
     ciBuildGate(),
-    pnpmScript('publint', 'publint', { needs: ['build'] }),
-    pnpmScript('node-next-types', 'verify-node-next-types', {
+    npmScript('publint', 'publint', { needs: ['build'] }),
+    npmScript('node-next-types', 'verify-node-next-types', {
       label: 'node-next types',
       needs: ['build'],
     }),
@@ -414,23 +414,23 @@ function ciConsumerGates(): Gate[] {
   const validatedBuild = ['built-package-invariants']
   return [
     ciBuildGate(),
-    pnpmScript('node-compat', 'check:node-compat', {
+    npmScript('node-compat', 'check:node-compat', {
       label: 'Node compatibility',
       env: { [CLIENT_BUILD_PROFILE_SELECTOR]: 'official' },
     }),
-    pnpmScript('publint', 'publint', { needs: builtTree }),
+    npmScript('publint', 'publint', { needs: builtTree }),
     builtPackageInvariantsGate(builtTree),
-    pnpmScript('lint-and-duplication', 'check:ci:lint:contracts-ready', {
+    npmScript('lint-and-duplication', 'check:ci:lint:contracts-ready', {
       label: 'lint and duplication',
       needs: validatedBuild,
     }),
     snapshotGate(validatedBuild),
     webSnapshotGate(validatedBuild),
-    pnpmScript('doc-typecheck', 'doc-typecheck:contracts-ready', {
+    npmScript('doc-typecheck', 'doc-typecheck:contracts-ready', {
       needs: validatedBuild,
-      env: { XHE_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1' },
+      env: { CF_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1' },
     }),
-    pnpmScript('node-next-types', 'verify-node-next-types', {
+    npmScript('node-next-types', 'verify-node-next-types', {
       label: 'node-next types',
       needs: validatedBuild,
     }),
@@ -439,24 +439,24 @@ function ciConsumerGates(): Gate[] {
 }
 
 function webSnapshotGate(needs: string[]): Gate {
-  const workerRaw = process.env.XHE_WEB_SNAPSHOT_WORKERS
+  const workerRaw = process.env.CF_WEB_SNAPSHOT_WORKERS
   if (workerRaw !== undefined && workerRaw !== '') {
     const workers = Number.parseInt(workerRaw, 10)
     if (!Number.isSafeInteger(workers) || workers < 2 || String(workers) !== workerRaw) {
-      throw new Error(`run-gates: XHE_WEB_SNAPSHOT_WORKERS must be an integer greater than 1, got ${JSON.stringify(workerRaw)}.`)
+      throw new Error(`run-gates: CF_WEB_SNAPSHOT_WORKERS must be an integer greater than 1, got ${JSON.stringify(workerRaw)}.`)
     }
-    return pnpmScript('web-snapshot', 'test:web:ci', {
+    return npmScript('web-snapshot', 'test:web:ci', {
       label: 'web browser snapshot',
-      displayCommand: `XHE_SNAPSHOT=replay XHE_WEB_SNAPSHOT_WORKERS=${workers} pnpm run test:web:ci`,
-      env: { XHE_SNAPSHOT: 'replay' },
+      displayCommand: `CF_SNAPSHOT=replay CF_WEB_SNAPSHOT_WORKERS=${workers} npm run test:web:ci`,
+      env: { CF_SNAPSHOT: 'replay' },
       needs,
       streamOutput: true,
     })
   }
-  return pnpmScript('web-snapshot', 'test:web:built', {
+  return npmScript('web-snapshot', 'test:web:built', {
     label: 'web browser snapshot',
-    displayCommand: 'XHE_SNAPSHOT=replay pnpm run test:web:built',
-    env: { XHE_SNAPSHOT: 'replay' },
+    displayCommand: 'CF_SNAPSHOT=replay npm run test:web:built',
+    env: { CF_SNAPSHOT: 'replay' },
     needs,
   })
 }
@@ -464,7 +464,7 @@ function webSnapshotGate(needs: string[]): Gate {
 function ciWindowsBlockingGates(): Gate[] {
   return [
     ciBuildGate('windows-build', { label: 'build' }),
-    pnpmScript('windows-site', 'docs:build', { label: 'production site' }),
+    npmScript('windows-site', 'docs:build', { label: 'production site' }),
   ]
 }
 
@@ -484,7 +484,7 @@ function ciWindowsCompleteGates(): Gate[] {
     }))
   return [
     ciBuildGate(),
-    pnpmScript('windows-site', 'docs:build', { label: 'production site' }),
+    npmScript('windows-site', 'docs:build', { label: 'production site' }),
     ...coverage,
     ...observational,
   ]
@@ -494,9 +494,9 @@ function ciWindowsObservationalGates(): Gate[] {
   return [
     ...ciStaticGates({ ownsBuild: true }),
     // Linux owns required lint and snapshots; Windows omits those duplicates.
-    pnpmScript('duplication', 'duplication'),
-    pnpmScript('publint', 'publint', { needs: ['build'] }),
-    pnpmScript('node-next-types', 'verify-node-next-types', {
+    npmScript('duplication', 'duplication'),
+    npmScript('publint', 'publint', { needs: ['build'] }),
+    npmScript('node-next-types', 'verify-node-next-types', {
       label: 'node-next types',
       needs: ['build'],
     }),
@@ -506,16 +506,16 @@ function ciWindowsObservationalGates(): Gate[] {
 }
 
 function typertContractsGate(): Gate {
-  return pnpmScript('typert-contracts', 'build:lib:host', { label: 'Typert contracts' })
+  return npmScript('typert-contracts', 'build:lib:host', { label: 'Typert contracts' })
 }
 
 function lintGate(options: { needs?: string[] } = {}): Gate {
-  const raw = process.env.XHE_OXLINT_THREADS
+  const raw = process.env.CF_OXLINT_THREADS
   const script = 'lint:contracts-ready'
-  return pnpmScript('lint', script, {
+  return npmScript('lint', script, {
     ...raw === undefined || raw === ''
       ? {}
-      : { displayCommand: `XHE_OXLINT_THREADS=${raw} pnpm run ${script}` },
+      : { displayCommand: `CF_OXLINT_THREADS=${raw} npm run ${script}` },
     ...options.needs === undefined ? {} : { needs: options.needs },
   })
 }
@@ -525,19 +525,19 @@ function lintGate(options: { needs?: string[] } = {}): Gate {
 // under v8 instrumentation while contributing nothing the thresholds need
 // (membership rules in scripts/coverage-exempt.ts).
 //
-// XHE_COVERAGE_MAX_WORKERS is the ordinary lane's worker budget, so the two
+// CF_COVERAGE_MAX_WORKERS is the ordinary lane's worker budget, so the two
 // parallel gates split it instead of each claiming it whole. When
-// XHE_COVERAGE_PARTITIONS is set, its single-worker processes replace the
+// CF_COVERAGE_PARTITIONS is set, its single-worker processes replace the
 // instrumented share while this budget still sizes the exempt gate. The exempt
 // gate's wall clock is dominated by its longest single file, so it takes the
 // small share. A budget of 1 gives each gate 1 worker; lanes that need a strict
-// total of one (the serial reference jobs) also set XHE_GATE_CONCURRENCY=1,
+// total of one (the serial reference jobs) also set CF_GATE_CONCURRENCY=1,
 // which keeps the gates from overlapping at all.
-// XHE_COVERAGE_TEST_TIMEOUT_MS raises Vitest's per-test and expect.poll
+// CF_COVERAGE_TEST_TIMEOUT_MS raises Vitest's per-test and expect.poll
 // defaults together for instrumented lanes whose scheduling overhead exceeds
 // those defaults. Explicit fixture timeouts remain authoritative.
 function coverageWorkerArgs(): { instrumented: string[]; exempt: string[] } {
-  const [flag] = positiveIntArg('XHE_COVERAGE_MAX_WORKERS', '--maxWorkers')
+  const [flag] = positiveIntArg('CF_COVERAGE_MAX_WORKERS', '--maxWorkers')
   if (flag === undefined) return { instrumented: [], exempt: [] }
   const total = Number.parseInt(flag.split('=')[1] ?? '', 10)
   const exempt = Math.max(1, Math.floor(total / 3))
@@ -553,7 +553,7 @@ function coverageGates(): Gate[] {
   const timeouts = coverageTestTimeoutArgs(process.env[COVERAGE_TEST_TIMEOUT_ENV])
   const partitions = parseCoveragePartitionCount(process.env[COVERAGE_PARTITIONS_ENV])
   const instrumented = partitions === undefined
-    ? pnpmExec('coverage', [
+    ? npmExec('coverage', [
       'vitest',
       'run',
       '--coverage',
@@ -563,15 +563,15 @@ function coverageGates(): Gate[] {
       label: 'test:coverage',
       env: { [COVERAGE_EXEMPT_ENV]: '1' },
     })
-    : pnpmScript('coverage', 'test:coverage:partitioned', {
+    : npmScript('coverage', 'test:coverage:partitioned', {
       label: 'test:coverage',
-      displayCommand: `${COVERAGE_PARTITIONS_ENV}=${partitions} pnpm run test:coverage:partitioned`,
+      displayCommand: `${COVERAGE_PARTITIONS_ENV}=${partitions} npm run test:coverage:partitioned`,
       env: { [COVERAGE_EXEMPT_ENV]: '1' },
       streamOutput: true,
     })
   return [
     instrumented,
-    pnpmExec('coverage-exempt-heavy', [
+    npmExec('coverage-exempt-heavy', [
       'vitest',
       'run',
       ...coverageExemptHeavySuites.map(suite => suite.filter),
@@ -587,14 +587,14 @@ function coverageGates(): Gate[] {
 // plugins via real exports); script snapshots execute their real source entry path.
 // Callers wait either on `build` or on a validation gate that transitively owns that build.
 function snapshotGate(needs: string[] = ['build']): Gate {
-  return pnpmScript('snapshot', 'test:snapshot', {
-    env: { XHE_EXAMPLE_MODE: 'lib' },
+  return npmScript('snapshot', 'test:snapshot', {
+    env: { CF_EXAMPLE_MODE: 'lib' },
     needs,
   })
 }
 
 function builtPackageInvariantsGate(needs?: string[]): Gate {
-  return pnpmScript('built-package-invariants', 'verify-built-package-invariants', {
+  return npmScript('built-package-invariants', 'verify-built-package-invariants', {
     label: 'built package invariants',
     ...needs === undefined ? {} : { needs },
   })
@@ -620,21 +620,21 @@ function flagEnabled(envName: string): boolean {
 function hygieneLeafGates(options: { artifactNeeds?: string[] } = {}): Gate[] {
   const artifactOptions = options.artifactNeeds === undefined ? {} : { needs: options.artifactNeeds }
   return [
-    pnpmScript('rescope-vendor', 'rescope-vendor:check', { label: 'vendor rescope' }),
-    pnpmScript('knip', 'knip'),
-    pnpmScript('publint', 'publint', artifactOptions),
-    pnpmScript('constraints', 'constraints'),
-    pnpmScript('cf-package-licenses', 'verify-cf-package-licenses', { label: 'CF package licenses' }),
-    pnpmScript('package-invariants', 'verify-package-invariants', { label: 'package invariants' }),
+    npmScript('rescope-vendor', 'rescope-vendor:check', { label: 'vendor rescope' }),
+    npmScript('knip', 'knip'),
+    npmScript('publint', 'publint', artifactOptions),
+    npmScript('constraints', 'constraints'),
+    npmScript('cf-package-licenses', 'verify-cf-package-licenses', { label: 'CF package licenses' }),
+    npmScript('package-invariants', 'verify-package-invariants', { label: 'package invariants' }),
     builtPackageInvariantsGate(options.artifactNeeds),
-    pnpmScript('node-next-types', 'verify-node-next-types', {
+    npmScript('node-next-types', 'verify-node-next-types', {
       label: 'node-next types',
       ...artifactOptions,
     }),
-    pnpmScript('optional-dependency-imports', 'verify-optional-dependency-imports', {
+    npmScript('optional-dependency-imports', 'verify-optional-dependency-imports', {
       label: 'optional dependency imports',
     }),
-    pnpmScript('client-packages', 'verify-client-packages', { label: 'client packages' }),
+    npmScript('client-packages', 'verify-client-packages', { label: 'client packages' }),
   ]
 }
 
@@ -652,41 +652,41 @@ function docSyncLeafGates(options: {
     // Stable FIFO starts the longest leaves first; only docs-site-build writes website/.generated.
     ...options.includeDocTypecheck === false
       ? []
-      : [pnpmScript('doc-typecheck', options.docTypecheckScript ?? 'doc-typecheck', docTypecheckOptions)],
-    pnpmScript('docs-site-build', options.docsBuildScript ?? 'docs:build', { label: 'documentation build' }),
-    pnpmScript('doc-graphs', 'verify-doc-graphs', { label: 'doc graphs' }),
-    pnpmScript('markdown-links', 'verify-md-links', { label: 'markdown links' }),
-    pnpmScript('type-equivalence', 'verify-type-equiv', { label: 'type equivalence' }),
-    pnpmScript('cordis-catalog', 'verify-cordis-catalog', { label: 'cordis catalog' }),
-    pnpmScript('mermaid', 'verify-mermaid'),
-    pnpmScript('scoped-events', 'verify-scoped-events', { label: 'scoped events' }),
-    pnpmScript('translation-pairing', 'verify-translation-pairing', { label: 'translation pairing' }),
-    pnpmScript('markdown-wrap', 'verify-md-wrap', { label: 'markdown wrap' }),
-    pnpmScript('client-catalog', 'verify-client-catalog', { label: 'client catalog' }),
-    pnpmScript('export-jsdoc', 'verify-export-jsdoc', { label: 'export jsdoc' }),
-    pnpmScript('tool-catalog', 'verify-tool-catalog', { label: 'tool catalog' }),
-    pnpmScript('config-catalog', 'verify-config-catalog', { label: 'config catalog' }),
-    pnpmScript('persistence-catalog', 'verify-persistence-catalog', { label: 'persistence catalog' }),
-    pnpmScript('public-repository-links', 'verify-public-repository-links', { label: 'public repository links' }),
-    pnpmScript('doc-refs', 'verify-doc-refs', { label: 'doc refs' }),
-    pnpmScript('package-paths', 'verify-package-paths', { label: 'package paths' }),
-    pnpmScript('config-source-ownership', 'verify-config-source-ownership', { label: 'config source ownership' }),
-    pnpmScript('package-readme-model-experience', 'verify-package-readme-model-experience', { label: 'package README model experience' }),
-    pnpmScript('agent-note-classification', 'verify-agent-note-classification', { label: 'agent note classification' }),
-    pnpmScript('agent-note-format', 'verify-agent-note-format', { label: 'agent note format' }),
-    pnpmScript('archived-agent-notes', 'verify-archived-agent-notes', { label: 'archived agent notes' }),
-    pnpmScript('skill-invocation-metadata', 'verify-skill-invocation-metadata', { label: 'skill invocation metadata' }),
-    pnpmScript('translation-prompt', 'verify-translation-prompt', { label: 'translation prompt' }),
-    pnpmScript('doc-budgets', 'verify-doc-budgets', { label: 'doc budgets' }),
-    pnpmExec('docs-site-projection', ['vitest', 'run', 'scripts/project-doc-site.spec.ts', 'scripts/verify-doc-site-fragments.spec.ts'], {
+      : [npmScript('doc-typecheck', options.docTypecheckScript ?? 'doc-typecheck', docTypecheckOptions)],
+    npmScript('docs-site-build', options.docsBuildScript ?? 'docs:build', { label: 'documentation build' }),
+    npmScript('doc-graphs', 'verify-doc-graphs', { label: 'doc graphs' }),
+    npmScript('markdown-links', 'verify-md-links', { label: 'markdown links' }),
+    npmScript('type-equivalence', 'verify-type-equiv', { label: 'type equivalence' }),
+    npmScript('cordis-catalog', 'verify-cordis-catalog', { label: 'cordis catalog' }),
+    npmScript('mermaid', 'verify-mermaid'),
+    npmScript('scoped-events', 'verify-scoped-events', { label: 'scoped events' }),
+    npmScript('translation-pairing', 'verify-translation-pairing', { label: 'translation pairing' }),
+    npmScript('markdown-wrap', 'verify-md-wrap', { label: 'markdown wrap' }),
+    npmScript('client-catalog', 'verify-client-catalog', { label: 'client catalog' }),
+    npmScript('export-jsdoc', 'verify-export-jsdoc', { label: 'export jsdoc' }),
+    npmScript('tool-catalog', 'verify-tool-catalog', { label: 'tool catalog' }),
+    npmScript('config-catalog', 'verify-config-catalog', { label: 'config catalog' }),
+    npmScript('persistence-catalog', 'verify-persistence-catalog', { label: 'persistence catalog' }),
+    npmScript('public-repository-links', 'verify-public-repository-links', { label: 'public repository links' }),
+    npmScript('doc-refs', 'verify-doc-refs', { label: 'doc refs' }),
+    npmScript('package-paths', 'verify-package-paths', { label: 'package paths' }),
+    npmScript('config-source-ownership', 'verify-config-source-ownership', { label: 'config source ownership' }),
+    npmScript('package-readme-model-experience', 'verify-package-readme-model-experience', { label: 'package README model experience' }),
+    npmScript('agent-note-classification', 'verify-agent-note-classification', { label: 'agent note classification' }),
+    npmScript('agent-note-format', 'verify-agent-note-format', { label: 'agent note format' }),
+    npmScript('archived-agent-notes', 'verify-archived-agent-notes', { label: 'archived agent notes' }),
+    npmScript('skill-invocation-metadata', 'verify-skill-invocation-metadata', { label: 'skill invocation metadata' }),
+    npmScript('translation-prompt', 'verify-translation-prompt', { label: 'translation prompt' }),
+    npmScript('doc-budgets', 'verify-doc-budgets', { label: 'doc budgets' }),
+    npmExec('docs-site-projection', ['vitest', 'run', 'scripts/project-doc-site.spec.ts', 'scripts/verify-doc-site-fragments.spec.ts'], {
       label: 'documentation site checks',
     }),
-    pnpmScript('package-readme-limitations', 'verify-package-readme-limitations', { label: 'package README limitations' }),
+    npmScript('package-readme-limitations', 'verify-package-readme-limitations', { label: 'package README limitations' }),
   ]
 }
 
 function builtBinSmokeGate(needs: string[] = ['build']): Gate {
-  return pnpmExec('built-bin-smoke', [
+  return npmExec('built-bin-smoke', [
     'vitest',
     'run',
     '--config',
@@ -708,7 +708,7 @@ function builtBinSmokeGate(needs: string[] = ['build']): Gate {
   ], {
     label: 'built-bin smoke',
     needs,
-    env: { XHE_EXAMPLE_MODE: 'lib' },
+    env: { CF_EXAMPLE_MODE: 'lib' },
   })
 }
 
@@ -923,7 +923,7 @@ export function formatGateResultReason(result: GateResult): string {
 }
 
 function printResult(result: GateResult): void {
-  const verbose = process.env.XHE_GATE_VERBOSE === '1'
+  const verbose = process.env.CF_GATE_VERBOSE === '1'
   const seconds = (result.durationMs / 1000).toFixed(2)
   if (result.status === 'passed' && !verbose) {
     console.log(`run-gates: PASS ${result.gate.label} (${seconds}s)`)

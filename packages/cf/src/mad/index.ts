@@ -17,10 +17,10 @@
  * @version 2.0.0-advanced
  *
  * Also known as:
- * - XeeCode / XCode
+ * - CodeFusion / CodeFusion
  * - CodeFusion
  *
- * Fork of: DSH/SeepSeek Harness
+ * Fork of: CodeFusion
  */
 
 // ============================================================================
@@ -51,7 +51,7 @@ export {
 // Re-export advanced systems
 export {
   createGODRuntime,
-  xheExecute as godXheExecute,
+  cfExecute as godXheExecute,
   enforceCoreRules,
 } from './core/god-runtime'
 
@@ -63,7 +63,7 @@ export {
   AdvancedMADEngine,
   LLMAPIClient,
   createAdvancedMADEngine,
-  xheAdvExecute,
+  cfAdvExecute,
 } from './mad'
 
 export type {
@@ -318,7 +318,7 @@ export { CF_IDENTITY } from './types'
 /**
  * Create a new CF/GOD Runtime instance
  */
-export function createXHE(config?: Partial<import('./types').GODRuntimeConfig>): import('./core/god-runtime').GodRuntime {
+export function createCF(config?: Partial<import('./types').GODRuntimeConfig>): import('./core/god-runtime').GodRuntime {
   const { GodRuntime } = require('./core/god-runtime')
   return new GodRuntime(config || {})
 }
@@ -326,12 +326,12 @@ export function createXHE(config?: Partial<import('./types').GODRuntimeConfig>):
 /**
  * Quick execute helper - runs a complete MAD session
  */
-export async function xheExecute(
+export async function cfExecute(
   task: string,
   mode: MADMode = 'PLAN',
   options?: Partial<import('./types').GODRuntimeConfig>,
 ): Promise<FinalReport> {
-  const runtime = createXHE({ mode, ...options })
+  const runtime = createCF({ mode, ...options })
 
   await runtime.initialize()
 
@@ -348,7 +348,7 @@ export async function xheExecute(
 /**
  * Create advanced MAD engine with real API support
  */
-export function createAdvancedXHE(config?: Partial<import('./mad').AdvancedMADConfig>): import('./mad').AdvancedMADEngine {
+export function createAdvancedCF(config?: Partial<import('./mad').AdvancedMADConfig>): import('./mad').AdvancedMADEngine {
   const { AdvancedMADEngine } = require('./mad')
   return new AdvancedMADEngine(config || {})
 }
@@ -356,7 +356,7 @@ export function createAdvancedXHE(config?: Partial<import('./mad').AdvancedMADCo
 /**
  * Quick execute with real LLM APIs
  */
-export async function xheAdvancedExecute(
+export async function cfAdvancedExecute(
   task: string,
   options?: {
     mode?: MADMode
@@ -365,8 +365,8 @@ export async function xheAdvancedExecute(
     qualityBar?: import('./types').BarSource
   },
 ): Promise<import('./mad').MADSessionResult> {
-  const { xheAdvExecute } = require('./mad')
-  return xheAdvExecute(task, options)
+  const { cfAdvExecute } = require('./mad')
+  return cfAdvExecute(task, options)
 }
 
 // ============================================================================

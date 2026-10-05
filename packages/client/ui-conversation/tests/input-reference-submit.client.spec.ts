@@ -9,8 +9,8 @@ import type { InputTriggerController, SubmitOutcome } from '@origin-ai/cf-client
 import { SessionInputShell } from '../src/client/input/facade.ts'
 import type { DraftAttachmentId } from '../src/client/input/contract.ts'
 
-const mention = '@[Research](xhe-session:InNvdXJjZSI)'
-const spacedMention = '@[Research notes](xhe-session:InNvdXJjZSI)'
+const mention = '@[Research](cf-session:InNvdXJjZSI)'
+const spacedMention = '@[Research notes](cf-session:InNvdXJjZSI)'
 const commandImages = {
   serialize: () => Promise.resolve([]),
   release: () => {},

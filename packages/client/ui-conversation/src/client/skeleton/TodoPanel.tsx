@@ -24,7 +24,7 @@ export interface TodoPanelProps {
   t: TodoDockProps['t']
 }
 
-/** Local exhaustiveness helper — client packages do not depend on `xhe-llm`. */
+/** Local exhaustiveness helper — client packages do not depend on `cf-llm`. */
 /* v8 ignore next 3 -- closed-union backstop; only reached if status is forged */
 function assertNever(value: never): never {
   throw new Error(`unreachable todo status: ${String(value)}`)

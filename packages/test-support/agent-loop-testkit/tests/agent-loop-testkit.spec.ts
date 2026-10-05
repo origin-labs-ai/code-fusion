@@ -4,7 +4,7 @@ import AgentLoop from '@origin-ai/cf-agent-loop'
 import { renderPrompt } from '@origin-ai/cf-system-prompt'
 import { mountAgentLoopTestDependencies } from '../src/index.ts'
 
-describe('xhe-agent-loop-testkit', () => {
+describe('cf-agent-loop-testkit', () => {
   it('mounts a configurable prerequisite spine that can activate AgentLoop', async () => {
     const ctx = new Context()
     await mountAgentLoopTestDependencies(ctx, {

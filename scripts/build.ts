@@ -11,11 +11,11 @@ import {
   resolveClientBuildEnvironment,
   writeClientBuildRecord,
 } from './client-build-environment.ts'
-import { pnpmInvocation } from './pnpm-invocation.ts'
+import { npmInvocation } from './npm-invocation.ts'
 
 /** Run one package script through the package manager that invoked this build. */
 function runScript(script: string, environment: NodeJS.ProcessEnv): void {
-  const invocation = pnpmInvocation(['run', script], environment)
+  const invocation = npmInvocation(['run', script], environment)
   const result = spawnSync(invocation.command, invocation.args, {
     cwd: resolve(import.meta.dirname, '..'),
     env: environment,
@@ -27,7 +27,7 @@ function runScript(script: string, environment: NodeJS.ProcessEnv): void {
   }
 }
 
-/** Run the full build selected by `--profile` or `XHE_BUILD_CLIENT_PROFILE`. */
+/** Run the full build selected by `--profile` or `CF_BUILD_CLIENT_PROFILE`. */
 function main(): void {
   const { values } = parseArgs({
     options: { profile: { type: 'string' } },
@@ -36,7 +36,7 @@ function main(): void {
   const root = resolve(import.meta.dirname, '..')
   const parentEnvironment = {
     ...process.env,
-    XHE_CLIENT_COMMIT_HASH: repositoryCommitHash(root, process.env),
+    CF_CLIENT_COMMIT_HASH: repositoryCommitHash(root, process.env),
   }
   const clientEnvironment = resolveClientBuildEnvironment(parentEnvironment, values.profile)
   const buildEnvironment = clientBuildProcessEnvironment(parentEnvironment, clientEnvironment)

@@ -15,7 +15,7 @@ The host and the CPython subprocess exchange a versionless, JSON-lines protocol 
 
 ## Model Experience
 
-Indirectly, through Code Mode in [`xhe-tools`](../../core/tools/README.md), which renders this backend's exact completion value when it fits (or an explicit `invalid-output` / `output-limit` failure), plus the exact `[xhe-code-runtime-python] log capture truncated at <maxLogBytes> bytes` log marker, into a retained `run_code` result.
+Indirectly, through Code Mode in [`cf-tools`](../../core/tools/README.md), which renders this backend's exact completion value when it fits (or an explicit `invalid-output` / `output-limit` failure), plus the exact `[cf-code-runtime-python] log capture truncated at <maxLogBytes> bytes` log marker, into a retained `run_code` result.
 
 #### KV Cache effect
 

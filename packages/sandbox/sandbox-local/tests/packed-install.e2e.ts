@@ -75,9 +75,9 @@ let verdict: {
 
 describe.skipIf(!packable)('sandbox-local: packed-tarball distribution (publish-path rehearsal)', () => {
   beforeAll(async () => {
-    const packDest = mkdtempSync(join(tmpdir(), 'xhe-pack-'))
-    consumerDir = mkdtempSync(join(tmpdir(), 'xhe-packed-consumer-'))
-    workDir = mkdtempSync(join(tmpdir(), 'xhe-packed-work-'))
+    const packDest = mkdtempSync(join(tmpdir(), 'cf-pack-'))
+    consumerDir = mkdtempSync(join(tmpdir(), 'cf-packed-consumer-'))
+    workDir = mkdtempSync(join(tmpdir(), 'cf-packed-work-'))
 
     const nativePackDest = join(packDest, 'native')
     const nativePack = spawnSync('node', ['./scripts/pack-release.mjs', nativePackDest, '--current-platform-only'], {
@@ -95,12 +95,12 @@ describe.skipIf(!packable)('sandbox-local: packed-tarball distribution (publish-
     // Pack each harness closure member with the exact bytes publish would upload.
     const tarballs: string[] = []
     for (const pkg of WORKSPACE_CLOSURE) {
-      const pack = spawnSync('pnpm', ['pack', '--pack-destination', packDest], {
+      const pack = spawnSync('npm', ['pack', '--pack-destination', packDest], {
         cwd: join(repoRoot, pkg),
         encoding: 'utf8',
         timeout: 120_000,
       })
-      expect(pack.status, `pnpm pack failed for ${pkg}:\n${pack.stdout}\n${pack.stderr}`).toBe(0)
+      expect(pack.status, `npm pack failed for ${pkg}:\n${pack.stdout}\n${pack.stderr}`).toBe(0)
       const lines = pack.stdout.trim().split('\n')
       tarballs.push(lines[lines.length - 1] as string)
     }
@@ -108,7 +108,7 @@ describe.skipIf(!packable)('sandbox-local: packed-tarball distribution (publish-
 
     // Peer ranges resolve to the tarballs, the framework peer included. Do not omit optional
     // dependencies because the launcher selects its OS/CPU package through one.
-    writeFileSync(join(consumerDir, 'package.json'), JSON.stringify({ name: 'xhe-packed-consumer', private: true, type: 'module' }))
+    writeFileSync(join(consumerDir, 'package.json'), JSON.stringify({ name: 'cf-packed-consumer', private: true, type: 'module' }))
     const install = spawnSync('npm', ['install', '--no-audit', '--no-fund', ...tarballs], {
       cwd: consumerDir,
       encoding: 'utf8',

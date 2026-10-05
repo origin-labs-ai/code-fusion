@@ -5,7 +5,7 @@
  * raw JSON representation. pi-ai also reports failures as terminal stream
  * events, which this module maps into Harness finish chunks.
  *
- * @module xhe-llm-pi-ai/stream
+ * @module cf-llm-pi-ai/stream
  */
 
 import { CallId, CONTEXT_WINDOW_EXCEEDED_CODE, EMPTY_RESPONSE_CODE, isContextWindowExceededError, isQuotaExceededError, LlmError, QUOTA_EXCEEDED_CODE } from '@origin-ai/cf-llm'

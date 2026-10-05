@@ -164,8 +164,8 @@ test('keeps terminal Status aligned with the native close reason', () => {
 test('separates resolving and informational references', () => {
   assert.deepEqual(
     parseReferences({
-      body: 'Fixes #12\nRelated to #4\nRefs deepseekharness/xhe-test#7',
-      repository: 'deepseekharness/xhe-test',
+      body: 'Fixes #12\nRelated to #4\nRefs deepseekharness/cf-test#7',
+      repository: 'deepseekharness/cf-test',
     }),
     { all: [4, 7, 12], resolving: [12], related: [4, 7] },
   )
@@ -295,7 +295,7 @@ test('toggles automation-owned work on request changes and repeated review reque
   let status = nextResolvingIssueStatus(
     'In review',
     'changes-requested',
-    'xhe-issue-management',
+    'cf-issue-management',
   )
   assert.equal(status, 'In progress')
   status = nextResolvingIssueStatus(status, 'review-requested')

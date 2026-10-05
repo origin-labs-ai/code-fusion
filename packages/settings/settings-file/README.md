@@ -7,7 +7,7 @@ File-backed settings provider. One YAML or JSON document carries every namespace
 | Field | Meaning | Default |
 |---|---|---|
 | `path` | Settings document path; extension picks the format (`.yaml`/`.yml`/`.json`) | `settings.yaml` under the harness home |
-| `dshHome` | Harness home used when `path` is omitted | `$CF_HOME` or `~/.cf` |
+| `cfHome` | Harness home used when `path` is omitted | `$CF_HOME` or `~/.cf` |
 | `watch` | Watch the document and hot-publish external edits | `true` |
 | `debounceMs` | Watcher write-settle window in milliseconds | `100` |
 

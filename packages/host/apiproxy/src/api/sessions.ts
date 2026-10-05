@@ -9,7 +9,7 @@ import type { AttachmentIdType, ImageAttachmentLimits, ImageAttachmentRef, Image
 import type { ContentBlock } from '@origin-ai/cf-llm/types'
 import type { SessionEvent, SessionId } from '@origin-ai/cf-session/types'
 // The pure-type outlet: api/ is browser-importable, and the package root's
-// cordis Context merge (via xhe-agent) must not enter client aggregates.
+// cordis Context merge (via cf-agent) must not enter client aggregates.
 import type { SessionProjectionMap } from '@origin-ai/cf-session-projection/types'
 import type { RpcId, RpcRequest, RpcResponse } from './rpc.ts'
 import type { ToolEventView } from './events.ts'

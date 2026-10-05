@@ -19,7 +19,7 @@ const REQUESTING_PACKAGE = '@origin-ai/cf-client-ui-conversation'
 
 function clientConfigs(id = REQUESTING_PACKAGE) {
   return clientBundle(id, ['lib/types/index.js', 'lib/types/invariant.js'])(
-    { env: { XHE_BUILD_FACE: 'client' } },
+    { env: { CF_BUILD_FACE: 'client' } },
   ).filter(config => config.platform === 'browser')
 }
 
@@ -27,7 +27,7 @@ describe('client bundle build faces', () => {
   it('watches source in development and consumes emitted JavaScript in the Client build', () => {
     const bundle = clientBundle('@origin-ai/cf-client-test', ['lib/types/index.js'])
     const development = bundle({ env: {} }).find(config => config.platform === 'browser')
-    const artifact = bundle({ env: { XHE_BUILD_FACE: 'client' } })
+    const artifact = bundle({ env: { CF_BUILD_FACE: 'client' } })
       .find(config => config.platform === 'browser')
 
     expect(development?.entry).toEqual({ client: 'src/client/index.ts' })
@@ -44,7 +44,7 @@ function purityResolveId(id = REQUESTING_PACKAGE): ResolveId {
   // package-invariants text check can see the invariant entry per package.
   const configs = clientConfigs(id)
   const plugins = (configs[0] as { plugins: { name: string; resolveId?: unknown }[] }).plugins
-  const gate = plugins.find(p => p.name === 'xhe-client-bundle-purity')
+  const gate = plugins.find(p => p.name === 'cf-client-bundle-purity')
   if (gate?.resolveId === undefined) throw new Error('purity plugin missing from client config')
   return gate.resolveId as ResolveId
 }
@@ -52,7 +52,7 @@ function purityResolveId(id = REQUESTING_PACKAGE): ResolveId {
 function cssModulePlugin(): CssModulePlugin {
   const configs = clientConfigs()
   const plugins = (configs[0] as { plugins: CssModulePlugin[] }).plugins
-  const plugin = plugins.find(candidate => candidate.name === 'xhe-css-modules-inline')
+  const plugin = plugins.find(candidate => candidate.name === 'cf-css-modules-inline')
   if (plugin?.resolveId === undefined || plugin.load === undefined) {
     throw new Error('CSS Modules plugin missing from client config')
   }
@@ -135,7 +135,7 @@ describe('client bundle module requests', () => {
 
   it('rejects a malformed declaration instead of reading past it', () => {
     expect(() => requestedExternals('@origin-ai/cf-client-fixture', { external: 'react' }))
-      .toThrow(/dsh\.client\.external must be a string array/)
+      .toThrow(/cf\.client\.external must be a string array/)
   })
 })
 
@@ -154,7 +154,7 @@ describe('client bundle debug artifacts', () => {
 
     const source = transform('../src/client/GoalBar.tsx', clientSourceMapPath('client/ui-goal'))
     expect(source).toBe('../../../packages/client/ui-goal/src/client/GoalBar.tsx')
-    const resolved = new URL(source, 'https://dsh.test/plugins/@origin-ai/cf-client-ui-goal/client.js.map')
+    const resolved = new URL(source, 'https://cf.test/plugins/@origin-ai/cf-client-ui-goal/client.js.map')
     expect(resolved.pathname).toBe('/packages/client/ui-goal/src/client/GoalBar.tsx')
   })
 
@@ -179,10 +179,10 @@ describe('client bundle debug artifacts', () => {
     const sourceMapPath = clientSourceMapPath('client/connection')
     const workspaceSource = transform('../../../host/apiproxy/src/api/rpc.ts', sourceMapPath)
     expect(workspaceSource).toBe('../../../packages/host/apiproxy/src/api/rpc.ts')
-    const resolved = new URL(workspaceSource, 'https://dsh.test/plugins/@origin-ai/cf-client-connection/client.js.map')
+    const resolved = new URL(workspaceSource, 'https://cf.test/plugins/@origin-ai/cf-client-connection/client.js.map')
     expect(resolved.pathname).toBe('/packages/host/apiproxy/src/api/rpc.ts')
 
-    const dependencySource = '../../../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/index.js'
+    const dependencySource = '../../../../node_modules/zod/index.js'
     expect(transform(dependencySource, sourceMapPath)).toBe(dependencySource)
   })
 })

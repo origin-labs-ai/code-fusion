@@ -35,9 +35,9 @@ The entry package has NO install script and never compiles on the consumer host.
 
 ## Pack gates
 
-Platform tarballs are produced by `npm pack`, entry tarballs by `pnpm pack` — deliberately split: `pnpm pack` (observed on 11.7.0) normalizes file modes and strips the executable bit, which would ship a launcher no consumer can spawn, while platform packages have no dependencies and so need none of pnpm's workspace-protocol conversion; entry packages need that conversion and carry no executables. `scripts/pack-release.mjs` encodes the split — never hand-pack a platform package with pnpm.
+Platform tarballs and entry tarballs are both produced by `npm pack`, which preserves the executable bit on the shipped launcher and rewrites the entry packages' local dependency ranges to resolved versions — one pack path for both package families. `scripts/pack-release.mjs` encodes it — never hand-pack a platform package.
 
-Both pack paths produce the exact publish bytes behind a `prepack` gate:
+Both package families produce the exact publish bytes behind a `prepack` gate:
 
 - Platform packages: `scripts/verify-launcher-binary.mjs` — every declared binary present, executable, ELF `e_machine` matching the declared `cpu`, nothing undeclared in `bin/`.
 - Entry packages: `scripts/verify-entry-lib.mjs` — built `lib/` present.

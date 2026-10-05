@@ -26,7 +26,7 @@ describe('Codex provider public Loader composition', () => {
   it('loads the Bundle default, two named instances, their tools, and job controls without starting Codex', async () => {
     const { stdout, stderr } = await runLoaderSmoke({
       label: 'subagent-codex Loader composition',
-      tempDirPrefix: 'xhe-subagent-codex-loader-',
+      tempDirPrefix: 'cf-subagent-codex-loader-',
       binScript: driver,
       libBinScript: driver,
       configPath,

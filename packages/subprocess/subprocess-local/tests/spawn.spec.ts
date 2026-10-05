@@ -80,7 +80,7 @@ vi.mock('node:fs', async (importOriginal) => {
   }
 })
 
-const spillDir = mkdtempSync(join(tmpdir(), 'xhe-subprocess-spec-'))
+const spillDir = mkdtempSync(join(tmpdir(), 'cf-subprocess-spec-'))
 
 type SpecOverrides = Partial<Parameters<typeof spawnSubprocess>[0]> & {
   stdoutMaxBytes?: number
@@ -315,7 +315,7 @@ describe('spawnSubprocess', () => {
   })
 
   it('rejects with a spawn error for a nonexistent cwd', async () => {
-    await expect(spawnSubprocess(spec('echo hi', { cwd: '/nonexistent-dir-xhe-test' })).done)
+    await expect(spawnSubprocess(spec('echo hi', { cwd: '/nonexistent-dir-cf-test' })).done)
       .rejects.toThrow(/ENOENT/)
   })
 
@@ -832,7 +832,7 @@ describe('coverage seams', () => {
   it('childEnv keeps the POSIX spread on non-Windows hosts', () => {
     const platform = vi.spyOn(process, 'platform', 'get').mockReturnValue('linux')
     try {
-      expect(childEnv({ XHE_X: '1' }).XHE_X).toBe('1')
+      expect(childEnv({ CF_X: '1' }).CF_X).toBe('1')
     } finally {
       platform.mockRestore()
     }
@@ -874,7 +874,7 @@ describe('coverage seams', () => {
   })
 
   it('a spawn-failed handle rejects done while waitForExit reports gone', async () => {
-    const running = spawnSubprocess(spec('true', { cwd: '/nonexistent-dir-xhe-dispose-test' }))
+    const running = spawnSubprocess(spec('true', { cwd: '/nonexistent-dir-cf-dispose-test' }))
     await expect(running.done).rejects.toThrow()
     await expect(running.waitForExit()).resolves.toBe(true)
   })
@@ -932,7 +932,7 @@ describe('coverage seams', () => {
   })
 
   it('waitForExit on a failed spawn reports exited immediately', async () => {
-    const running = spawnSubprocess(spec('true', { cwd: '/nonexistent-dir-xhe-spawn-test' }))
+    const running = spawnSubprocess(spec('true', { cwd: '/nonexistent-dir-cf-spawn-test' }))
     await expect(running.done).rejects.toThrow()
     await expect(running.waitForExit()).resolves.toBe(true)
   })
@@ -1076,7 +1076,7 @@ describe('environment and spill-file hardening', () => {
       { spillDir },
     ))
     const path = result.stdout.spillPath!
-    expect(path).toMatch(/xhe-subprocess-\d+-\d+-[0-9a-f]{12}-stdout\.log$/)
+    expect(path).toMatch(/cf-subprocess-\d+-\d+-[0-9a-f]{12}-stdout\.log$/)
     const mode = statSync(path).mode & 0o777
     expect(mode).toBe(0o600)
   })
@@ -1086,7 +1086,7 @@ describe('environment and spill-file hardening', () => {
       spec('for i in $(seq 1 200); do printf "line-%04d\\n" $i; done', { stdoutMaxBytes: 500, stderrMaxBytes: 500 }),
     ))
     const dir = dirname(result.stdout.spillPath!)
-    expect(dir).toMatch(/xhe-subprocess-/)
+    expect(dir).toMatch(/cf-subprocess-/)
     const mode = statSync(dir).mode & 0o777
     expect(mode).toBe(0o700)
   })

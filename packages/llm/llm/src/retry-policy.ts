@@ -2,7 +2,7 @@
  * Provider-owned request-retry policy configuration and resolution.
  *
  * Adapters expose one resolved policy per registered provider route; the
- * optional xhe-llm-retry plugin executes it on the agent's failed-step extension point.
+ * optional cf-llm-retry plugin executes it on the agent's failed-step extension point.
  *
  * @module @origin-ai/cf-llm/retry-policy
  */

@@ -273,7 +273,7 @@ describe('settings domain', () => {
     const api = createApiProxy(ctx, DEFAULTS)
     const error = expectErr(await api.settings.describe(request({})))
     expect(error.code).toBe('internal')
-    expect(error.message).toContain('xhe-settings-file')
+    expect(error.message).toContain('cf-settings-file')
   })
 
   it('describes layered redacted namespaces with their secret slots', async () => {
@@ -616,7 +616,7 @@ describe('credentials domain', () => {
     const api = createApiProxy(ctx, DEFAULTS)
     const error = expectErr(await api.credentials.describe(request({ refs: ['A'] })))
     expect(error.code).toBe('internal')
-    expect(error.message).toContain('xhe-credentials-local')
+    expect(error.message).toContain('cf-credentials-local')
   })
 
   it('describes value-free views and flips state through set/unset with frames', async () => {

@@ -264,7 +264,7 @@ export const WIRE_FRAME_FIELDS =
  * @returns the marker line.
  */
 export function logTruncationMarker(maxBytes: number): string {
-  return `[xhe-code-runtime-python] log capture truncated at ${maxBytes} bytes`
+  return `[cf-code-runtime-python] log capture truncated at ${maxBytes} bytes`
 }
 
 /**

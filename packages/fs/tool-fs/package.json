@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/fs/tool-fs"
   },
   "type": "module",
@@ -33,38 +33,38 @@
   "license": "MIT",
   "dependencies": {
     "diff": "^9.0.0",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "peerDependencies": {
-    "@origin-ai/cf-attachment": "workspace:^",
-    "@origin-ai/cf-fs": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-sandbox": "workspace:^",
-    "@origin-ai/cf-sandbox-policy": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-attachment": "*",
+    "@origin-ai/cf-fs": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-sandbox": "*",
+    "@origin-ai/cf-sandbox-policy": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-user-approval": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-loop": "workspace:^",
-    "@origin-ai/cf-agent-loop-testkit": "workspace:^",
-    "@origin-ai/cf-attachment": "workspace:^",
-    "@origin-ai/cf-fs": "workspace:^",
-    "@origin-ai/cf-fs-local": "workspace:^",
-    "@origin-ai/cf-fs-observation-policy": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-llm-deepseek": "workspace:^",
-    "@origin-ai/cf-sandbox": "workspace:^",
-    "@origin-ai/cf-sandbox-policy": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-system-prompt": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@origin-ai/cf-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-loop": "*",
+    "@origin-ai/cf-agent-loop-testkit": "*",
+    "@origin-ai/cf-attachment": "*",
+    "@origin-ai/cf-fs": "*",
+    "@origin-ai/cf-fs-local": "*",
+    "@origin-ai/cf-fs-observation-policy": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-llm-deepseek": "*",
+    "@origin-ai/cf-sandbox": "*",
+    "@origin-ai/cf-sandbox-policy": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-system-prompt": "*",
+    "@origin-ai/cf-tools": "*",
+    "@origin-ai/cf-user-approval": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

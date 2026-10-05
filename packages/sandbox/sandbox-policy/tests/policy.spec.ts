@@ -85,7 +85,7 @@ describe('SandboxPolicyService', () => {
   })
 
   it.skipIf(process.platform === 'win32')('resolves a symlink-sensitive session cwd with POSIX component semantics', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'xhe-policy-cwd-'))
+    const root = mkdtempSync(join(tmpdir(), 'cf-policy-cwd-'))
     try {
       const lexical = join(root, 'lexical')
       const physical = join(root, 'physical')
@@ -153,9 +153,9 @@ describe('sandbox:policy request context', () => {
     const ctx = await promptMounted({ mode, workspaceRoot: '/fallback' })
     const workspaceRoot = resolve('/projects/current')
     const expected = {
-      'read-only': 'Current XHE file policy: read-only. Any available operation enforced by the XHE file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.',
-      'workspace-write': `Current XHE file policy: workspace-write. Any available operation enforced by the XHE file sandbox may modify files under the session workspace: ${JSON.stringify(workspaceRoot)}. Some platform temporary areas may also be writable.`,
-      'danger-full-access': 'Current XHE file policy: danger-full-access. The XHE file sandbox does not restrict file modifications by available operations.',
+      'read-only': 'Current CF file policy: read-only. Any available operation enforced by the CF file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.',
+      'workspace-write': `Current CF file policy: workspace-write. Any available operation enforced by the CF file sandbox may modify files under the session workspace: ${JSON.stringify(workspaceRoot)}. Some platform temporary areas may also be writable.`,
+      'danger-full-access': 'Current CF file policy: danger-full-access. The CF file sandbox does not restrict file modifications by available operations.',
     } as const
 
     expect(await policyContext(ctx, session(`sess-${mode}`, '/projects/../projects/current'))).toBe(expected[mode])
@@ -189,11 +189,11 @@ describe('sandbox:policy request context', () => {
 
     setSandboxMode(active, 'danger-full-access')
     const danger = await policyContext(ctx, active)
-    expect(danger).toBe('Current XHE file policy: danger-full-access. The XHE file sandbox does not restrict file modifications by available operations.')
+    expect(danger).toBe('Current CF file policy: danger-full-access. The CF file sandbox does not restrict file modifications by available operations.')
     expect(await policyContext(ctx, active)).toBe(danger)
 
     setSandboxMode(active, 'workspace-write')
-    expect(await policyContext(ctx, active)).toBe(`Current XHE file policy: workspace-write. Any available operation enforced by the XHE file sandbox may modify files under the session workspace: ${JSON.stringify(resolve('/projects/current'))}. Some platform temporary areas may also be writable.`)
+    expect(await policyContext(ctx, active)).toBe(`Current CF file policy: workspace-write. Any available operation enforced by the CF file sandbox may modify files under the session workspace: ${JSON.stringify(resolve('/projects/current'))}. Some platform temporary areas may also be writable.`)
   })
 
   it('reconstructs resumed policy from the session log and omits diagnostics without an agent', async () => {

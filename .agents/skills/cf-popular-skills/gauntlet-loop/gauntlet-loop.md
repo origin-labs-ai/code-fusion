@@ -1,4 +1,4 @@
-name: xhe-gauntlet-loop
+name: cf-gauntlet-loop
 description: Use when user wants highest quality output with Builder-Critic pattern. Runs iterative quality loops until output passes quality bar. Inspired by Matt Shumer's Gauntlet-Loop for AI agents.
 ---
 
@@ -92,7 +92,7 @@ Gauntlet-Loop is an **AI agent quality assurance pattern** that uses **Builder-C
 | `strict` | 5 iterations, comprehensive | Production code |
 | `paranoid` | 10 iterations, exhaustive | Security-critical |
 
-## Implementation in XHE
+## Implementation in CF
 
 ### Builder Agent Prompt
 ```
@@ -255,7 +255,7 @@ Final Score: 9/10
 Quality Bar: STRICT ✅ PASSED
 ```
 
-## XHE Integration Points
+## CF Integration Points
 
 ### Session Events Emitted
 ```typescript
@@ -285,7 +285,7 @@ Quality Bar: STRICT ✅ PASSED
 ```
 
 ### Subagent Usage
-Gauntlet-Loop uses XHE's subagent capability:
+Gauntlet-Loop uses CF's subagent capability:
 - **Builder** = Fresh subagent with goal context
 - **Critic** = Fresh subagent with ONLY output + criteria
 - **Controller** = Main agent orchestrating loop

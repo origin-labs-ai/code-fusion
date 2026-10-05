@@ -22,7 +22,7 @@ import ToolRuntime from '@origin-ai/cf-tools'
 import LocalSubprocessRuntime from '@origin-ai/cf-subprocess-local'
 import * as toolFsSearch from '@origin-ai/cf-tool-fs-search'
 
-describe('xhe-tool-fs-search real-load-path guard', () => {
+describe('cf-tool-fs-search real-load-path guard', () => {
   it('has no default export and keeps name/inject/Config through unwrapExports', () => {
     expect('default' in toolFsSearch).toBe(false)
 

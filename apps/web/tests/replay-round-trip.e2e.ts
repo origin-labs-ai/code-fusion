@@ -1,13 +1,13 @@
 // Web e2e scenario: fresh round trip. A real chromium types a prompt into the
 // real composer; the wire, apiproxy, agent loop, and the REAL bash tool (echo
-// in the temp workspace) all run; the model adapter is xhe-llm-replay (keyless)
+// in the temp workspace) all run; the model adapter is cf-llm-replay (keyless)
 // or the live adapter (record). Drive steps run in every mode and wait only
 // on generic completion (whenTurnSettled — never model-content selectors, so
 // record cannot hang on a live model answering differently); assertion steps
 // run in replay/refresh only. Settled states only — streaming incrementality
 // is asserted from the persisted assistant/chunk events, not transient DOM.
-// Record: XHE_SNAPSHOT=record rewrites session.jsonl, then a keyless
-// XHE_SNAPSHOT=refresh regenerates ui.expected.md.
+// Record: CF_SNAPSHOT=record rewrites session.jsonl, then a keyless
+// CF_SNAPSHOT=refresh regenerates ui.expected.md.
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -101,7 +101,7 @@ describe('web e2e: fresh round trip through the real assembly', () => {
       callId: CallId('web-url-probe'),
       name: 'bash',
       arguments: {
-        command: 'printf \'%s\\n\' "$XHE_WEB_URL"',
+        command: 'printf \'%s\\n\' "$CF_WEB_URL"',
         description: 'Print current Web runtime',
       },
       agent,

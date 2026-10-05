@@ -11,8 +11,8 @@ on:
       - '.github/workflows/landlock-run-release.yml'
       - 'native/landlock-run/**'
       - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
+      - 'package-lock.json'
+      - 'package-lock.json'
   push:
     branches: [master]
     paths:
@@ -20,8 +20,8 @@ on:
       - '.github/workflows/landlock-run-release.yml'
       - 'native/landlock-run/**'
       - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
+      - 'package-lock.json'
+      - 'package-lock.json'
   workflow_dispatch:
 
 concurrency:
@@ -34,7 +34,7 @@ permissions:
 env:
   # CI runs must never report to the production telemetry endpoint baked
   # into apps/cli/cordis.yml (AppCLIEntry disables the row when set).
-  XHE_TELEMETRY_DISABLED: '1'
+  CF_TELEMETRY_DISABLED: '1'
 
 defaults:
   run:
@@ -62,18 +62,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          package_json_file: package.json
-
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: pnpm install --filter @deepseek-ai/node-addon-landlock-run-workspace... --frozen-lockfile
+        run: npm install --filter @deepseek-ai/node-addon-landlock-run-workspace... --frozen-lockfile
 
       - name: Install musl toolchain
         run: |
@@ -81,13 +77,13 @@ jobs:
           sudo apt-get install -yq musl-tools
 
       - name: Build TypeScript
-        run: pnpm build:ts
+        run: npm run build:ts
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: npm run typecheck
 
       - name: Build native binaries (this architecture is the builder of record)
-        run: pnpm build:native
+        run: npm run build:native
 
       - name: Entry tests (keyless)
         run: node ./test/entry.test.js
@@ -113,24 +109,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          package_json_file: package.json
-
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: pnpm install --filter @deepseek-ai/node-addon-landlock-run-workspace... --frozen-lockfile
+        run: npm install --filter @deepseek-ai/node-addon-landlock-run-workspace... --frozen-lockfile
 
       - name: Build TypeScript
-        run: pnpm build:ts
+        run: npm run build:ts
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: npm run typecheck
 
       - name: Entry tests (keyless)
         run: node ./test/entry.test.js

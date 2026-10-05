@@ -1,9 +1,9 @@
 ---
 name: cf-prose-standard
-description: Use when writing, reviewing, restoring, trimming, or auditing prose in the xhe repo, including deciding where documentation or comments are required across Markdown, JSDoc, code and test comments, prompts, descriptions, diagnostics, and CLI or UI strings.
+description: Use when writing, reviewing, restoring, trimming, or auditing prose in the cf repo, including deciding where documentation or comments are required across Markdown, JSDoc, code and test comments, prompts, descriptions, diagnostics, and CLI or UI strings.
 ---
 
-# Xee Harness Enhanced Prose Standard
+# CodeFusion Prose Standard
 
 Write enough to preserve the contract, then remove reasoning transcripts, repetition, and decoration. A contract is an obligation, invariant, precondition, postcondition, or compatibility promise that a caller, callee, implementer, producer, or consumer relies on. This skill owns editorial judgment and required prose coverage; use [cf-doc-standards](../cf-doc-standards/SKILL.md) for placement, budgets, bilingual pairs, and documentation gates, and [cf-trim-cot-leakage](../cf-trim-cot-leakage/SKILL.md) for hunting and fixing reasoning-transcript leakage. It is guidance, not a script.
 

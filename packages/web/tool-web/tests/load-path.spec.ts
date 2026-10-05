@@ -13,7 +13,7 @@ import ToolRuntime from '@origin-ai/cf-tools'
 import WebRuntime from '@origin-ai/cf-web'
 import * as toolWeb from '@origin-ai/cf-tool-web'
 
-describe('xhe-tool-web real-load-path guard', () => {
+describe('cf-tool-web real-load-path guard', () => {
   it('has no default export and keeps name/inject/Config through unwrapExports', () => {
     expect('default' in toolWeb).toBe(false)
 

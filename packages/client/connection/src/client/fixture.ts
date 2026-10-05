@@ -180,7 +180,7 @@ const SEARCH_MATCHES_FIXTURE: { path: string; matches: { lineNumber: number; lin
 /**
  * The model-facing grep render text for the sample — what a UI without a search
  * card shows, attached as the view's `content`. Mirrors the real grep
- * presenter's shape (see formatGrepOutput in xhe-tool-fs-search): a
+ * presenter's shape (see formatGrepOutput in cf-tool-fs-search): a
  * `Found X of Y matches` header, the matches grouped under file headers with
  * `Line N:` rows, then a spill-recovery footer.
  */
@@ -208,7 +208,7 @@ const SEARCH_PATHS_FIXTURE = [
 /**
  * The model-facing glob render text — the newline-joined path list plus a
  * spill-recovery footer, mirroring the real glob presenter's shape (see
- * formatGlobOutput in xhe-tool-fs-search).
+ * formatGlobOutput in cf-tool-fs-search).
  */
 const SEARCH_PATHS_TEXT = [
   ...SEARCH_PATHS_FIXTURE,
@@ -253,11 +253,11 @@ const READ_SAMPLE_TEXT = READ_SAMPLE_SOURCE.map((text, index) => `${READ_SAMPLE_
  * search view minus its wire discriminants.
  */
 const WEB_SEARCH_RESULT: Omit<Extract<ToolResultView, { card: 'web'; kind: 'search' }>, 'card' | 'kind'> = {
-  answer: 'Xee Harness Enhanced is a plugin-based agent harness on vendored Cordis where **every capability is a plugin**.',
+  answer: 'CodeFusion is a plugin-based agent harness on vendored Cordis where **every capability is a plugin**.',
   sources: [
     {
-      url: 'https://github.com/deepseek-ai/xhe',
-      title: 'Xee Harness Enhanced — plugin-based agent harness',
+      url: 'https://github.com/deepseek-ai/cf',
+      title: 'CodeFusion — plugin-based agent harness',
       snippet: 'Everything is a plugin: session, tools, agent-loop, and LLM adapters all mount on the same Cordis context.',
       publishedAt: '2026-07-01',
     },
@@ -511,7 +511,7 @@ function buildAlphaLog(): SessionEvent[] {
   // Ordered BEFORE the todo turn deliberately: the standing plan retires at the
   // next `turn/start`, so a turn appended after it would leave the dock's plan
   // strip empty and take the todo surfaces' own coverage with it.
-  toolTurn(66, 'bash', '{"command":"pnpm run check","cwd":"/tmp/fixture/deep/nested"}', TERMINAL_OUTPUT_FIXTURE)
+  toolTurn(66, 'bash', '{"command":"npm run check","cwd":"/tmp/fixture/deep/nested"}', TERMINAL_OUTPUT_FIXTURE)
 
   // Turns 67-68: the search card's two shapes. `grep` emits a `card: 'search'`
   // `shape: 'matches'` result view (grouped-by-file matches, truncated with a
@@ -1379,7 +1379,7 @@ function backscanTodos(log: readonly SessionEvent[]): TodoItem[] | undefined {
   return undefined
 }
 
-/** Fixture-local mirror of the goal projection value (xhe-goal's GoalProjection shape). */
+/** Fixture-local mirror of the goal projection value (cf-goal's GoalProjection shape). */
 interface FxGoalProjection {
   goal: {
     id: string
@@ -1594,7 +1594,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
     [FIXTURE_HOME, ['Documents', 'Downloads', '.config']],
     [`${FIXTURE_HOME}/Documents`, [
       'project', 'deepseek-iOS', 'deepseek-android', 'deepseek-platform',
-      'deepseek-web', 'xhe', 'deepseek-app', 'deepseek-landing-blog',
+      'deepseek-web', 'cf', 'deepseek-app', 'deepseek-landing-blog',
     ]],
   ])
   const childrenOf = (path: string): string[] | undefined => {
@@ -1904,7 +1904,7 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
             label,
             ...item.cwd === undefined ? {} : { cwd: item.cwd },
             createdAt: item.updatedAt,
-            mention: `@[${label}](xhe-session:${encoded})`,
+            mention: `@[${label}](cf-session:${encoded})`,
           }
         })
       return { ok: true, value }

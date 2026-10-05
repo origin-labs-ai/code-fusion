@@ -4,7 +4,7 @@
  * vocabulary and pi-ai's `AuthInteraction`; nothing above it knows which
  * library ran the conversation.
  *
- * @module xhe-llm-pi-ai/login
+ * @module cf-llm-pi-ai/login
  */
 
 import { createModels } from '@earendil-works/pi-ai'

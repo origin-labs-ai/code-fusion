@@ -92,9 +92,9 @@ The API Gateway package owns the Host dispatcher and Client Remote endpoint as p
 
 ## Strict generation pipeline
 
-The root build runs `build:lib:host`, `build:lib:client`, and `build:web` in order. The Host lib phase first runs `tsc -b tsconfig.host.json`, then `tsdown --env.XHE_BUILD_FACE host`; the normal Host Project Reference graph compiles the Typert generator, which runs during this tsdown pass with the Host aggregate as its only `ts.Program` seed. The Client lib phase then runs `tsc -b tsconfig.client.json` and `tsdown --env.XHE_BUILD_FACE client`, consuming the newly generated Remote Client declarations and runtime contributions without starting Typert again.
+The root build runs `build:lib:host`, `build:lib:client`, and `build:web` in order. The Host lib phase first runs `tsc -b tsconfig.host.json`, then `tsdown --env.CF_BUILD_FACE host`; the normal Host Project Reference graph compiles the Typert generator, which runs during this tsdown pass with the Host aggregate as its only `ts.Program` seed. The Client lib phase then runs `tsc -b tsconfig.client.json` and `tsdown --env.CF_BUILD_FACE client`, consuming the newly generated Remote Client declarations and runtime contributions without starting Typert again.
 
-Both tsdown passes receive the complete workspace and bundle only JavaScript emitted to `lib/types` by the corresponding tsc phase. The root config does not scan Client artifacts, classify package names, or pass a maintained filter to tsdown; package-local configs return entries for the current phase based on `XHE_BUILD_FACE`. An ordinary Client plugin produces both its Node loader entry and browser bundle during the Client phase.
+Both tsdown passes receive the complete workspace and bundle only JavaScript emitted to `lib/types` by the corresponding tsc phase. The root config does not scan Client artifacts, classify package names, or pass a maintained filter to tsdown; package-local configs return entries for the current phase based on `CF_BUILD_FACE`. An ordinary Client plugin produces both its Node loader entry and browser bundle during the Client phase.
 
 `api-remotes` is the only package with split TypeScript faces. Its Host project owns the Agent/Session lookup policy, while its Client project depends on `/remote` declarations generated for business packages during Host tsdown; root aggregates and direct consumers must reference `api/remotes/tsconfig.host.json` or `api/remotes/tsconfig.client.json` respectively. The package's `clientBundle(..., { hostPhase: true })` produces its Host entry during Host tsdown and leaves only the browser entry for Client tsdown. Every other package remains registered in one aggregate.
 
@@ -136,22 +136,22 @@ SRC solves only dispatch for a Host process running from source. The Client does
 
 ## Development mode
 
-Web development prepares current Host, Client, and Web artifacts with `pnpm run build`, then runs the source Host and the Client plugin watcher in separate terminals:
+Web development prepares current Host, Client, and Web artifacts with `npm run build`, then runs the source Host and the Client plugin watcher in separate terminals:
 
 ```sh
-pnpm xhe web
-pnpm run dev:web
+npm run cf web
+npm run dev:web
 ```
 
-`dsh` starts the Host source through tsx, so the Host can use the SRC fallback; `dev:web` watches only Client plugins with a `dsh.client` declaration and rewrites their `lib/client.js`. It does not analyze Host decorators or generate Remote Client DTS.
+`cf` starts the Host source through tsx, so the Host can use the SRC fallback; `dev:web` watches only Client plugins with a `cf.client` declaration and rewrites their `lib/client.js`. It does not analyze Host decorators or generate Remote Client DTS.
 
 Changing only a Remote method's implementation body without changing its contract does not require regenerating the Typert files. After adding or removing a decorator or changing an export name, namespace, parameter, return value, lookup, Context, or cancellation signature, rerun the ordered lib build so the Host generates the strict contract before the Client compiles and bundles the new contribution:
 
 ```sh
-pnpm run build:lib
+npm run build:lib
 ```
 
-The running Client watcher consumes these generated files when it rebundles. If `pnpm run build:lib:host` has already refreshed the Host contract, `pnpm run build:lib:client` can complete the Client side; a clean worktree cannot skip the Host phase. Recompiling only the frontend source cannot infer new types from Host decorators. `pnpm run typecheck` runs the Host lib phase before Client tsc, and CI and release builds use the same order.
+The running Client watcher consumes these generated files when it rebundles. If `npm run build:lib:host` has already refreshed the Host contract, `npm run build:lib:client` can complete the Client side; a clean worktree cannot skip the Host phase. Recompiling only the frontend source cannot infer new types from Host decorators. `npm run typecheck` runs the Host lib phase before Client tsc, and CI and release builds use the same order.
 
 ## Boundaries
 

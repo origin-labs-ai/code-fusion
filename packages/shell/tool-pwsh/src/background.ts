@@ -1,13 +1,13 @@
 /**
  * Generic-task adaptation for background pwsh process handles — the shell-agnostic
- * twin of `xhe-tool-bash`'s background adaptation.
+ * twin of `cf-tool-bash`'s background adaptation.
  *
  * @module @origin-ai/cf-tool-pwsh/background
  */
 
 import type { ShellProcess } from '@origin-ai/cf-shell'
 
-/* jscpd:ignore-start -- deliberate twin of xhe-tool-bash/background.ts (Agent Note). */
+/* jscpd:ignore-start -- deliberate twin of cf-tool-bash/background.ts (Agent Note). */
 
 /**
  * Map a settled background process onto the generic task-outcome vocabulary:

@@ -1,6 +1,6 @@
 /**
- * Shared profile boot for every `dsh` surface: resolve the profile, stack its
- * patch layers (bundle layers in `dsh.profile.bundles` order, the profile's
+ * Shared profile boot for every `cf` surface: resolve the profile, stack its
+ * patch layers (bundle layers in `cf.profile.bundles` order, the profile's
  * own `cordis.patch.yml`, `--patch` overlays, the telemetry switch), mount the
  * tree over the profile's empty root config, keep the profile patch layer
  * live, and wire fail-loud plus bounded shutdown.
@@ -34,11 +34,11 @@ import { resolveCfHome, migrateLegacyCfHome } from '@origin-ai/cf-home-paths'
 /** Shipped agent-preset root: beside this app's own config, in both source and built layouts. */
 const SHIPPED_PRESET_ROOT = fileURLToPath(new URL('../config/agent-presets/', import.meta.url))
 
-import { XHE_LAUNCH_ENVIRONMENT_KEY, type LaunchEnvironmentSnapshot } from '@origin-ai/cf-launch-environment'
+import { CF_LAUNCH_ENVIRONMENT_KEY, type LaunchEnvironmentSnapshot } from '@origin-ai/cf-launch-environment'
 import { provideCmdline } from '@origin-ai/cf-cmdline'
 import { createProcessShutdown, type ProcessShutdown } from './process-shutdown.ts'
 
-const NAME = 'dsh'
+const NAME = 'cf'
 
 /**
  * The home-level user patch layer (`$CF_HOME/cordis.patch.yml`), applied
@@ -50,15 +50,15 @@ export function homePatchPath(): string {
   return join(resolveCfHome(), PROFILE_PATCH_FILENAME)
 }
 
-/** Absolute path of this dsh installation's package.json (both anchors: src/ and lib/ sit one level under apps/cli). */
+/** Absolute path of this cf installation's package.json (both anchors: src/ and lib/ sit one level under apps/cli). */
 export const INSTALL_ANCHOR = fileURLToPath(new URL('../package.json', import.meta.url))
 
-/** The session-telemetry row id the XHE_TELEMETRY_DISABLED switch targets. */
+/** The session-telemetry row id the CF_TELEMETRY_DISABLED switch targets. */
 const TELEMETRY_ROW_ID = 'session-telemetry-otel'
 
 /** The empty root entry list every profile tree patches over. */
-const PROFILE_ROOT_CONFIG = `# dsh profile root — an empty entry list. The tree is composed as patches:
-# each bundle in package.json's dsh.profile.bundles, then cordis.patch.yml, then any
+const PROFILE_ROOT_CONFIG = `# cf profile root — an empty entry list. The tree is composed as patches:
+# each bundle in package.json's cf.profile.bundles, then cordis.patch.yml, then any
 # --patch overlays. Edit cordis.patch.yml, not this file.
 []
 `
@@ -73,7 +73,7 @@ export const PROFILE_ROOT_FILENAME = 'cordis.yml'
  * exports nothing, so the switch is then trivially satisfied and no patch is
  * generated — custom profiles need not mount telemetry to run with the
  * switch set.
- * @param disabledEnv - the raw `XHE_TELEMETRY_DISABLED` value (`undefined` when unset).
+ * @param disabledEnv - the raw `CF_TELEMETRY_DISABLED` value (`undefined` when unset).
  * @param hasRow - whether the composition carries the telemetry row.
  * @returns the disable patch, or `undefined` when no hard-disable patch is required.
  */
@@ -136,7 +136,7 @@ function allPatches(composed: ComposedProfile): PatchOptions[] {
 
 /**
  * Load `name` and compose its effective patch stack: bundle layers in
- * `dsh.profile.bundles` order (the base bundle gates the shell stacks by
+ * `cf.profile.bundles` order (the base bundle gates the shell stacks by
  * platform on its own rows), the profile's user layer, the home-level user
  * layer (`$CF_HOME/cordis.patch.yml` — machine-local preferences that apply
  * to every profile, so it outranks the per-profile layer), `--patch` overlays,
@@ -160,7 +160,7 @@ function composeProfile(
   const composedOverlays = [...overlays]
   // The SHIPPED root is the part of the roster only this app can resolve: it
   // sits beside this app's own config, in both the source and built layouts.
-  // The writable root the roster appends is `xhe-agent-presets`' own, so a
+  // The writable root the roster appends is `cf-agent-presets`' own, so a
   // launcher that never reaches this patch still finds a person's presets.
   if (rows.has('agent-presets')) {
     composedOverlays.push({
@@ -171,7 +171,7 @@ function composeProfile(
       },
     })
   }
-  const telemetryPatch = resolveTelemetryPatch(process.env.XHE_TELEMETRY_DISABLED, rows.has(TELEMETRY_ROW_ID))
+  const telemetryPatch = resolveTelemetryPatch(process.env.CF_TELEMETRY_DISABLED, rows.has(TELEMETRY_ROW_ID))
   if (telemetryPatch !== undefined) composedOverlays.push(telemetryPatch)
   return { profile, bundlePatches, homePatches, overlays: composedOverlays, rows }
 }
@@ -255,7 +255,7 @@ export async function runProfile(options: RunProfileOptions): Promise<{ ctx: Con
     app.current = hostCtx
     // Before any config-tree entry mounts, so plugins resolve all launch-time
     // environment values from the same immutable provenance snapshot.
-    hostCtx.provide(XHE_LAUNCH_ENVIRONMENT_KEY, options.environment)
+    hostCtx.provide(CF_LAUNCH_ENVIRONMENT_KEY, options.environment)
     // The command line and bounded exit request are launcher facts available
     // to every app plugin that injects the argument snapshot.
     provideCmdline(hostCtx, {

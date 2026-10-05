@@ -1,5 +1,5 @@
 /** Shared agent-loop scheduler defaults.
- * @module xhe-agent-loop/constants
+ * @module cf-agent-loop/constants
  */
 
 /** Default maximum in-flight parallel-safe calls per agent step. */

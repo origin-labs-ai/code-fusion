@@ -5,7 +5,7 @@
  * operation and the bearer token through a per-request resolver, so the
  * registering plugin owns validation, layering, and credential policy.
  *
- * @module xhe-llm-deepseek/adapter
+ * @module cf-llm-deepseek/adapter
  */
 
 import { attributionHeaders, contentHasImage, CONTEXT_WINDOW_EXCEEDED_CODE, isContextWindowExceededError, isQuotaExceededError, LlmAdapter, LlmError, offloadRequestImagesWithPolicy, ProviderRequestId, QUOTA_EXCEEDED_CODE, ReasoningEffortId } from '@origin-ai/cf-llm'
@@ -522,12 +522,12 @@ export class DeepSeekAdapter extends LlmAdapter {
       'content-type': 'application/json',
       'accept': 'text/event-stream',
       ...attributionHeaders(),
-      'x-xhe-user-id': String(userId),
+      'x-cf-user-id': String(userId),
       ...options.sessionId !== undefined
-        ? { 'x-xhe-session-id': String(options.sessionId) }
+        ? { 'x-cf-session-id': String(options.sessionId) }
         : {},
       ...options.purpose === 'compaction'
-        ? { 'x-xhe-compact': '1' }
+        ? { 'x-cf-compact': '1' }
         : {},
     }
 

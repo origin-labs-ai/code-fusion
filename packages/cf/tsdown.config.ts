@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  // Entry points matching root XH build expectations
+  // Entry points matching root CF build expectations
   entry: [
     'src/index.ts',
     'src/invariant.ts',

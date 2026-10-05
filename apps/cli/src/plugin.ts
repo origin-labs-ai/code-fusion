@@ -1,12 +1,12 @@
 /**
- * `dsh plugin --profile <name> <args...>` — profile plugin management as a
- * thin pnpm forwarder: initialize the profile on first use, run
- * `pnpm <args...>` in the profile directory, then reconcile the
- * `dsh.profile.bundles` layer list against the installed state (a dependency
- * resolving to a package that declares `dsh.bundle` joins the layer stack; a
+ * `cf plugin --profile <name> <args...>` — profile plugin management as a
+ * thin npm forwarder: initialize the profile on first use, run
+ * `npm <args...>` in the profile directory, then reconcile the
+ * `cf.profile.bundles` layer list against the installed state (a dependency
+ * resolving to a package that declares `cf.bundle` joins the layer stack; a
  * removed or bundle-less dependency leaves it). Reconciling by installed
  * state, not by dependency diff, means `update` activates a package that
- * gained its `dsh.bundle` declaration in a newer version.
+ * gained its `cf.bundle` declaration in a newer version.
  * @module @origin-ai/cf/plugin
  */
 
@@ -25,27 +25,27 @@ import {
 } from '@origin-ai/cf-app-boot'
 import { INSTALL_ANCHOR } from './profile-boot.ts'
 
-const NAME = 'dsh'
+const NAME = 'cf'
 
 /**
  * Whether a resolved dependency exports a profile patch, i.e. is a bundle.
  * @param packageName - the dependency's package name.
  * @param profileDir - the profile directory (resolution anchor).
- * @returns true when the package manifest declares `dsh.bundle`.
+ * @returns true when the package manifest declares `cf.bundle`.
  */
 function exportsPatch(packageName: string, profileDir: string): boolean {
   let dir: string
   try {
     dir = resolveBundleDir(NAME, packageName, INSTALL_ANCHOR, profileDir)
   } catch {
-    return false // pnpm reported success yet the package is unresolvable — treat as plain
+    return false // npm reported success yet the package is unresolvable — treat as plain
   }
   const manifest = readProfileManifest(NAME, dir)
   return manifest.cf?.bundle?.patch !== undefined
 }
 
 /**
- * Reconcile `cf.profile.bundles` against the installed state: pnpm has
+ * Reconcile `cf.profile.bundles` against the installed state: npm has
  * already written the real installed names (so a git/path/tarball/alias spec
  * on the command line reconciles by its true package name) and materialized
  * the packages. A dependency that resolves to a `cf.bundle`-declaring
@@ -77,7 +77,7 @@ function reconcilePlugins(before: ProfileManifest, profileDir: string): void {
   const dependencySet = new Set(dependencies)
   for (const packageName of [...plugins]) {
     // Only dependency-managed entries are subject to removal; template
-    // bundles (xhe-base and friends) are not dependencies.
+    // bundles (cf-base and friends) are not dependencies.
     const wasDependency = beforeDeps.has(packageName) || dependencySet.has(packageName)
     const stillBundle = dependencySet.has(packageName) && exportsPatch(packageName, profileDir)
     if (wasDependency && !stillBundle) {
@@ -92,19 +92,19 @@ function reconcilePlugins(before: ProfileManifest, profileDir: string): void {
 
 /**
  * Rewrite relative filesystem specs against the user's invoking directory.
- * pnpm runs with cwd = the profile directory, so a bare `.` or `../plugin`
+ * npm runs with cwd = the profile directory, so a bare `.` or `../plugin`
  * (or their `file:`/`link:` forms) would silently resolve inside the profile
  * — `add .` from a plugin checkout would self-link the profile. Absolute
- * specs, registry names, and every other pnpm argument pass through
+ * specs, registry names, and every other npm argument pass through
  * untouched.
- * @param argument - one pnpm argument, verbatim from argv.
- * @param cwd - the directory `dsh` was invoked from.
+ * @param argument - one npm argument, verbatim from argv.
+ * @param cwd - the directory `cf` was invoked from.
  * @returns the argument with a relative path spec anchored to `cwd`.
  */
 function anchorPathSpec(argument: string, cwd: string): string {
   const match = /^(?<prefix>(?:file|link):)?(?<path>\.{1,2}(?:[/\\].*)?)$/.exec(argument)
   if (match?.groups?.path === undefined) return argument
-  // A bare path stays bare and a prefixed spec keeps its prefix: pnpm's
+  // A bare path stays bare and a prefixed spec keeps its prefix: npm's
   // link-vs-copy semantics differ between `file:` and a plain directory
   // path, and the anchor must not change which one the user asked for.
   const prefix = match.groups.prefix ?? ''
@@ -112,10 +112,10 @@ function anchorPathSpec(argument: string, cwd: string): string {
 }
 
 /**
- * Run one `dsh plugin` invocation: init if needed, forward to pnpm, reconcile.
+ * Run one `cf plugin` invocation: init if needed, forward to npm, reconcile.
  * @param profile - the profile name.
- * @param args - pnpm arguments with relative path specs anchored to the invoking directory.
- * @returns the pnpm exit code.
+ * @param args - npm arguments with relative path specs anchored to the invoking directory.
+ * @returns the npm exit code.
  */
 export function runPlugin(profile: string, args: readonly string[]): number {
   const dir = resolveProfileDir(profile)
@@ -124,9 +124,9 @@ export function runPlugin(profile: string, args: readonly string[]): number {
     process.stderr.write(`${NAME}: initialized profile ${profile} at ${dir}\n`)
   }
   const before = readProfileManifest(NAME, dir)
-  // Windows resolves pnpm through its .cmd shim, which spawn() refuses
+  // Windows resolves npm through its .cmd shim, which spawn() refuses
   // without a shell since the CVE-2024-27980 hardening.
-  const result = spawnSync('pnpm', args.map(argument => anchorPathSpec(argument, process.cwd())), {
+  const result = spawnSync('npm', args.map(argument => anchorPathSpec(argument, process.cwd())), {
     cwd: dir,
     stdio: 'inherit',
     shell: process.platform === 'win32',
@@ -134,7 +134,7 @@ export function runPlugin(profile: string, args: readonly string[]): number {
   if (result.error !== undefined) {
     const code = (result.error as NodeJS.ErrnoException).code
     if (code === 'ENOENT') {
-      process.stderr.write(`${NAME}: pnpm not found on PATH — install pnpm to manage profile plugins\n`)
+      process.stderr.write(`${NAME}: npm not found on PATH — install npm to manage profile plugins\n`)
       return 127
     }
     throw result.error
@@ -143,14 +143,14 @@ export function runPlugin(profile: string, args: readonly string[]): number {
   if (exitCode === 0) {
     reconcilePlugins(before, dir)
   } else {
-    // pnpm's own diagnostics name pnpm-workspace.yaml without saying WHICH
-    // one; the profile owns it, and the commonest failure here is pnpm ≥10
-    // blocking a git dependency's prepare (build) script until allowlisted.
-    process.stderr.write(`${NAME}: pnpm failed in profile directory ${dir}\n`)
+    // The profile owns the failing install, and the commonest failure here is
+    // npm refusing to run a dependency's lifecycle script until the profile's
+    // own `allowScripts` policy covers it.
+    process.stderr.write(`${NAME}: npm failed in profile directory ${dir}\n`)
     if (args.some(argument => /^git\+|^github:|\.git(?:#|$)/.test(argument))) {
       process.stderr.write(
-        `${NAME}: git-hosted plugins build on install via their prepare script, which pnpm blocks until allowed — `
-        + `add the exact key pnpm printed above under allowBuilds in ${join(dir, 'pnpm-workspace.yaml')}, then re-run\n`,
+        `${NAME}: git-hosted plugins build on install via their prepare script, which npm runs only for a package covered by allowScripts — `
+        + `add the exact key npm printed above under allowScripts in ${join(dir, 'package.json')}, then re-run\n`,
       )
     }
   }

@@ -79,4 +79,4 @@ A separate case covers the paste path end to end: a short draft, the caret at it
 
 The two-geometry comparison behind the decision was measured on a standalone harness before implementing, since the old and new arrangements cannot both exist in the app at once: the same-task separation is 203/202/203px old against 3/2/3px new (chromium/firefox/WebKit), the wrap widths 768-against-776 old on WebKit against 1264/1264/1264 new on all three, and the textarea's own scrollable overflow 0 in the new geometry, which is what makes a second offset impossible rather than merely equal.
 
-Note that the composer ships inside a client-module bundle, so `pnpm run build:web` alone does not pick up a change to `InputBar.tsx` — the package build must run for the browser lane to see it, and a scenario run against a stale `lib/` asserts against an older client than the tree.
+Note that the composer ships inside a client-module bundle, so `npm run build:web` alone does not pick up a change to `InputBar.tsx` — the package build must run for the browser lane to see it, and a scenario run against a stale `lib/` asserts against an older client than the tree.

@@ -13,7 +13,7 @@ import type {} from '@origin-ai/cf-system-prompt'
 
 /**
  * Default upper bound on returned sources (the `searchMaxResults` config).
- * Owned by the consumer (not the provider or model), mirroring `xhe-tool-fs`'s
+ * Owned by the consumer (not the provider or model), mirroring `cf-tool-fs`'s
  * `READ_LIMIT`. The model just asks a question; the product controls how much
  * context returns. The default `8` aligns with OpenCode's Exa default.
  */

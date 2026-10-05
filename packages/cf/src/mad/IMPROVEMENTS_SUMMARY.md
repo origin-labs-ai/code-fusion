@@ -1,4 +1,4 @@
-# XHE MAD GOD Runtime - v3.0.0-ultimate
+# CF MAD GOD Runtime - v3.0.0-ultimate
 ## 8 Rounds of Improvements Complete ✅
 
 ### 📊 FILE STATISTICS
@@ -150,7 +150,7 @@ Completed:
 ## 📁 FILE STRUCTURE
 
 ```
-packages/xhe-enhanced/src/mad/
+packages/cf-enhanced/src/mad/
 ├── core/
 │   └── god-runtime.ts          # 4411 lines - MAIN FILE
 ├── examples/
@@ -190,7 +190,7 @@ packages/xhe-enhanced/src/mad/
 21. GodRuntime (Main Class)
 
 ### Types Exported
-- XHEPlugin, XHEPluginManifest
+- CFPlugin, CFPluginManifest
 - PluginContext, PluginHook
 - All GODRuntimeConfig types
 

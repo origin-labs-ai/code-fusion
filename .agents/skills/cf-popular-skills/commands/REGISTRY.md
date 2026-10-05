@@ -1,7 +1,7 @@
-# XHE Popular Skills - Slash Commands Registry
+# CF Popular Skills - Slash Commands Registry
 
 This document defines all slash commands for the `cf-popular-skills` collection.
-Commands are registered via `ctx.commands.register()` in XHE's interaction system.
+Commands are registered via `ctx.commands.register()` in CF's interaction system.
 
 ## Command Registration Format
 
@@ -492,7 +492,7 @@ To add custom commands:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  XHE COMMANDS QUICK REF                     │
+│                  CF COMMANDS QUICK REF                     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  QUALITY          TESTING         GIT                        │

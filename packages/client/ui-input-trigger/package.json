@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/client/ui-input-trigger"
   },
   "type": "module",
@@ -47,23 +47,23 @@
     "clsx": "^2.0.0"
   },
   "peerDependencies": {
-    "@origin-ai/cf-client-locale": "workspace:^",
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@origin-ai/cf-file-reference": "workspace:^"
+    "@origin-ai/cf-client-locale": "*",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*",
+    "@origin-ai/cf-file-reference": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-client-locale": "workspace:^",
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-test-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-primitives": "workspace:^",
-    "@origin-ai/cf-client-ui-slots": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
+    "@origin-ai/cf-client-locale": "*",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-test-runtime": "*",
+    "@origin-ai/cf-client-ui-primitives": "*",
+    "@origin-ai/cf-client-ui-slots": "*",
+    "@origin-ai/cf-invariants": "*",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/cordis": "*",
     "react": "^18.2.0",
-    "@origin-ai/cf-file-reference": "workspace:^"
+    "@origin-ai/cf-file-reference": "*"
   },
   "files": [
     "lib/index.js",

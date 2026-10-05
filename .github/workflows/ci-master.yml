@@ -30,7 +30,7 @@ env:
   PRIMARY_NODE_VERSION: '24'
   # CI runs must never report to the production telemetry endpoint baked
   # into apps/cli/cordis.yml (AppCLIEntry disables the row when set).
-  XHE_TELEMETRY_DISABLED: '1'
+  CF_TELEMETRY_DISABLED: '1'
 
 jobs:
   # Master seeds the Wine apt-archive cache in the default-branch scope,
@@ -66,18 +66,18 @@ jobs:
   # re-runs the complete unsharded aggregate on the persistent 64-core VM,
   # continuously proving that environment can take over a required lane if
   # the hosted pools degrade (the switch is then setting the writer-manageable
-  # XHE_CI_FAILOVER_LINUX variable — see the failover runbook, no merge required).
+  # CF_CI_FAILOVER_LINUX variable — see the failover runbook, no merge required).
   # Push-triggered, so this lane always executes the base branch's own
   # workflow definition. This workflow never listens to pull_request, so the
   # drill does not appear in PR checks. No cache steps because the VM's
-  # persistent pnpm store and tool caches make them redundant (and saving here
+  # persistent npm cache and tool caches make them redundant (and saving here
   # would poison the hosted cache namespace with self-hosted paths).
   serial-linux-selfhosted:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: serial / linux (self-hosted standby)
     runs-on: [self-hosted, linux, x64, vm-backup]
     steps:
-      # XHE_ARCHIVE_BASE_REF below compares the frozen-archive gate against
+      # CF_ARCHIVE_BASE_REF below compares the frozen-archive gate against
       # github.event.before, so full history is required: depth 2 would miss it
       # on multi-commit or force pushes; full fetch is cheap here because
       # checkout resolves against the VM's local mirror.
@@ -85,38 +85,31 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure persistent pnpm store
-        run: echo "PNPM_CONFIG_STORE_DIR=$HOME/.local/share/pnpm/store" >> "$GITHUB_ENV"
-
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       # The persistent VM image owns Playwright's Linux system packages; this
       # step also proves that browser provisioning remains usable for failover.
       - name: Install Playwright Chromium
-        run: pnpm --filter @origin-ai/cf-web-frontend exec playwright install chromium
+        run: npm exec --workspace @origin-ai/cf-web-frontend -- playwright install chromium
 
       - name: Prepare bubblewrap (unrestrict userns)
         run: bash scripts/prepare-ci-bubblewrap.sh
 
       - name: Run complete unsharded primary Node CI serially
         env:
-          XHE_ARCHIVE_BASE_REF: ${{ github.event.before }}
-          XHE_COVERAGE_MAX_WORKERS: '1'
-          XHE_E2E_MAX_WORKERS: '1'
-          XHE_GATE_CONCURRENCY: '1'
-          XHE_OXLINT_THREADS: '1'
-          XHE_PUBLINT_CONCURRENCY: '1'
-          XHE_SNAPSHOT_MAX_CONCURRENCY: '1'
-        run: pnpm run check:ci:linux-primary
+          CF_ARCHIVE_BASE_REF: ${{ github.event.before }}
+          CF_COVERAGE_MAX_WORKERS: '1'
+          CF_E2E_MAX_WORKERS: '1'
+          CF_GATE_CONCURRENCY: '1'
+          CF_OXLINT_THREADS: '1'
+          CF_PUBLINT_CONCURRENCY: '1'
+          CF_SNAPSHOT_MAX_CONCURRENCY: '1'
+        run: npm run check:ci:linux-primary
 
   # TODO(hosted-serial-ci): Re-enable the one remaining disabled hosted serial
   # reference job (serial-macos) before release. Re-enabling serial-macos does
@@ -129,41 +122,37 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run complete unsharded primary Node CI serially
         env:
-          XHE_COVERAGE_MAX_WORKERS: '1'
-          XHE_E2E_MAX_WORKERS: '1'
-          XHE_GATE_CONCURRENCY: '1'
-          XHE_PUBLINT_CONCURRENCY: '1'
-          XHE_SNAPSHOT_MAX_CONCURRENCY: '1'
-        run: pnpm run check:ci
+          CF_COVERAGE_MAX_WORKERS: '1'
+          CF_E2E_MAX_WORKERS: '1'
+          CF_GATE_CONCURRENCY: '1'
+          CF_PUBLINT_CONCURRENCY: '1'
+          CF_SNAPSHOT_MAX_CONCURRENCY: '1'
+        run: npm run check:ci
 
   # Hot-standby drill for the in-house self-hosted Windows pool: every master
   # move re-runs the complete unsharded Windows gate inventory on the persistent
   # VM, continuously proving that environment can take over the required
   # `windows` lane if the hosted pool degrades (the switch is setting the
-  # writer-manageable XHE_CI_FAILOVER_WINDOWS variable — see the failover
+  # writer-manageable CF_CI_FAILOVER_WINDOWS variable — see the failover
   # runbook, no merge required). Push-triggered, so this lane always executes
   # the base branch's own workflow definition. This workflow never listens to
   # pull_request, so the drill does not appear in PR checks. No cache steps
-  # because the VM's persistent pnpm store and tool caches make them redundant
+  # because the VM's persistent npm cache and tool caches make them redundant
   # (and saving here would poison the hosted cache namespace with self-hosted
   # paths).
   serial-windows:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     name: serial / windows (self-hosted standby)
-    runs-on: [self-hosted, xhe-win-ci, windows]
+    runs-on: [self-hosted, cf-win-ci, windows]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v6
@@ -174,31 +163,22 @@ jobs:
           reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
           /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure persistent pnpm store
-        shell: pwsh
-        run: |
-          $storeRoot = "$env:LOCALAPPDATA\pnpm\store"
-          echo "PNPM_CONFIG_STORE_DIR=$storeRoot" >> $env:GITHUB_ENV
 
       - name: Install (immutable)
         shell: pwsh
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run complete unsharded Windows gate inventory serially
         shell: pwsh
         env:
-          XHE_COVERAGE_MAX_WORKERS: '1'
-          XHE_GATE_CONCURRENCY: '1'
-          XHE_PUBLINT_CONCURRENCY: '1'
-        run: pnpm run check:ci:windows-complete
+          CF_COVERAGE_MAX_WORKERS: '1'
+          CF_GATE_CONCURRENCY: '1'
+          CF_PUBLINT_CONCURRENCY: '1'
+        run: npm run check:ci:windows-complete
 
   # Manual, bounded comparison of the actual critical Linux and Windows lanes.
   # The named pools are restricted at the organization level to this repository.
@@ -213,65 +193,61 @@ jobs:
         include:
           - platform: linux
             cores: '4'
-            runner: xhe-ubuntu-24-04-4core
+            runner: cf-ubuntu-24-04-4core
             workload: typecheck
           - platform: linux
             cores: '8'
-            runner: xhe-ubuntu-24-04-8core
+            runner: cf-ubuntu-24-04-8core
             workload: typecheck
           - platform: linux
             cores: '16'
-            runner: xhe-ubuntu-24-04-16core
+            runner: cf-ubuntu-24-04-16core
             workload: typecheck
           - platform: linux
             cores: '32'
-            runner: xhe-ubuntu-24-04-32core
+            runner: cf-ubuntu-24-04-32core
             workload: typecheck
           - platform: linux
             cores: '64'
-            runner: xhe-ubuntu-24-04-64core
+            runner: cf-ubuntu-24-04-64core
             workload: typecheck
           - platform: linux
             cores: '96'
-            runner: xhe-ubuntu-24-04-96core
+            runner: cf-ubuntu-24-04-96core
             workload: typecheck
           - platform: windows
             cores: '4'
-            runner: xhe-windows-2025-4core
+            runner: cf-windows-2025-4core
             workload: production-site
           - platform: windows
             cores: '8'
-            runner: xhe-windows-2025-8core
+            runner: cf-windows-2025-8core
             workload: production-site
           - platform: windows
             cores: '16'
-            runner: xhe-windows-2025-16core
+            runner: cf-windows-2025-16core
             workload: production-site
           - platform: windows
             cores: '32'
-            runner: xhe-windows-2025-32core
+            runner: cf-windows-2025-32core
             workload: production-site
           - platform: windows
             cores: '64'
-            runner: xhe-windows-2025-64core
+            runner: cf-windows-2025-64core
             workload: production-site
           - platform: windows
             cores: '96'
-            runner: xhe-windows-2025-96core
+            runner: cf-windows-2025-96core
             workload: production-site
     steps:
       - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
 
       # The benchmark's Windows lanes deliberately skip the store cache like
       # the independent native Windows job; an empty input disables caching.
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
-          cache: ${{ matrix.platform == 'linux' && 'pnpm' || '' }}
+          cache: ${{ matrix.platform == 'linux' && 'npm' || '' }}
 
       - name: Report runner capacity
         run: >-
@@ -280,15 +256,15 @@ jobs:
           memoryGiB: Math.round(os.totalmem() / 2 ** 30) }))"
 
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run critical Linux typecheck lane
         if: matrix.platform == 'linux'
-        run: pnpm run typecheck
+        run: npm run typecheck
 
       - name: Run critical Windows production-site lane
         if: matrix.platform == 'windows'
-        run: pnpm run docs:build
+        run: npm run docs:build
 
   # Manual comparison of the intended low-fanout topology. Linux runs the
   # complete unsharded primary aggregate with bounded in-runner parallelism;
@@ -304,65 +280,61 @@ jobs:
         include:
           - platform: linux
             cores: '4'
-            runner: xhe-ubuntu-24-04-4core
+            runner: cf-ubuntu-24-04-4core
             workers: '4'
           - platform: linux
             cores: '8'
-            runner: xhe-ubuntu-24-04-8core
+            runner: cf-ubuntu-24-04-8core
             workers: '8'
           - platform: linux
             cores: '16'
-            runner: xhe-ubuntu-24-04-16core
+            runner: cf-ubuntu-24-04-16core
             workers: '16'
           - platform: linux
             cores: '32'
-            runner: xhe-ubuntu-24-04-32core
+            runner: cf-ubuntu-24-04-32core
             workers: '32'
           - platform: linux
             cores: '64'
-            runner: xhe-ubuntu-24-04-64core
+            runner: cf-ubuntu-24-04-64core
             workers: '32'
           - platform: linux
             cores: '96'
-            runner: xhe-ubuntu-24-04-96core
+            runner: cf-ubuntu-24-04-96core
             workers: '32'
           - platform: windows
             cores: '4'
-            runner: xhe-windows-2025-4core
+            runner: cf-windows-2025-4core
             workers: '2'
           - platform: windows
             cores: '8'
-            runner: xhe-windows-2025-8core
+            runner: cf-windows-2025-8core
             workers: '2'
           - platform: windows
             cores: '16'
-            runner: xhe-windows-2025-16core
+            runner: cf-windows-2025-16core
             workers: '2'
           - platform: windows
             cores: '32'
-            runner: xhe-windows-2025-32core
+            runner: cf-windows-2025-32core
             workers: '2'
           - platform: windows
             cores: '64'
-            runner: xhe-windows-2025-64core
+            runner: cf-windows-2025-64core
             workers: '2'
           - platform: windows
             cores: '96'
-            runner: xhe-windows-2025-96core
+            runner: cf-windows-2025-96core
             workers: '2'
     steps:
       - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
 
       # Unlike the larger-runner suite, both platforms cache the store here:
       # the consolidated topology measures cache mechanics as workload.
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
-          cache: pnpm
+          cache: npm
 
       - name: Report runner capacity
         run: >-
@@ -373,7 +345,7 @@ jobs:
       - name: Install and prepare Linux
         if: matrix.platform == 'linux'
         run: |
-          pnpm install --frozen-lockfile &
+          npm ci &
           install_pid=$!
           bash scripts/prepare-ci-bubblewrap.sh &
           sandbox_pid=$!
@@ -387,21 +359,21 @@ jobs:
       - name: Install (immutable)
         if: matrix.platform == 'windows'
         shell: pwsh
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run complete unsharded primary Node CI concurrently
         if: matrix.platform == 'linux'
         env:
-          XHE_COVERAGE_MAX_WORKERS: ${{ matrix.workers }}
-          XHE_GATE_CONCURRENCY: ${{ matrix.workers }}
-          XHE_OXLINT_THREADS: ${{ matrix.workers }}
-          XHE_PUBLINT_CONCURRENCY: ${{ matrix.workers }}
-          XHE_SNAPSHOT_MAX_CONCURRENCY: ${{ matrix.workers }}
-        run: pnpm run check:ci
+          CF_COVERAGE_MAX_WORKERS: ${{ matrix.workers }}
+          CF_GATE_CONCURRENCY: ${{ matrix.workers }}
+          CF_OXLINT_THREADS: ${{ matrix.workers }}
+          CF_PUBLINT_CONCURRENCY: ${{ matrix.workers }}
+          CF_SNAPSHOT_MAX_CONCURRENCY: ${{ matrix.workers }}
+        run: npm run check:ci
 
       - name: Run blocking Windows builds concurrently
         if: matrix.platform == 'windows'
         shell: pwsh
         env:
-          XHE_GATE_CONCURRENCY: ${{ matrix.workers }}
-        run: pnpm run check:ci:windows-blocking
+          CF_GATE_CONCURRENCY: ${{ matrix.workers }}
+        run: npm run check:ci:windows-blocking

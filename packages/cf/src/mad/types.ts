@@ -8,10 +8,10 @@
  * @version 2.0.0
  *
  * Also known as:
- * - XeeCode / XCode
+ * - CodeFusion / CodeFusion
  * - CodeFusion
  *
- * Fork of: DSH/SeepSeek Harness
+ * Fork of: CodeFusion
  */
 
 // ============================================================================

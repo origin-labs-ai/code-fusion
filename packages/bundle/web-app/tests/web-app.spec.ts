@@ -13,7 +13,7 @@ import { join } from 'node:path'
 import { PassThrough } from 'node:stream'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import { createLaunchEnvironmentSnapshot, XHE_LAUNCH_ENVIRONMENT_KEY } from '@origin-ai/cf-launch-environment'
+import { createLaunchEnvironmentSnapshot, CF_LAUNCH_ENVIRONMENT_KEY } from '@origin-ai/cf-launch-environment'
 import SystemPrompt from '@origin-ai/cf-system-prompt'
 import type { WebServer } from '@origin-ai/cf-host-webserver'
 import { apply, Config, internals } from '../src/index.ts'
@@ -60,7 +60,7 @@ function launcher(): BrowserLauncher {
 
 /** Stage a dist fixture and point the bundle's resolver at it. */
 function stageDist(): string {
-  dist = mkdtempSync(join(tmpdir(), 'xhe-web-app-'))
+  dist = mkdtempSync(join(tmpdir(), 'cf-web-app-'))
   mkdirSync(join(dist, 'dist'))
   const index = join(dist, 'dist', 'index.html')
   writeFileSync(index, '<head></head><body>shell</body>')
@@ -99,7 +99,7 @@ describe('web-app runtime glue', () => {
     stageDist()
     const ctx = new Context()
     // Editor markers and a project .env SSH value do not establish a remote launch.
-    ctx.provide(XHE_LAUNCH_ENVIRONMENT_KEY, createLaunchEnvironmentSnapshot([
+    ctx.provide(CF_LAUNCH_ENVIRONMENT_KEY, createLaunchEnvironmentSnapshot([
       { source: 'process', values: { VSCODE_IPC_HOOK_CLI: '/tmp/local-vscode-ipc' } },
       { source: 'project-env', path: '/work/.env', values: { SSH_CONNECTION: 'stale-project-value' } },
     ]))
@@ -127,23 +127,23 @@ describe('web-app runtime glue', () => {
       lanAddresses: ['192.168.1.5'],
       trustedHosts: ['192.168.1.5', 'lab.internal'],
     })
-    expect(log).toHaveBeenCalledWith('dsh web: http://127.0.0.1:4567 (LAN: http://192.168.1.5:4567)')
-    expect(log).toHaveBeenCalledWith('dsh web: opening the default browser; pass --no-open to disable')
+    expect(log).toHaveBeenCalledWith('cf web: http://127.0.0.1:4567 (LAN: http://192.168.1.5:4567)')
+    expect(log).toHaveBeenCalledWith('cf web: opening the default browser; pass --no-open to disable')
     expect(openBrowser).toHaveBeenCalledWith('http://127.0.0.1:4567')
     expect(lifecycle).toEqual([
-      'dsh web: http://127.0.0.1:4567 (LAN: http://192.168.1.5:4567)',
-      'dsh web: opening the default browser; pass --no-open to disable',
+      'cf web: http://127.0.0.1:4567 (LAN: http://192.168.1.5:4567)',
+      'cf web: opening the default browser; pass --no-open to disable',
       'open:http://127.0.0.1:4567',
     ])
     const assembly = await ctx.systemPrompt.assemble()
-    expect(assembly.sections.find(entry => entry.name === 'harness:source')?.text).toContain('Xee Harness Enhanced implementation checkout')
+    expect(assembly.sections.find(entry => entry.name === 'harness:source')?.text).toContain('CodeFusion implementation checkout')
     const section = assembly.sections.find(entry => entry.name === 'app:web-surface')
     expect(section?.text).toContain('http://127.0.0.1:4567')
     // The single update contract: the receiver is always on; no-refresh
     // reloads additionally need the rebuild watcher.
-    expect(section?.text).toContain('pnpm run dev:web')
+    expect(section?.text).toContain('npm run dev:web')
     const webRuntime = contributions.find(contribution => contribution.name === 'web-runtime')
-    expect(webRuntime?.resolve()).toEqual({ XHE_WEB_URL: 'http://127.0.0.1:4567' })
+    expect(webRuntime?.resolve()).toEqual({ CF_WEB_URL: 'http://127.0.0.1:4567' })
     await ctx.fiber.dispose()
   })
 
@@ -193,7 +193,7 @@ describe('web-app runtime glue', () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {})
     apply(ctx, new Config({ openBrowser: false, printUrl: true, surfaceContext: true, trustedHosts: [] }))
     await new Promise(resolve => setTimeout(resolve, 0))
-    expect(log).toHaveBeenCalledWith('dsh web: http://127.0.0.1:4567')
+    expect(log).toHaveBeenCalledWith('cf web: http://127.0.0.1:4567')
     await ctx.fiber.dispose()
   })
 
@@ -210,7 +210,7 @@ describe('web-app runtime glue', () => {
     internals.openBrowser = openBrowser
     apply(ctx, new Config({ openBrowser: true, printUrl: true, surfaceContext: false, trustedHosts: [] }))
     await new Promise(resolve => setTimeout(resolve, 0))
-    expect(log).toHaveBeenCalledWith('dsh web: http://127.0.0.1:4567')
+    expect(log).toHaveBeenCalledWith('cf web: http://127.0.0.1:4567')
     expect(openBrowser).not.toHaveBeenCalled()
     await ctx.fiber.dispose()
   })
@@ -233,7 +233,7 @@ describe('web-app runtime glue', () => {
     expect(openBrowser).not.toHaveBeenCalled()
     release!()
     await new Promise(resolve => setTimeout(resolve, 0))
-    expect(log).toHaveBeenCalledWith('dsh web: http://127.0.0.1:4567')
+    expect(log).toHaveBeenCalledWith('cf web: http://127.0.0.1:4567')
     expect(openBrowser).toHaveBeenCalledWith('http://127.0.0.1:4567')
     await settled.fiber.dispose()
 
@@ -310,7 +310,7 @@ describe('web-app runtime glue', () => {
     const diagnostic = vi.spyOn(console, 'error').mockImplementation(() => {})
     apply(ctx, new Config({ openBrowser: true, printUrl: false, surfaceContext: false, trustedHosts: [] }))
     await new Promise(resolve => setTimeout(resolve, 0))
-    expect(log).toHaveBeenCalledWith('dsh web: opening the default browser; pass --no-open to disable')
+    expect(log).toHaveBeenCalledWith('cf web: opening the default browser; pass --no-open to disable')
     expect(diagnostic).toHaveBeenCalledWith(
       `web-app: could not open the default browser because ${reason}; visit http://127.0.0.1:4567 manually`,
     )

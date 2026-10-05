@@ -31,7 +31,7 @@ describe.skipIf(!isWin32)('AclWriteGrant (server-side materialization)', () => {
   })
 
   function scratch(): string {
-    const dir = mkdtempSync(join(tmpdir(), 'xhe-acl-grant-'))
+    const dir = mkdtempSync(join(tmpdir(), 'cf-acl-grant-'))
     scratchDirs.push(dir)
     return dir
   }

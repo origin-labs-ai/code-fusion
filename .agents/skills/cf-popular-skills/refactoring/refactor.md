@@ -1,4 +1,4 @@
-name: xhe-refactor
+name: cf-refactor
 description: Use when user wants to refactor code safely, optimize performance, or migrate between patterns. Ensures tests pass and behavior is preserved during refactoring.
 ---
 
@@ -265,7 +265,7 @@ Before declaring refactoring complete:
 - [ ] Documentation updated
 - [ ] Type safety maintained/improved
 
-### XHE-Specific
+### CF-Specific
 - [ ] Plugin protocol unchanged (or properly versioned)
 - [ ] Session events still emitted correctly
 - [ ] Effects disposed properly

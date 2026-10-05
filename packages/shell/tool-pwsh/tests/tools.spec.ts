@@ -351,7 +351,7 @@ describe('argument validation', () => {
 
 describe('execution through the bash seam', () => {
   it('forwards command, session cwd, timeout, and managed CF_* environment', async () => {
-    const cfHome = mkdtempSync(join(tmpdir(), 'xhe-tool-pwsh-home-'))
+    const cfHome = mkdtempSync(join(tmpdir(), 'cf-tool-pwsh-home-'))
     const { ctx, bash } = await setup({}, cfHome)
     bash.handler = () => runResult('hi\n')
     const agent = registerFakeAgent(ctx, 'session-1')
@@ -501,7 +501,7 @@ describe('execution through the bash seam', () => {
 describe('per-call sandbox policy resolution', () => {
   it('stamps the CALLING SESSION\'s resolved policy onto the request (session cwd, not the server launch dir)', async () => {
     const { ctx, bash } = await setupSandboxed()
-    const sessionCwd = mkdtempSync(join(tmpdir(), 'xhe-tool-pwsh-policy-'))
+    const sessionCwd = mkdtempSync(join(tmpdir(), 'cf-tool-pwsh-policy-'))
     const agent = registerFakeAgent(ctx, 'policy-session')
     Object.assign(agent.session.header, { cwd: sessionCwd })
     const result = await call(ctx, 'pwsh', { command: 'Write-Output hi', description: 'say hi' }, agent)

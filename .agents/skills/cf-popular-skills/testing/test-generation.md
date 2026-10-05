@@ -1,4 +1,4 @@
-name: xhe-test
+name: cf-test
 description: Use when user wants to generate tests, improve test coverage, or create test suites. Supports unit, integration, and e2e testing patterns.
 ---
 
@@ -44,7 +44,7 @@ description: Use when user wants to generate tests, improve test coverage, or cr
 
 ## Supported Test Frameworks
 
-### Vitest (XHE Default)
+### Vitest (CF Default)
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -74,7 +74,7 @@ describe('ModuleName', () => {
 })
 ```
 
-### Snapshot Testing (for XHE)
+### Snapshot Testing (for CF)
 ```typescript
 import { expect } from 'vitest'
 
@@ -125,7 +125,7 @@ describe('asyncOperation', () => {
 })
 ```
 
-### 3. Plugin/Service Tests (XHE Specific)
+### 3. Plugin/Service Tests (CF Specific)
 ```typescript
 describe('MyPlugin', () => {
   let ctx: MockContext
@@ -235,7 +235,7 @@ expect(JSON.stringify(result)).toBe('...')
 expect(result).toMatchObject({ status: 'success' })
 ```
 
-## XHE-Specific Testing Notes
+## CF-Specific Testing Notes
 
 - Use `vitest.config.ts` from repo root
 - Session replay tests use snapshot matching

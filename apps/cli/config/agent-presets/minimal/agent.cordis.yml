@@ -80,7 +80,7 @@
     - id: fs-local
       name: '@origin-ai/cf-fs-local'
       config:
-        cwd: !!js process.env.XHE_CWD ?? process.cwd()
+        cwd: !!js process.env.CF_CWD ?? process.cwd()
 
     - id: str-replace-editor
       name: '@origin-ai/cf-tool-str-replace-editor'

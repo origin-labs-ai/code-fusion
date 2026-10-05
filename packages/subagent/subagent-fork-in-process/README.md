@@ -21,7 +21,7 @@ Fork advertises `{ outputSchema: true, depthLimit: true, toolFilter: true, perso
 | Key | Meaning |
 |---|---|
 | `providerName` | Registry name on `ctx.subagents` (default `fork`). |
-See [`xhe-subagent-spawn-in-process`](../subagent-spawn-in-process/README.md) for the run lifecycle, model inheritance, and depth tracking — all shared.
+See [`cf-subagent-spawn-in-process`](../subagent-spawn-in-process/README.md) for the run lifecycle, model inheritance, and depth tracking — all shared.
 
 ## Model Experience
 
@@ -43,7 +43,7 @@ The child may reuse the inherited byte-identical prefix under the same provider 
 
 #### What the model sees
 
-The parent receives only the child's own final output through `xhe-tool-subagent`, not the inherited prefix or intermediate work.
+The parent receives only the child's own final output through `cf-tool-subagent`, not the inherited prefix or intermediate work.
 
 #### Token effect
 

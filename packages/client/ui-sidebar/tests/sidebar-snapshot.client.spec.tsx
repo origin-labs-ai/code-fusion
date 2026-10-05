@@ -18,7 +18,7 @@ import { apply, inject } from '@origin-ai/cf-client-ui-sidebar/client'
 // the shipped Chinese copy, so they state the browser they assume.
 usePinnedBrowserLanguages('zh-CN')
 
-beforeEach(() => { vi.stubEnv('XHE_CLIENT_COMMIT_HASH', 'abc1234') })
+beforeEach(() => { vi.stubEnv('CF_CLIENT_COMMIT_HASH', 'abc1234') })
 
 afterEach(() => {
   cleanup()

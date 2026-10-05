@@ -1,5 +1,5 @@
 /**
- * End-to-end tests for xhe-mcp-client. Exercises the REAL MCP protocol against:
+ * End-to-end tests for cf-mcp-client. Exercises the REAL MCP protocol against:
  * 1. A self-written fixture server over stdio (controlled edge cases)
  * 2. @modelcontextprotocol/server-everything (official integration test server)
  * 3. @modelcontextprotocol/server-filesystem (real filesystem operations)
@@ -32,7 +32,7 @@ const testToolSignal = new AbortController().signal
 
 const fixtureServerPath = fileURLToPath(new URL('./fixture-server.ts', import.meta.url))
 
-// Resolve package-local .bin for pnpm-hoisted MCP server binaries.
+// Resolve package-local .bin for npm-hoisted MCP server binaries.
 const packageDir = fileURLToPath(new URL('..', import.meta.url))
 const localBin = join(packageDir, 'node_modules', '.bin')
 

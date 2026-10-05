@@ -39,7 +39,7 @@ export type ErrorCategory =
 /**
  * Classified error with metadata for smart handling
  */
-export class XHEError extends Error {
+export class CFError extends Error {
   public readonly category: ErrorCategory
   public readonly severity: ErrorSeverity
   public readonly retryable: boolean
@@ -65,7 +65,7 @@ export class XHEError extends Error {
     },
   ) {
     super(message)
-    this.name = 'XHEError'
+    this.name = 'CFError'
     this.category = options.category
     this.severity = options.severity || this.inferSeverity(options.category)
     this.retryable = options.retryable ?? this.isRetryableByCategory(options.category)
@@ -78,7 +78,7 @@ export class XHEError extends Error {
 
     // Maintain proper stack trace in V8 environments
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, XHEError)
+      Error.captureStackTrace(this, CFError)
     }
   }
 
@@ -108,8 +108,8 @@ export class XHEError extends Error {
   /**
    * Create a new instance with incremented retry count
    */
-  withRetry(): XHEError {
-    const newError = new XHEError(this.message, {
+  withRetry(): CFError {
+    const newError = new CFError(this.message, {
       category: this.category,
       severity: this.severity,
       retryable: this.retryable,
@@ -144,10 +144,10 @@ export class XHEError extends Error {
   }
 
   /**
-   * Classify a generic error into an XHEError
+   * Classify a generic error into an CFError
    */
-  static classify(error: unknown, context?: { provider?: string; model?: string }): XHEError {
-    if (error instanceof XHEError) {
+  static classify(error: unknown, context?: { provider?: string; model?: string }): CFError {
+    if (error instanceof CFError) {
       return error
     }
 
@@ -155,7 +155,7 @@ export class XHEError extends Error {
 
     // Network errors
     if (message.includes('ECONNREFUSED') || message.includes('ENOTFOUND') || message.includes('network')) {
-      return new XHEError(message, {
+      return new CFError(message, {
         category: 'network',
         originalError: error instanceof Error ? error : undefined,
         ...context,
@@ -164,7 +164,7 @@ export class XHEError extends Error {
 
     // Auth errors
     if (message.includes('401') || message.includes('403') || message.includes('unauthorized') || message.includes('forbidden')) {
-      return new XHEError(message, {
+      return new CFError(message, {
         category: 'authentication',
         statusCode: message.includes('401') ? 401 : 403,
         originalError: error instanceof Error ? error : undefined,
@@ -174,7 +174,7 @@ export class XHEError extends Error {
 
     // Rate limit errors
     if (message.includes('429') || message.includes('rate limit') || message.includes('too many requests')) {
-      return new XHEError(message, {
+      return new CFError(message, {
         category: 'rate_limit',
         statusCode: 429,
         originalError: error instanceof Error ? error : undefined,
@@ -184,7 +184,7 @@ export class XHEError extends Error {
 
     // Context window errors
     if (message.includes('context length') || message.includes('token limit') || message.includes('too long')) {
-      return new XHEError(message, {
+      return new CFError(message, {
         category: 'context_window',
         originalError: error instanceof Error ? error : undefined,
         ...context,
@@ -193,7 +193,7 @@ export class XHEError extends Error {
 
     // Timeout errors
     if (message.includes('timeout') || message.includes('timed out') || message.includes('abort')) {
-      return new XHEError(message, {
+      return new CFError(message, {
         category: 'timeout',
         originalError: error instanceof Error ? error : undefined,
         ...context,
@@ -201,7 +201,7 @@ export class XHEError extends Error {
     }
 
     // Default to internal error
-    return new XHEError(message, {
+    return new CFError(message, {
       category: 'internal',
       originalError: error instanceof Error ? error : undefined,
       ...context,
@@ -232,7 +232,7 @@ export interface RetryConfig {
   /** Specific error categories to retry on (default: all retryable) */
   retryOnCategories?: ErrorCategory[]
   /** Callback before each retry */
-  onRetry?: (error: XHEError, attempt: number) => void | Promise<void>
+  onRetry?: (error: CFError, attempt: number) => void | Promise<void>
 }
 
 const DEFAULT_RETRY_CONFIG: RetryConfig = {
@@ -271,7 +271,7 @@ export async function withRetry<T>(
   config: Partial<RetryConfig> = {},
 ): Promise<T> {
   const fullConfig = { ...DEFAULT_RETRY_CONFIG, ...config }
-  let lastError: XHEError | Error | unknown
+  let lastError: CFError | Error | unknown
 
   for (let attempt = 0; attempt <= fullConfig.maxRetries; attempt++) {
     try {
@@ -280,21 +280,21 @@ export async function withRetry<T>(
       lastError = error
 
       // Classify the error
-      const xheError = XHEError.classify(error)
+      const cfError = CFError.classify(error)
 
       // Check if we should retry this error type
-      if (!xheError.retryable) {
-        throw xheError
+      if (!cfError.retryable) {
+        throw cfError
       }
 
       // Check if we've exhausted retries
       if (attempt >= fullConfig.maxRetries) {
-        throw xheError.withRetry()
+        throw cfError.withRetry()
       }
 
       // Call retry callback if provided
       if (fullConfig.onRetry) {
-        await fullConfig.onRetry(xheError.withRetry(), attempt + 1)
+        await fullConfig.onRetry(cfError.withRetry(), attempt + 1)
       }
 
       // Calculate and wait
@@ -314,9 +314,9 @@ export async function withRetry<T>(
 export async function withParallelRetry<T>(
   tasks: Array<() => Promise<T>>,
   config: Partial<RetryConfig> & { concurrency?: number } = {},
-): Promise<Array<{ result: T; index: number } | { error: XHEError; index: number }>> {
+): Promise<Array<{ result: T; index: number } | { error: CFError; index: number }>> {
   const concurrency = config.concurrency || tasks.length
-  const results: Array<{ result: T; index: number } | { error: XHEError; index: number }> = []
+  const results: Array<{ result: T; index: number } | { error: CFError; index: number }> = []
 
   // Process in batches
   for (let i = 0; i < tasks.length; i += concurrency) {
@@ -325,13 +325,13 @@ export async function withParallelRetry<T>(
       batch.map((task, batchIndex) =>
         withRetry(task, config).then(
           result => ({ result, index: i + batchIndex }),
-          error => ({ error: XHEError.classify(error), index: i + batchIndex }),
+          error => ({ error: CFError.classify(error), index: i + batchIndex }),
         ),
       ),
     )
 
     results.push(...batchResults.map(result =>
-      result.status === 'fulfilled' ? result.value : { error: XHEError.classify(result.reason), index: i },
+      result.status === 'fulfilled' ? result.value : { error: CFError.classify(result.reason), index: i },
     ))
   }
 
@@ -387,7 +387,7 @@ export class CircuitBreaker {
     this.checkState()
 
     if (this.state === 'open') {
-      throw new XHEError(
+      throw new CFError(
         `Circuit breaker '${this.config.name}' is open - failing fast`,
         {
           category: 'external',
@@ -503,7 +503,7 @@ export async function withTimeout<T>(
   return new Promise<T>((resolve, reject) => {
     // Set up timeout
     const timer = setTimeout(() => {
-      const timeoutError = new XHEError(
+      const timeoutError = new CFError(
         message || `Operation timed out after ${timeoutMs}ms`,
         {
           category: 'timeout',
@@ -523,7 +523,7 @@ export async function withTimeout<T>(
       })
       .catch((error) => {
         clearTimeout(timer)
-        reject(XHEError.classify(error))
+        reject(CFError.classify(error))
       })
   })
 }
@@ -534,7 +534,7 @@ export async function withTimeout<T>(
 export async function withOverallTimeout<T>(
   tasks: Array<() => Promise<T>>,
   timeoutMs: number,
-): Promise<Array<{ result: T; index: number } | { error: XHEError; index: number }>> {
+): Promise<Array<{ result: T; index: number } | { error: CFError; index: number }>> {
   return withTimeout(
     () => Promise.allSettled(
       tasks.map(async (task, index) => {
@@ -542,12 +542,12 @@ export async function withOverallTimeout<T>(
           const result = await task()
           return { result, index }
         } catch (error) {
-          return { error: XHEError.classify(error), index }
+          return { error: CFError.classify(error), index }
         }
       }),
     ).then(settledResults =>
       settledResults.map(result =>
-        result.status === 'fulfilled' ? result.value : { error: XHEError.classify(result.reason), index: 0 },
+        result.status === 'fulfilled' ? result.value : { error: CFError.classify(result.reason), index: 0 },
       ),
     ),
     { timeoutMs, message: `Batch operations timed out after ${timeoutMs}ms` },
@@ -569,7 +569,7 @@ export interface FallbackConfig<T> {
   /** Whether to try all fallbacks or stop at first success */
   tryAll?: boolean
   /** Custom error handler for each attempt */
-  onError?: (error: XHEError, attempt: { type: 'primary' | 'fallback'; index: number }) => void
+  onError?: (error: CFError, attempt: { type: 'primary' | 'fallback'; index: number }) => void
 }
 
 /**
@@ -583,24 +583,24 @@ export async function withGracefulDegradation<T>(
     ...config.fallbacks.map((fn, i) => ({ fn, type: 'fallback' as const, index: i + 1 })),
   ]
 
-  const errors: Array<XHEError> = []
+  const errors: Array<CFError> = []
 
   for (const attempt of attempts) {
     try {
       const result = await attempt.fn()
       return { result, source: attempt.type, index: attempt.index }
     } catch (error) {
-      const xheError = XHEError.classify(error)
-      errors.push(xheError)
+      const cfError = CFError.classify(error)
+      errors.push(cfError)
 
       if (config.onError) {
-        config.onError(xheError, { type: attempt.type, index: attempt.index })
+        config.onError(cfError, { type: attempt.type, index: attempt.index })
       }
     }
   }
 
   // All failed - throw aggregated error
-  throw new XHEError(
+  throw new CFError(
     `All ${attempts.length} attempts failed (${errors.length} errors)`,
     {
       category: 'external',
@@ -637,7 +637,7 @@ export class Bulkhead {
   private runningCount: number = 0
   private waitQueue: Array<{
     resolve: () => void
-    reject: (error: XHEError) => void
+    reject: (error: CFError) => void
     timestamp: number
   }> = []
   private readonly config: BulkheadConfig
@@ -676,7 +676,7 @@ export class Bulkhead {
 
     // Check queue capacity
     if (this.waitQueue.length >= this.config.maxWaitQueue) {
-      throw new XHEError(
+      throw new CFError(
         `Bulkhead '${this.config.name}' wait queue full`,
         {
           category: 'resource_exhausted',
@@ -698,7 +698,7 @@ export class Bulkhead {
           this.runningCount++
           resolve()
         },
-        reject: (error: XHEError) => reject(error),
+        reject: (error: CFError) => reject(error),
         timestamp: Date.now(),
       }
 
@@ -817,9 +817,9 @@ export interface ErrorAggregation {
   totalErrors: number
   byCategory: Record<ErrorCategory, number>
   bySeverity: Record<ErrorSeverity, number>
-  criticalErrors: XHEError[]
-  retryableErrors: XHEError[]
-  nonRetryableErrors: XHEError[]
+  criticalErrors: CFError[]
+  retryableErrors: CFError[]
+  nonRetryableErrors: CFError[]
   uniqueMessages: Set<string>
   timestamp: number
 }
@@ -828,10 +828,10 @@ export interface ErrorAggregation {
  * Aggregate multiple errors for analysis
  */
 export function aggregateErrors(errors: Array<unknown>): ErrorAggregation {
-  const xheErrors = errors.map(e => XHEError.classify(e))
+  const cfErrors = errors.map(e => CFError.classify(e))
 
   const aggregation: ErrorAggregation = {
-    totalErrors: xheErrors.length,
+    totalErrors: cfErrors.length,
     byCategory: {} as Record<ErrorCategory, number>,
     bySeverity: {} as Record<ErrorSeverity, number>,
     criticalErrors: [],
@@ -841,7 +841,7 @@ export function aggregateErrors(errors: Array<unknown>): ErrorAggregation {
     timestamp: Date.now(),
   }
 
-  for (const error of xheErrors) {
+  for (const error of cfErrors) {
     // Count by category
     aggregation.byCategory[error.category] = (aggregation.byCategory[error.category] || 0) + 1
 

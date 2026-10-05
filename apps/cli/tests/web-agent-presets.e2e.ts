@@ -23,7 +23,7 @@ import type {} from '@origin-ai/cf-token-meter'
 
 const CONFIG_DIR = fileURLToPath(new URL('../config/', import.meta.url))
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url))
-/** The shipped Web surface: the xhe-base and xhe-web-app bundle patches over an empty preset root. */
+/** The shipped Web surface: the cf-base and cf-web-app bundle patches over an empty preset root. */
 const BASE_PATCH = join(REPO_ROOT, 'packages/bundle/base/cordis.patch.yml')
 const WEB_PATCH = join(REPO_ROOT, 'packages/bundle/web-app/cordis.patch.yml')
 const CODEX_PACKAGE_DIR = join(REPO_ROOT, 'packages/subagent/subagent-codex')
@@ -60,7 +60,7 @@ async function bootWeb(
     // names only the shipped root.
     { id: 'settings', config: { path: settingsFile, watch: false } },
     // storage-json's root is anchored to the real $CF_HOME. Unpinned, this
-    // file writes the developer's own `~/.dsh/storages/` — and then reads it
+    // file writes the developer's own `~/.cf/storages/` — and then reads it
     // back on the next run, so a stored document from any other build decides
     // this test's boot. Same reason the settings row above is pinned.
     { id: 'storage-json', config: { root: storageRoot } },
@@ -96,7 +96,7 @@ async function bootWeb(
       { id: 'ui-directory-picker-browse', name: '@origin-ai/cf-client-ui-directory-picker-browse' },
     ] },
     // The roster AppCLIEntry would patch in; only the shipped root, so a
-    // developer's own `~/.dsh/.preset` cannot change this test's outcome.
+    // developer's own `~/.cf/.preset` cannot change this test's outcome.
     // `default` here is the COMPOSITION default — the base layer the settings
     // document overrides.
     {
@@ -117,8 +117,8 @@ async function bootWeb(
   healProfilesModuleFallback(INSTALL_ANCHOR, home)
   const profileDir = join(home, 'profiles', 'spec')
   await mkdir(profileDir, { recursive: true })
-  // Product Bundles are installed into the Profile, not the dsh app. Model
-  // pnpm's package link for only the selected products; their own production
+  // Product Bundles are installed into the Profile, not the cf app. Model
+  // npm's package link for only the selected products; their own production
   // dependencies resolve from the linked workspace packages, while shared
   // peers still resolve through the installation fallback above.
   for (const packageDir of profilePackages) {
@@ -128,21 +128,21 @@ async function bootWeb(
     await symlink(packageDir, link, 'junction')
   }
   let bundlePatches: PatchOptions[] = [
-    ...loadOverlayPatches('xhe-test', BASE_PATCH),
-    ...loadOverlayPatches('xhe-test', WEB_PATCH),
+    ...loadOverlayPatches('cf-test', BASE_PATCH),
+    ...loadOverlayPatches('cf-test', WEB_PATCH),
   ]
   if (profileBundles !== undefined) {
     await writeFile(join(profileDir, 'package.json'), JSON.stringify({
       private: true,
       dependencies: Object.fromEntries(profileBundles.map(name => [name, 'workspace:*'])),
-      dsh: { profile: { bundles: profileBundles } },
+      cf: { profile: { bundles: profileBundles } },
     }, null, 2) + '\n')
-    const profile = loadProfile('xhe-test', 'spec', INSTALL_ANCHOR, home, { userLayer: false })
+    const profile = loadProfile('cf-test', 'spec', INSTALL_ANCHOR, home, { userLayer: false })
     bundlePatches = profile.layers.flatMap(layer => layer.patches)
   }
   const rootConfig = join(profileDir, 'cordis.yml')
   await writeFile(rootConfig, '[]\n')
-  return await boot('xhe-test', rootConfig, [...bundlePatches, ...overrides], (bootCtx) => {
+  return await boot('cf-test', rootConfig, [...bundlePatches, ...overrides], (bootCtx) => {
     provideCmdline(bootCtx, { args: [], exit: () => {} })
   })
 }
@@ -174,7 +174,7 @@ function enablePresetTool(composition: string, id: string): string {
 
 let ctx: Context
 beforeAll(async () => {
-  const settingsFile = join(await mkdtemp(join(tmpdir(), 'xhe-web-presets-')), 'settings.yaml')
+  const settingsFile = join(await mkdtemp(join(tmpdir(), 'cf-web-presets-')), 'settings.yaml')
   await writeFile(settingsFile, '{}\n')
   ctx = await bootWeb(settingsFile)
 }, 120_000)
@@ -372,9 +372,9 @@ describe('the shipped Web composition', () => {
   })
 
   it('merges the global skill layer into a preset agent\'s catalog, keeping local discovery preset-side', async () => {
-    const proj = await mkdtemp(join(tmpdir(), 'xhe-preset-skill-proj-'))
-    await mkdir(join(proj, '.dsh', 'skills', 'project-proof'), { recursive: true })
-    await writeFile(join(proj, '.dsh', 'skills', 'project-proof', 'SKILL.md'), [
+    const proj = await mkdtemp(join(tmpdir(), 'cf-preset-skill-proj-'))
+    await mkdir(join(proj, '.cf', 'skills', 'project-proof'), { recursive: true })
+    await writeFile(join(proj, '.cf', 'skills', 'project-proof', 'SKILL.md'), [
       '---',
       'name: project-proof',
       'description: Proves the preset layer discovers project skills beside global ones.',
@@ -385,7 +385,7 @@ describe('the shipped Web composition', () => {
     ].join('\n'))
 
     const handle = await ctx.agents.create({
-      // Unique per run: the composition persists into the ambient XHE home,
+      // Unique per run: the composition persists into the ambient CF home,
       // and a fixed id would collide with a log an earlier run left there.
       sessionId: SessionId(`preset-skills-standard-${randomUUID()}`),
       setup: agentCtx => ctx.agentPresets.mount(agentCtx, 'standard').then(() => undefined),
@@ -462,7 +462,7 @@ describe('product Bundle and user-preset intersection', () => {
   type PresetId = typeof presetIds[number]
 
   async function bootProducts(installed: readonly Product[]): Promise<Context> {
-    const root = await mkdtemp(join(tmpdir(), 'xhe-product-presets-'))
+    const root = await mkdtemp(join(tmpdir(), 'cf-product-presets-'))
     const userRoot = join(root, 'presets')
     const settingsFile = join(root, 'settings.yaml')
     const standard = await readFile(join(CONFIG_DIR, 'agent-presets', 'standard', 'agent.cordis.yml'), 'utf8')
@@ -713,14 +713,14 @@ describe('a launcher that configures no writable root', () => {
   // The claim this default exists for, asserted through the real shipped
   // bundles rather than a hand-built context: `apps/cli` patches in only the
   // system root, and a person's own presets are found anyway because the
-  // roster derives `<dshHome>/.agent-presets` itself. `$CF_HOME` is pointed
+  // roster derives `<cfHome>/.agent-presets` itself. `$CF_HOME` is pointed
   // at a temp home BEFORE boot — the derived root is resolved when the plugin
   // is constructed, and an unpinned run would read the developer's own.
   let derivedCtx: Context
   let previousHome: string | undefined
 
   beforeAll(async () => {
-    const home = await mkdtemp(join(tmpdir(), 'xhe-preset-derived-'))
+    const home = await mkdtemp(join(tmpdir(), 'cf-preset-derived-'))
     previousHome = process.env.CF_HOME
     process.env.CF_HOME = home
     await mkdir(join(home, '.agent-presets', 'derived-mine'), { recursive: true })
@@ -728,7 +728,7 @@ describe('a launcher that configures no writable root', () => {
       join(home, '.agent-presets', 'derived-mine', 'agent.cordis.yml'),
       '- id: tool-todo\n  name: \'@origin-ai/cf-tool-todo\'\n  config:\n    allowParallelInProgress: true\n',
     )
-    const settingsFile = join(await mkdtemp(join(tmpdir(), 'xhe-preset-derived-settings-')), 'settings.yaml')
+    const settingsFile = join(await mkdtemp(join(tmpdir(), 'cf-preset-derived-settings-')), 'settings.yaml')
     await writeFile(settingsFile, '{}\n')
     // Only the shipped root, exactly what `composeProfile` supplies; the
     // writable one is the roster's own default rather than this patch's job.
@@ -774,8 +774,8 @@ describe('authoring a preset on the shipped composition', () => {
   let userRoot: string
 
   beforeAll(async () => {
-    userRoot = join(await mkdtemp(join(tmpdir(), 'xhe-preset-authoring-')), 'profiles')
-    const settingsFile = join(await mkdtemp(join(tmpdir(), 'xhe-preset-authoring-settings-')), 'settings.yaml')
+    userRoot = join(await mkdtemp(join(tmpdir(), 'cf-preset-authoring-')), 'profiles')
+    const settingsFile = join(await mkdtemp(join(tmpdir(), 'cf-preset-authoring-settings-')), 'settings.yaml')
     await writeFile(settingsFile, '{}\n')
     authorCtx = await bootWeb(settingsFile, [{
       id: 'agent-presets',

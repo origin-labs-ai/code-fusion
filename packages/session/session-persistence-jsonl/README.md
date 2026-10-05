@@ -1,6 +1,6 @@
 # @origin-ai/cf-session-persistence-jsonl
 
-The JSONL durable session-persistence backend — a concrete `SessionPersistence` (the `xhe-session-persistence` seam). Each session has one append-only logical JSONL log, stored as `.jsonl.zstd` by default or raw `.jsonl` when compression is disabled.
+The JSONL durable session-persistence backend — a concrete `SessionPersistence` (the `cf-session-persistence` seam). Each session has one append-only logical JSONL log, stored as `.jsonl.zstd` by default or raw `.jsonl` when compression is disabled.
 
 ## On-disk layout
 

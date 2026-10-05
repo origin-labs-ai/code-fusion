@@ -12,7 +12,7 @@
     },
     {
       "op": "waitForFile",
-      "path": ".xhe-snapshot-subagent-settled"
+      "path": ".cf-snapshot-subagent-settled"
     },
     {
       "op": "waitForTurnStart",

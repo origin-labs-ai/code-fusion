@@ -90,7 +90,7 @@ export interface GoalConfig {
  * `bash` name.
  */
 export interface Config {
-  /** The agent-loop `agents` list (see xhe-agent-loop's `Config`). */
+  /** The agent-loop `agents` list (see cf-agent-loop's `Config`). */
   agents?: AgentLoopConfig['agents']
   /** Agent-loop concurrency cap; `1` is serial. */
   maxParallelToolCalls?: AgentLoopConfig['maxParallelToolCalls']
@@ -98,11 +98,11 @@ export interface Config {
   includeHarnessIdentity?: SystemPromptConfig['includeHarnessIdentity']
   /** Whether model history includes dynamic runtime-context snapshots (default true). */
   includeRuntimeContext?: SystemPromptConfig['includeRuntimeContext']
-  /** The deployment persona (see xhe-system-prompt's `Config`). */
+  /** The deployment persona (see cf-system-prompt's `Config`). */
   persona?: SystemPromptConfig['persona']
-  /** The explicit model-facing tool order (see xhe-system-prompt's `Config`). */
+  /** The explicit model-facing tool order (see cf-system-prompt's `Config`). */
   toolOrder?: SystemPromptConfig['toolOrder']
-  /** The tool registry's config — its presentation `mode` (see xhe-tools' `Config`). */
+  /** The tool registry's config — its presentation `mode` (see cf-tools' `Config`). */
   tools?: ToolsConfig
   /** CodeFusion home directory shared by shell context and local skill discovery. */
   cfHome?: string

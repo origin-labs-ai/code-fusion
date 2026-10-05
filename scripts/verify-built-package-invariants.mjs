@@ -45,10 +45,10 @@ for (const manifestPath of manifests) {
   }
 
   // Keep the staged view below its owning package so Node reaches the real
-  // pnpm dependency links. Junctioning node_modules elsewhere breaks pnpm's
+  // npm dependency links. Junctioning node_modules elsewhere breaks npm's
   // relative workspace links on Windows. Copy the manifest-declared lib view
   // so a companion that imports an undeclared runtime chunk fails here.
-  const stagedPackageDir = mkdtempSync(resolve(packageDir, '.xhe-built-invariant-'))
+  const stagedPackageDir = mkdtempSync(resolve(packageDir, '.cf-built-invariant-'))
   try {
     copyFileSync(resolve(packageDir, 'package.json'), resolve(stagedPackageDir, 'package.json'))
     copyDeclaredLibFiles(packageDir, stagedPackageDir, manifest.files)

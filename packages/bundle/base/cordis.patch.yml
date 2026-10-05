@@ -1,4 +1,4 @@
-# The xhe-base bundle patch: the shared core of every dsh profile, applied as
+# The cf-base bundle patch: the shared core of every cf profile, applied as
 # ONE insert over the empty profile root. Later bundle patches and the user's
 # profile cordis.patch.yml address these rows by id, with the last write
 # winning per row.
@@ -126,13 +126,13 @@
     - id: session-projection
       name: '@origin-ai/cf-session-projection'
 
-    # Session telemetry is mounted but disabled by default. XHE_TELEMETRY_MODE
+    # Session telemetry is mounted but disabled by default. CF_TELEMETRY_MODE
     # explicitly opts into FULL or FEEDBACK_ONLY reporting; uploading mirrors
     # session-log records onto OTLP/HTTP logs with no session-telemetry/record redaction
     # rule, so exports are the raw captured copy. The deployment stance, env
     # seams, and follow-ups are pinned in the default-off Agent Note.
-    # XHE_TELEMETRY_OTLP_URL overrides the production endpoint. A non-empty
-    # XHE_TELEMETRY_DISABLED — any value, including '0'/'false' — opts the
+    # CF_TELEMETRY_OTLP_URL overrides the production endpoint. A non-empty
+    # CF_TELEMETRY_DISABLED — any value, including '0'/'false' — opts the
     # process out (the launchers patch the row disabled; config cannot disable
     # a row). Exports carry the harness home's anonymous user id ($CF_HOME/.anonymous-user-id,
     # random UUID; delete the file to reset the identity) as the Resource's
@@ -148,10 +148,10 @@
     - id: session-telemetry-otel
       name: '@origin-ai/cf-session-telemetry-otel'
       config:
-        mode: !!js process.env.XHE_TELEMETRY_MODE || 'DISABLED'
+        mode: !!js process.env.CF_TELEMETRY_MODE || 'DISABLED'
         shutdownTimeoutMillis: 3000
         exporter:
-          url: !!js process.env.XHE_TELEMETRY_OTLP_URL ?? 'https://harness-telemetry.deepseeksvc.com/v1/logs'
+          url: !!js process.env.CF_TELEMETRY_OTLP_URL ?? 'https://harness-telemetry.deepseeksvc.com/v1/logs'
           compression: gzip
           timeoutMillis: 1000
         processor:
@@ -172,7 +172,7 @@
     - id: sandbox-policy
       name: '@origin-ai/cf-sandbox-policy'
       config:
-        mode: !!js process.env.XHE_PERMISSION_MODE ?? 'workspace-write'
+        mode: !!js process.env.CF_PERMISSION_MODE ?? 'workspace-write'
         workspaceRoot: !!js process.cwd()
 
     - id: bash-sandbox
@@ -188,7 +188,7 @@
     - id: approval
       name: '@origin-ai/cf-user-approval'
       config:
-        policy: !!js "(process.env.XHE_PERMISSION_MODE ?? 'workspace-write') === 'danger-full-access' ? 'never' : 'ask'"
+        policy: !!js "(process.env.CF_PERMISSION_MODE ?? 'workspace-write') === 'danger-full-access' ? 'never' : 'ask'"
 
     - id: permission
       name: '@origin-ai/cf-permission-presets'

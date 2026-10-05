@@ -1,5 +1,5 @@
 # Bundled default config. The runtime still requires an explicit
-# $XHE_CORDIS_CONFIG or argv path; the SDK injects this path for bundled
+# $CF_CORDIS_CONFIG or argv path; the SDK injects this path for bundled
 # zero-config launches. SDK-set session-root and cwd variables have manual-run fallbacks.
 
 # Stdio JSON-RPC server entry; without it the agent has no SDK client.
@@ -20,18 +20,18 @@
 - id: llm-deepseek
   name: '@origin-ai/cf-llm-deepseek'
 
-# JSONL persistence; $XHE_SESSION_ROOT wins over ./.sessions in the process cwd.
+# JSONL persistence; $CF_SESSION_ROOT wins over ./.sessions in the process cwd.
 - id: sessions
   name: '@origin-ai/cf-session-persistence-jsonl'
   config:
-    root: !!js process.env.XHE_SESSION_ROOT ?? './.sessions'
+    root: !!js process.env.CF_SESSION_ROOT ?? './.sessions'
 
 # Persistence owns durable storage; this separate policy explicitly selects
 # the request, tool-dispatch, and completed-step durability checkpoints.
 - id: session-checkpoints
   name: '@origin-ai/cf-session-checkpoint-policy'
 
-# Local bash executor; $XHE_CWD wins over the process cwd.
+# Local bash executor; $CF_CWD wins over the process cwd.
 # Managed child-process groups for the bash executor (spawn/kill/output plumbing).
 - id: subprocess
   name: '@origin-ai/cf-subprocess-local'
@@ -39,11 +39,11 @@
 - id: bash
   name: '@origin-ai/cf-bash-local'
   config:
-    cwd: !!js process.env.XHE_CWD ?? process.cwd()
+    cwd: !!js process.env.CF_CWD ?? process.cwd()
 
 # Local filesystem provider for workspace instruction loading. This does not
 # expose model-facing file tools by itself.
 - id: fs-local
   name: '@origin-ai/cf-fs-local'
   config:
-    cwd: !!js process.env.XHE_CWD ?? process.cwd()
+    cwd: !!js process.env.CF_CWD ?? process.cwd()

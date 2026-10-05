@@ -22,7 +22,7 @@
  * {@link EXACT_EDITS} with an exact hit count, so an upstream change to one of
  * them fails loudly instead of being silently skipped.
  *
- * Usage: `pnpm run rescope-vendor [--apply|--check] [--reverse]`. Without a
+ * Usage: `npm run rescope-vendor [--apply|--check] [--reverse]`. Without a
  * mode it reports what would change. `--check` asserts the post-state: no
  * residue, every exact edit landed, every postcondition holds, and a second
  * `--apply` would be a no-op.
@@ -155,7 +155,7 @@ const POSTCONDITIONS: readonly PostCondition[] = [
   // The vendored README owns this required entry; reject its deletion or duplication.
   { file: 'vendor/README.md', text: '17. **`@deepseek-ai` rescope**', count: 1 },
   { file: 'knip.json', text: '@cordisjs', count: 0 },
-  { file: 'pnpm-workspace.yaml', text: 'cordis@4.0.0-rc.7', count: 0 },
+  { file: 'package.json', text: 'cordis@4.0.0-rc.7', count: 0 },
   // The preset ids in this table are product data, not package names.
   { file: 'packages/client/ui-agent-preset/tests/locales.client.spec.ts', text: '[\'cordis\', \'presetCordisName\'', count: 1 },
   // The preset id the shipped composition documents to its own model.
@@ -228,19 +228,6 @@ const EXACT_EDITS: readonly ExactEdit[] = [
     expect: 1,
   },
   {
-    // Rescoped packages are never fetched from a registry, so the exclusion is dead config.
-    id: 'pnpm-release-age',
-    file: 'pnpm-workspace.yaml',
-    find: `minimumReleaseAgeExclude:
-  # Cordis release candidates are source-vendored and pinned in vendor/README.md
-  # during the same-day sync that updates package manifests and the lockfile.
-  - '@cordisjs/plugin-loader@1.0.0-rc.5'
-  - cordis@4.0.0-rc.7
-`,
-    replace: 'minimumReleaseAgeExclude:\n',
-    expect: 1,
-  },
-  {
     id: 'publication-set-scope-assertion',
     file: 'scripts/publish-npm-baseline.ts',
     find: '      if (!isVendored && !name.startsWith(\'@deepseek-ai/\')) {',
@@ -252,8 +239,8 @@ const EXACT_EDITS: readonly ExactEdit[] = [
   {
     id: 'vendor-readme-preamble',
     file: 'vendor/README.md',
-    find: 'All vendored packages keep their **original npm names** and are marked `private: true` — they are never published from this repo. `pnpm-workspace.yaml#linkWorkspacePackages` makes matching upstream semver ranges resolve these pinned workspaces, including imports from built `lib/`; disabling it substitutes npm copies behind the same names.',
-    replace: 'All vendored packages are **renamed into the `@deepseek-ai` scope** (`cordis` → `@deepseek-ai/cordis`, `@cordisjs/plugin-<x>` → `@deepseek-ai/cordis-plugin-<x>`): every harness package declares `cordis` as a peer dependency, so publishing the harness publishes this framework layer too, and a publication under the upstream names would squat them on the registry. Directory names and upstream version numbers are deliberately unchanged, so the manifest below still reads as an upstream snapshot. `pnpm-workspace.yaml#linkWorkspacePackages` makes those preserved semver ranges resolve these pinned workspaces, including imports from built `lib/`.',
+    find: 'All vendored packages keep their **original npm names** and are marked `private: true` — they are never published from this repo.',
+    replace: 'All vendored packages are **renamed into the `@deepseek-ai` scope** (`cordis` → `@deepseek-ai/cordis`, `@cordisjs/plugin-<x>` → `@deepseek-ai/cordis-plugin-<x>`): every harness package declares `cordis` as a peer dependency, so publishing the harness publishes this framework layer too, and a publication under the upstream names would squat them on the registry. Directory names and upstream version numbers are deliberately unchanged, so the manifest below still reads as an upstream snapshot. npm workspaces link those preserved semver ranges to these pinned workspaces automatically, including imports from built `lib/`. The `hygiene` gate `verify-vendored-links` asserts every vendored name resolves to a workspace `link:` in `package-lock.json` with no registry copy alongside. Schemastery\'s manifest additionally declares a conditional `exports` map (import → `.mjs`, require → `.cjs`): npm links the directory itself, so without `exports` Node\'s ESM resolver would fall back to `main` and load the CJS entry whose lazy `require(\'@deepseek-ai/cosmokit\')` can race ESM loading of the same linked module under module-hook hosts (vitest). Upstream MIT `LICENSE` files are preserved in each package directory.',
     expect: 1,
   },
   {
@@ -456,11 +443,11 @@ const VENDORED_LIBRARY = /^@deepseek-ai\\/(cosmokit|schemastery)(\\/|$)/
     file: 'packages/sandbox/sandbox-local/tests/packed-install.e2e.ts',
     find: `    // Peer ranges resolve to the tarballs; Cordis is pinned to their peer range. Do not omit optional
     // dependencies because the launcher selects its OS/CPU package through one.
-    writeFileSync(join(consumerDir, 'package.json'), JSON.stringify({ name: 'xhe-packed-consumer', private: true, type: 'module' }))
+    writeFileSync(join(consumerDir, 'package.json'), JSON.stringify({ name: 'cf-packed-consumer', private: true, type: 'module' }))
     const install = spawnSync('npm', ['install', '--no-audit', '--no-fund', ...tarballs, 'cordis@4.0.0-rc.7'], {`,
     replace: `    // Peer ranges resolve to the tarballs, the framework peer included. Do not omit optional
     // dependencies because the launcher selects its OS/CPU package through one.
-    writeFileSync(join(consumerDir, 'package.json'), JSON.stringify({ name: 'xhe-packed-consumer', private: true, type: 'module' }))
+    writeFileSync(join(consumerDir, 'package.json'), JSON.stringify({ name: 'cf-packed-consumer', private: true, type: 'module' }))
     const install = spawnSync('npm', ['install', '--no-audit', '--no-fund', ...tarballs], {`,
     expect: 1,
   },
@@ -499,7 +486,7 @@ function excluded(file: string): boolean {
   // The mapping documents state both names on purpose.
   if (file === 'docs/rescope.md' || file === 'docs/rescope.zh.md') return true
   if (file.endsWith('.i18n.yaml')) return true // blob-hash records, re-recorded by the pairing gate
-  if (file === 'pnpm-lock.yaml') return true // regenerated by pnpm install
+  if (file === 'package-lock.json') return true // regenerated by npm install
   if (/^vendor\/[^/]+\/(README\.md|LICENSE)$/.test(file)) return true // upstream files kept verbatim
   return !EXTENSIONS.some(extension => file.endsWith(extension))
 }
@@ -709,7 +696,7 @@ function main(): void {
   } else if (mode === 'check') {
     console.log('rescope-vendor: post-state verified — no residue, every exact edit landed, idempotent.')
   } else if (mode === 'apply') {
-    console.log('rescope-vendor: applied. Run `pnpm install`, `pnpm run gen-third-party-notices`, and re-record the touched bilingual pairs.')
+    console.log('rescope-vendor: applied. Run `npm install`, `npm run gen-third-party-notices`, and re-record the touched bilingual pairs.')
   }
 }
 

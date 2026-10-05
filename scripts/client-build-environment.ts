@@ -11,22 +11,22 @@ import {
 import { dirname, resolve } from 'node:path'
 
 /** Prefix reserved for build-time values that may be embedded in browser artifacts. */
-const CLIENT_BUILD_ENV_PREFIX = 'XHE_CLIENT_'
+const CLIENT_BUILD_ENV_PREFIX = 'CF_CLIENT_'
 
 /** Non-public selector used by build orchestration to request a named client profile. */
-export const CLIENT_BUILD_PROFILE_SELECTOR = 'XHE_BUILD_CLIENT_PROFILE'
+export const CLIENT_BUILD_PROFILE_SELECTOR = 'CF_BUILD_CLIENT_PROFILE'
 
-/** Public client environment required by official XHE artifacts. */
+/** Public client environment required by official CodeFusion artifacts. */
 const OFFICIAL_CLIENT_BUILD_ENVIRONMENT = {
-  XHE_CLIENT_BUILD_PROFILE: 'official',
-  XHE_CLIENT_TITLE: 'Xee Harness Enhanced',
+  CF_CLIENT_BUILD_PROFILE: 'official',
+  CF_CLIENT_TITLE: 'CodeFusion',
 } as const
 
 /** Public variable carrying the source commit embedded in client artifacts. */
-const CLIENT_COMMIT_HASH_VARIABLE = 'XHE_CLIENT_COMMIT_HASH'
+const CLIENT_COMMIT_HASH_VARIABLE = 'CF_CLIENT_COMMIT_HASH'
 
 /** Repository-relative path of the complete client build record. */
-export const CLIENT_BUILD_RECORD_PATH = '.xhe-build/client-build-environment.json'
+export const CLIENT_BUILD_RECORD_PATH = '.cf-build/client-build-environment.json'
 
 const CLIENT_BUILD_RECORD_FORMAT = 1
 const CLIENT_ARTIFACT_PATTERNS = [
@@ -66,9 +66,9 @@ export function repositoryCommitHash(root: string, environment: NodeJS.ProcessEn
 export function officialClientBuildEnvironment(
   root: string,
   environment: NodeJS.ProcessEnv = process.env,
-): Readonly<Record<`XHE_CLIENT_${string}`, string>> {
+): Readonly<Record<`CF_CLIENT_${string}`, string>> {
   return {
-    XHE_CLIENT_COMMIT_HASH: repositoryCommitHash(root, environment),
+    CF_CLIENT_COMMIT_HASH: repositoryCommitHash(root, environment),
     ...OFFICIAL_CLIENT_BUILD_ENVIRONMENT,
   }
 }
@@ -94,7 +94,7 @@ export interface ClientBuildRecord {
 /**
  * Collect the public client environment in deterministic key order.
  * @param environment - environment inherited by the build process.
- * @returns defined `XHE_CLIENT_*` values only.
+ * @returns defined `CF_CLIENT_*` values only.
  */
 function clientBuildEnvironment(environment: NodeJS.ProcessEnv): ClientBuildEnvironment {
   return Object.fromEntries(Object.entries(environment)
@@ -118,7 +118,7 @@ export function resolveClientBuildEnvironment(
     if (commitHash === undefined) {
       throw new Error(`${CLIENT_COMMIT_HASH_VARIABLE} is required for the official client build profile`)
     }
-    return { XHE_CLIENT_COMMIT_HASH: commitHash, ...OFFICIAL_CLIENT_BUILD_ENVIRONMENT }
+    return { CF_CLIENT_COMMIT_HASH: commitHash, ...OFFICIAL_CLIENT_BUILD_ENVIRONMENT }
   }
   throw new Error(`unknown client build profile ${JSON.stringify(profile)}; expected "official"`)
 }
@@ -153,7 +153,7 @@ export function clientBuildProcessEnvironment(
  */
 export function assertClientBuildEnvironment(
   environment: Readonly<Record<string, string | undefined>>,
-  expected: Readonly<Record<`XHE_CLIENT_${string}`, string>>,
+  expected: Readonly<Record<`CF_CLIENT_${string}`, string>>,
 ): void {
   const actual = Object.fromEntries(Object.entries(environment)
     .filter(([name, value]) => name.startsWith(CLIENT_BUILD_ENV_PREFIX) && value !== undefined)
@@ -217,11 +217,11 @@ export function writeClientBuildRecord(
  */
 export function readClientBuildRecord(
   root: string,
-  expected?: Readonly<Record<`XHE_CLIENT_${string}`, string>>,
+  expected?: Readonly<Record<`CF_CLIENT_${string}`, string>>,
 ): ClientBuildRecord {
   const path = resolve(root, CLIENT_BUILD_RECORD_PATH)
   if (!existsSync(path)) {
-    throw new Error(`client build record ${CLIENT_BUILD_RECORD_PATH} is missing; run a complete pnpm run build first`)
+    throw new Error(`client build record ${CLIENT_BUILD_RECORD_PATH} is missing; run a complete npm run build first`)
   }
 
   let parsed: unknown
@@ -237,7 +237,7 @@ export function readClientBuildRecord(
   const current = clientArtifactDigest(root)
   if (current.fileCount !== record.artifacts.fileCount || current.sha256 !== record.artifacts.sha256) {
     throw new Error(
-      `client artifacts differ from ${CLIENT_BUILD_RECORD_PATH}; run a complete pnpm run build before consuming them`,
+      `client artifacts differ from ${CLIENT_BUILD_RECORD_PATH}; run a complete npm run build before consuming them`,
     )
   }
   return record

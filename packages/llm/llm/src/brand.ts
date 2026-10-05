@@ -1,10 +1,10 @@
 /**
- * xhe-llm's owned branded ids: tool-call correlation and provider request
+ * cf-llm's owned branded ids: tool-call correlation and provider request
  * diagnostics.
  *
  * The `Branded<B>` primitive itself lives in `@origin-ai/cf-brand` (a
  * zero-dependency type-only package) so every owner of a cross-boundary id can
- * brand it without depending on xhe-llm; see that package's README for the
+ * brand it without depending on cf-llm; see that package's README for the
  * nominal-typing policy.
  *
  * @module @origin-ai/cf-llm/brand

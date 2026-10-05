@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/host/plugin-inventory"
   },
   "type": "module",
@@ -52,17 +52,17 @@
     "zod": "^4.4.3"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-typert-protocol": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-typert-protocol": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-typert-protocol": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-typert-protocol": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

@@ -1,11 +1,11 @@
 /**
  * Keyless snapshot coverage for the TypeScript SDK path: each scenario spawns
- * the REAL `xhe-jsonrpc-agent` runtime (per `XHE_EXAMPLE_MODE`) through the
+ * the REAL `cf-jsonrpc-agent` runtime (per `CF_EXAMPLE_MODE`) through the
  * REAL `@origin-ai/cf-sdk-client`, drives one turn over stdio JSON-RPC,
  * and pins the SDK `RunResult`, the complete notification stream, and the
  * persisted session logs. Replay serves recorded model
- * responses via `llm-replay` (`cordis.snapshot.yml`); `XHE_SNAPSHOT=record`
- * re-records against the live API; `XHE_SNAPSHOT=refresh` replays committed
+ * responses via `llm-replay` (`cordis.snapshot.yml`); `CF_SNAPSHOT=record`
+ * re-records against the live API; `CF_SNAPSHOT=refresh` replays committed
  * fixtures and rewrites expected outputs.
  */
 
@@ -50,7 +50,7 @@ const MINIMAL_BASH_DESCRIPTION = `Run commands in a bash shell
 * Please avoid commands that may produce a very large amount of output.
 * Please run long lived commands in the background, e.g. 'sleep 10 &' or start a server in the background.`
 
-const mode = process.env.XHE_SNAPSHOT ?? 'replay'
+const mode = process.env.CF_SNAPSHOT ?? 'replay'
 const recording = mode === 'record'
 const refreshing = mode === 'refresh'
 
@@ -92,7 +92,7 @@ const SCENARIOS: SdkScenario[] = [
   },
   {
     name: 'bash-tool',
-    prompt: 'Run this exact command with your bash tool, then reply with its stdout only: echo xhe-sdk-proof-7391',
+    prompt: 'Run this exact command with your bash tool, then reply with its stdout only: echo cf-sdk-proof-7391',
     sessionId: 'sdk-snapshot-bash',
     children: 0,
   },
@@ -108,7 +108,7 @@ const SCENARIOS: SdkScenario[] = [
     sessionId: 'persistent-tools-snapshot',
     children: 0,
     configs: { live: minimalLiveConfig, replay: minimalReplayConfig },
-    environment: { XHE_SYSTEM_PROMPT: MINIMAL_SYSTEM_PROMPT },
+    environment: { CF_SYSTEM_PROMPT: MINIMAL_SYSTEM_PROMPT },
     expectedFiles: { 'note.txt': 'target:\n\tnew\n' },
     expectedTools: { bash: ['command'], str_replace_editor: ['command', 'path'] },
     expectedSystem: MINIMAL_SYSTEM_PROMPT,
@@ -280,16 +280,16 @@ async function runScenario(scenario: SdkScenario): Promise<{
   const env: Record<string, string> = {
     ...Object.fromEntries(Object.entries(process.env).filter(([, value]) => value !== undefined)) as Record<string, string>,
     ...Object.fromEntries(Object.entries(launch.env).filter(([, value]) => value !== undefined)) as Record<string, string>,
-    XHE_CORDIS_CONFIG: recording
+    CF_CORDIS_CONFIG: recording
       ? scenario.configs?.live ?? liveConfig
       : scenario.configs?.replay ?? replayConfig,
-    XHE_SESSION_ROOT: sessionsRoot,
-    XHE_CWD: cwd,
-    XHE_SNAPSHOT: mode,
+    CF_SESSION_ROOT: sessionsRoot,
+    CF_CWD: cwd,
+    CF_SNAPSHOT: mode,
     NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' '),
     ...parentFixture === undefined ? {} : {
-      XHE_SNAPSHOT_FILE: parentFixture,
-      ...childFixtures.length > 0 ? { XHE_SNAPSHOT_CHILD_FILES: childFixtures.join(delimiter) } : {},
+      CF_SNAPSHOT_FILE: parentFixture,
+      ...childFixtures.length > 0 ? { CF_SNAPSHOT_CHILD_FILES: childFixtures.join(delimiter) } : {},
     },
     ...scenario.environment,
   }

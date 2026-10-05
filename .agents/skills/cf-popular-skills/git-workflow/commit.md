@@ -1,4 +1,4 @@
-name: xhe-commit
+name: cf-commit
 description: Use when user wants to generate commit messages, create PRs, or manage git workflow. Analyzes changes and generates conventional commits.
 ---
 
@@ -39,7 +39,7 @@ description: Use when user wants to generate commit messages, create PRs, or man
 | `chore` | Maintenance tasks |
 | `revert` | Revert previous commit |
 
-### Scopes (XHE-Specific)
+### Scopes (CF-Specific)
 - `core` - Core agent/session packages
 - `llm` - LLM adapter changes
 - `shell/fs/web` - Capability plugins
@@ -110,7 +110,7 @@ Closes #456
 /pr
 
 # With specific template
-/pr --template XHE_PR_TEMPLATE
+/pr --template CF_PR_TEMPLATE
 
 # Target specific branch
 /pr --target main
@@ -135,7 +135,7 @@ Closes #456
 - [ ] Manual testing completed
 
 ## Checklist
-- [ ] Follows XHE conventions (AGENTS.md)
+- [ ] Follows CF conventions (AGENTS.md)
 - [ ] No new warnings/errors
 - [ ] Documentation updated
 - [ ] Session events properly emitted
@@ -180,7 +180,7 @@ Closes #456
 - Added input validation to shell provider (#345)
 ```
 
-## Integration with XHE Hooks
+## Integration with CF Hooks
 
 This skill integrates with:
 - **Pre-commit hooks**: Run quality checks before commit

@@ -1,5 +1,5 @@
 /**
- * XH Production Sweep — 4-agent sweep (QA + annotation-linter
+ * CF Production Sweep — 4-agent sweep (QA + annotation-linter
  * TODO/FIXME/XXX/HACK + adversarial + UX) with dedup / severity /
  * dependency graph → remediation + fresh resweep + READY gates.
  *

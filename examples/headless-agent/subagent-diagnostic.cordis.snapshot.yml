@@ -10,7 +10,7 @@
     root: './.sessions'
     compression: none
 
-# file/override both default to their XHE_SNAPSHOT_* env vars.
+# file/override both default to their CF_SNAPSHOT_* env vars.
 - id: replay
   name: '@origin-ai/cf-llm-replay'
 

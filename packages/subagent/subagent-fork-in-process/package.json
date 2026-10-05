@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/subagent/subagent-fork-in-process"
   },
   "type": "module",
@@ -32,27 +32,27 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-subagent-in-process-driver": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-subagent-in-process-driver": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-loop": "workspace:^",
-    "@origin-ai/cf-agent-loop-testkit": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-subagent-in-process-driver": "workspace:^",
-    "@origin-ai/cf-subagent-spawn-in-process": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-loop": "*",
+    "@origin-ai/cf-agent-loop-testkit": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-subagent-in-process-driver": "*",
+    "@origin-ai/cf-subagent-spawn-in-process": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/compaction/compaction-basic"
   },
   "type": "module",
@@ -32,15 +32,15 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-compaction": "workspace:^",
-    "@origin-ai/cf-commands": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-token-meter": "workspace:^",
-    "@origin-ai/cf-compaction-tool-result-pruner": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-compaction": "*",
+    "@origin-ai/cf-commands": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-token-meter": "*",
+    "@origin-ai/cf-compaction-tool-result-pruner": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "peerDependenciesMeta": {
     "@origin-ai/cf-compaction-tool-result-pruner": {
@@ -48,23 +48,23 @@
     }
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-loop": "workspace:^",
-    "@origin-ai/cf-agent-loop-testkit": "workspace:^",
-    "@origin-ai/cf-compaction": "workspace:^",
-    "@origin-ai/cf-commands": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-llm-retry": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-token-meter": "workspace:^",
-    "@origin-ai/cf-compaction-tool-result-pruner": "workspace:^",
-    "@origin-ai/cf-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-include": "*",
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-loop": "*",
+    "@origin-ai/cf-agent-loop-testkit": "*",
+    "@origin-ai/cf-compaction": "*",
+    "@origin-ai/cf-commands": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-llm-retry": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-token-meter": "*",
+    "@origin-ai/cf-compaction-tool-result-pruner": "*",
+    "@origin-ai/cf-tools": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

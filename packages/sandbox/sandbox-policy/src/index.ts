@@ -38,11 +38,11 @@ function resolveWorkspaceRoot(path: string): string {
 function renderPolicyContext(policy: SandboxExecutionPolicy): string {
   switch (policy.mode) {
     case 'read-only':
-      return 'Current XHE file policy: read-only. Any available operation enforced by the XHE file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.'
+      return 'Current CF file policy: read-only. Any available operation enforced by the CF file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.'
     case 'workspace-write':
-      return `Current XHE file policy: workspace-write. Any available operation enforced by the XHE file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)}. Some platform temporary areas may also be writable.`
+      return `Current CF file policy: workspace-write. Any available operation enforced by the CF file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)}. Some platform temporary areas may also be writable.`
     case 'danger-full-access':
-      return 'Current XHE file policy: danger-full-access. The XHE file sandbox does not restrict file modifications by available operations.'
+      return 'Current CF file policy: danger-full-access. The CF file sandbox does not restrict file modifications by available operations.'
     /* v8 ignore next 4 -- SandboxMode is a typed same-process closed union; this branch is only the static exhaustiveness guard. */
     default: {
       const mode: never = policy.mode

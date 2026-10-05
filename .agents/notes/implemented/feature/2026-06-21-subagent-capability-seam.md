@@ -2,7 +2,7 @@
 
 Status: implemented
 
-> The full seam is shipped: the `xhe-subagent` interface and `xhe-tool-subagent` consumer; the two in-process backends (`xhe-subagent-spawn-in-process`, `xhe-subagent-fork-in-process`); the nested-agent snapshot infrastructure ([per-session snapshot replay](../testing/2026-06-22-subagent-snapshot-replay.md)); and the out-of-process ACP, Codex, and Claude Code backends ([ACP Agent Note](2026-06-22-acp-subagent-backend.md), [product-provider Agent Note](2026-08-04-claude-code-and-codex-subagent-backends.md)).
+> The full seam is shipped: the `cf-subagent` interface and `cf-tool-subagent` consumer; the two in-process backends (`cf-subagent-spawn-in-process`, `cf-subagent-fork-in-process`); the nested-agent snapshot infrastructure ([per-session snapshot replay](../testing/2026-06-22-subagent-snapshot-replay.md)); and the out-of-process ACP, Codex, and Claude Code backends ([ACP Agent Note](2026-06-22-acp-subagent-backend.md), [product-provider Agent Note](2026-08-04-claude-code-and-codex-subagent-backends.md)).
 
 ## Problem
 
@@ -29,13 +29,13 @@ A new package group `packages/subagent/`:
 
 | Package | Role |
 |---|---|
-| `@origin-ai/xhe-subagent` | interface: `SubagentRuntime` (`ctx.subagents`), `SubagentProvider`, `SubagentRun`, the request/result/capability vocabulary, the `subagent/*` events |
-| `@origin-ai/xhe-subagent-spawn-in-process` | implementation: a fresh in-process child via `ctx.agents.create` |
-| `@origin-ai/xhe-subagent-fork-in-process` | implementation: an in-process child seeded with a snapshot of the parent's log |
-| `@origin-ai/xhe-subagent-acp` | implementation: an ACP client driving a configured child process |
-| `@origin-ai/xhe-subagent-codex` | implementation: a one-shot official Codex app-server process |
-| `@origin-ai/xhe-subagent-claude-code` | implementation: a one-shot official Claude Code process through the Agent SDK |
-| `@origin-ai/xhe-tool-subagent` | consumer: the model-facing `subagent` tool over `ctx.subagents` |
+| `@origin-ai/cf-subagent` | interface: `SubagentRuntime` (`ctx.subagents`), `SubagentProvider`, `SubagentRun`, the request/result/capability vocabulary, the `subagent/*` events |
+| `@origin-ai/cf-subagent-spawn-in-process` | implementation: a fresh in-process child via `ctx.agents.create` |
+| `@origin-ai/cf-subagent-fork-in-process` | implementation: an in-process child seeded with a snapshot of the parent's log |
+| `@origin-ai/cf-subagent-acp` | implementation: an ACP client driving a configured child process |
+| `@origin-ai/cf-subagent-codex` | implementation: a one-shot official Codex app-server process |
+| `@origin-ai/cf-subagent-claude-code` | implementation: a one-shot official Claude Code process through the Agent SDK |
+| `@origin-ai/cf-tool-subagent` | consumer: the model-facing `subagent` tool over `ctx.subagents` |
 
 ### The primitive: async `start → SubagentRun`
 
@@ -48,7 +48,7 @@ A provider exposes `start(request) → Promise<SubagentRun>`. Fulfillment publis
 
 ### Fork vs. fresh are separate backends, not a flag
 
-Fresh and forked children are separate providers, not a request flag. `xhe-subagent-spawn-in-process` starts an isolated child; `xhe-subagent-fork-in-process` seeds a balanced prefix containing only completed parent turns. The in-flight turn is excluded because its subagent call has no result yet and cannot form valid replay history.
+Fresh and forked children are separate providers, not a request flag. `cf-subagent-spawn-in-process` starts an isolated child; `cf-subagent-fork-in-process` seeds a balanced prefix containing only completed parent turns. The in-flight turn is excluded because its subagent call has no result yet and cannot form valid replay history.
 
 ### Child isolation and the parent log
 
@@ -56,11 +56,11 @@ Each in-process subagent runs in its **own `Session`** (own id, `parentSession` 
 
 ### Synchronous collect (first cut)
 
-`xhe-tool-subagent` passes its execution signal to `start()`, awaits the child result, and disposes the run before reporting. Non-completed outcomes become error results rather than successful partial output; they present the optional safe diagnostic owned by the [non-interactive permissions decision](2026-08-15-product-subagent-noninteractive-permissions.md) separately from partial assistant text. Independent result and disposal rejections remain independently observable.
+`cf-tool-subagent` passes its execution signal to `start()`, awaits the child result, and disposes the run before reporting. Non-completed outcomes become error results rather than successful partial output; they present the optional safe diagnostic owned by the [non-interactive permissions decision](2026-08-15-product-subagent-noninteractive-permissions.md) separately from partial assistant text. Independent result and disposal rejections remain independently observable.
 
 ### Provider selection is config, not model-facing
 
-`xhe-tool-subagent` binds to exactly one provider name (`Config.provider`); the model sees only `{ description, prompt }`. To expose more than one transport, load the tool plugin more than once, each bound to a different provider and a distinct `toolName` (the tool registry rejects a duplicate name). The *service* holds the multi-provider registry; the *tool* picks one — the schema carries no provider/type parameter.
+`cf-tool-subagent` binds to exactly one provider name (`Config.provider`); the model sees only `{ description, prompt }`. To expose more than one transport, load the tool plugin more than once, each bound to a different provider and a distinct `toolName` (the tool registry rejects a duplicate name). The *service* holds the multi-provider registry; the *tool* picks one — the schema carries no provider/type parameter.
 
 ## Testing
 

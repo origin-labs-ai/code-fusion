@@ -6,7 +6,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@origin-ai/cf-invariants'
 // Type-only: resolves the `system-prompt/assemble` waterfall this companion
-// joins, and the `agent` field `xhe-agent` merges into its context.
+// joins, and the `agent` field `cf-agent` merges into its context.
 import type {} from '@origin-ai/cf-system-prompt'
 import type {} from '@origin-ai/cf-agent'
 // Imported through the package name, not `./mount.ts`: a module shared between

@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/terminal/terminal-bash"
   },
   "type": "module",
@@ -32,28 +32,28 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-terminal": "workspace:^",
-    "@origin-ai/cf-sandbox": "workspace:^",
-    "@origin-ai/cf-sandbox-policy": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subprocess": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-terminal": "*",
+    "@origin-ai/cf-sandbox": "*",
+    "@origin-ai/cf-sandbox-policy": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subprocess": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "dependencies": {
-    "@origin-ai/cf-pwsh-local": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@origin-ai/cf-pwsh-local": "*",
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-terminal": "workspace:^",
-    "@origin-ai/cf-sandbox": "workspace:^",
-    "@origin-ai/cf-sandbox-policy": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subprocess": "workspace:^",
-    "@origin-ai/cf-subprocess-local": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-terminal": "*",
+    "@origin-ai/cf-sandbox": "*",
+    "@origin-ai/cf-sandbox-policy": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subprocess": "*",
+    "@origin-ai/cf-subprocess-local": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

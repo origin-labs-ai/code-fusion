@@ -16,10 +16,12 @@ import { resolveLinuxNodePtyAddon } from './build-exe-for-python-sdk-native-pty.
 const root = resolve(import.meta.dirname, '..')
 
 /** The closure manifest whose dependencies define the executable. */
-const DEPLOY_ROOT_PACKAGE = 'xhe-jsonrpc-agent-pkg'
+const DEPLOY_ROOT_PACKAGE = 'cf-jsonrpc-agent-pkg'
+/** That closure manifest, relative to the repository root. */
+const DEPLOY_ROOT_MANIFEST = 'python/sdk-runtime/package.json'
 /** The closed-runtime app entry inside the deployed closure. */
 const ENTRY_BIN = 'node_modules/@origin-ai/cf-sdk-jsonrpc-demo/lib/packaged-bin.js'
-const OUTPUT_BASENAME = 'xhe-jsonrpc-agent-pkg'
+const OUTPUT_BASENAME = 'cf-jsonrpc-agent-pkg'
 /** Default Node major; SEA mode requires at least Node 22. */
 const DEFAULT_NODE_RANGE = 'node24'
 /** Pinned for reproducible builds. */
@@ -131,7 +133,7 @@ class BuildCli {
   private constructor(
     /** Build targets; defaults to the host platform only. */
     readonly targets: readonly Target[],
-    /** Skip step 1 (`pnpm run build`); lib/ artifacts must already exist. */
+    /** Skip step 1 (`npm run build`); lib/ artifacts must already exist. */
     readonly skipBuild: boolean,
     /** Print every command and config patch instead of executing. */
     readonly dryRun: boolean,
@@ -185,11 +187,11 @@ class BuildCli {
 
   private static usage(): string {
     return [
-      'Usage: pnpm exec tsx scripts/build-exe-for-python-sdk.ts [flags]',
+      'Usage: npx tsx scripts/build-exe-for-python-sdk.ts [flags]',
       '',
       '  --targets=<t1,t2,...>  pkg targets, e.g. node24-linux-x64,node24-linux-arm64,node24-macos-arm64.',
       '                         Default: the host platform only (on node24).',
-      '  --skip-build           skip `pnpm run build` (lib/ artifacts must already exist).',
+      '  --skip-build           skip `npm run build` (lib/ artifacts must already exist).',
       '  --dry-run              print every command and config patch without executing.',
       '  --help                 print this help.',
       '',
@@ -199,8 +201,8 @@ class BuildCli {
   }
 }
 
-function pnpmBin(): string {
-  return process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+function npmBin(): string {
+  return process.platform === 'win32' ? 'npm.cmd' : 'npm'
 }
 
 /**
@@ -229,16 +231,16 @@ class SingleExeBuild {
 
   /** Verify the closure before compiling or packaging. */
   async verifyClosure(): Promise<void> {
-    await this.run('runtime dependency closure', pnpmBin(), ['run', 'verify-runtime-closure'])
+    await this.run('runtime dependency closure', npmBin(), ['run', 'verify-runtime-closure'])
   }
 
   /** Build all package artifacts unless `--skip-build` was passed. */
   async build(): Promise<void> {
     if (this.cli.skipBuild) {
-      console.log('build-exe-for-python-sdk: skipping pnpm run build (--skip-build)')
+      console.log('build-exe-for-python-sdk: skipping npm run build (--skip-build)')
       return
     }
-    await this.run('build', pnpmBin(), ['run', 'build'])
+    await this.run('build', npmBin(), ['run', 'build'])
   }
 
   /** Clear and deploy the runtime closure into the node carrier. */
@@ -248,17 +250,13 @@ class SingleExeBuild {
     }
     if (this.cli.dryRun) console.log(`build-exe-for-python-sdk: [dry-run] rm -rf ${this.staging}`)
     else await rm(this.staging, { recursive: true, force: true })
-    await this.run('deploy', pnpmBin(), [
-      '--filter',
-      DEPLOY_ROOT_PACKAGE,
-      'deploy',
-      '--legacy',
-      '--prod',
-      '--config.node-linker=hoisted',
-      '--config.auto-install-peers=false',
-      '--config.link-workspace-packages=true',
-      this.staging,
-    ])
+    if (this.cli.dryRun) {
+      console.log(`build-exe-for-python-sdk: [dry-run] stage the ${DEPLOY_ROOT_PACKAGE} production closure into ${this.staging}`)
+    } else {
+      await mkdir(this.staging, { recursive: true })
+      await copyFile(join(root, DEPLOY_ROOT_MANIFEST), join(this.staging, 'package.json'))
+      await this.copyProductionClosure()
+    }
     await this.restoreLegacyHoists()
     await this.materializeStagedLinks()
     if (this.cli.dryRun) {
@@ -269,14 +267,61 @@ class SingleExeBuild {
   }
 
   /**
-   * Restore direct packages that pnpm's legacy hoister places beside the deploy
-   * source instead of in the target. The runtime manifest supplies every peer,
-   * so package-local node_modules trees are omitted to preserve one flat Cordis
-   * instance and a symlink-free packaged payload.
+   * Copy the deploy root's production dependency closure into the carrier.
+   *
+   * npm has no `pnpm deploy`, and `ASSET_GLOBS` turns every JavaScript file
+   * under the carrier's `node_modules` into a pkg asset, so the carrier gets
+   * the walk's exact closure rather than the workspace's whole store.
+   * Resolution follows npm's hoisted layout: the repository store first, then
+   * the deploy root's own nested store. Each package's own `node_modules` is
+   * omitted so one flat Cordis instance survives into the payload.
+   */
+  private async copyProductionClosure(): Promise<void> {
+    const manifest = JSON.parse(await readFile(join(this.staging, 'package.json'), 'utf8')) as {
+      dependencies?: Record<string, string>
+      optionalDependencies?: Record<string, string>
+    }
+    const stores = [resolve(root, 'node_modules'), resolve(root, DEPLOY_SOURCE_NODE_MODULES)]
+    const pending = [...Object.keys(manifest.dependencies ?? {}), ...Object.keys(manifest.optionalDependencies ?? {})]
+    const staged = new Set<string>()
+    while (pending.length > 0) {
+      const name = pending.pop()
+      if (name === undefined || staged.has(name)) continue
+      staged.add(name)
+      const source = stores.map(store => join(store, name)).find(candidate => existsSync(join(candidate, 'package.json')))
+      if (source === undefined) {
+        throw new Error(`build-exe-for-python-sdk: ${name} is not installed in ${stores.join(' or ')}; run npm install.`)
+      }
+      const destination = join(this.staging, 'node_modules', name)
+      await mkdir(dirname(destination), { recursive: true })
+      const nestedNodeModules = join(source, 'node_modules')
+      await cp(source, destination, {
+        recursive: true,
+        dereference: true,
+        filter: path => path !== nestedNodeModules
+          && !path.startsWith(nestedNodeModules + sep)
+          && !path.split(sep).includes('.bin'),
+      })
+      const dependencyManifest = JSON.parse(await readFile(join(source, 'package.json'), 'utf8')) as {
+        dependencies?: Record<string, string>
+        optionalDependencies?: Record<string, string>
+      }
+      pending.push(...Object.keys(dependencyManifest.dependencies ?? {}))
+      pending.push(...Object.keys(dependencyManifest.optionalDependencies ?? {}))
+    }
+    console.log(`build-exe-for-python-sdk: staged ${String(staged.size)} production packages`)
+  }
+
+  /**
+   * Fill in any direct package the closure walk resolved from a nested store
+   * rather than the repository store, and fail when one is missing entirely.
+   * The runtime manifest supplies every peer, so package-local node_modules
+   * trees are omitted to preserve one flat Cordis instance and a symlink-free
+   * packaged payload.
    */
   private async restoreLegacyHoists(): Promise<void> {
     if (this.cli.dryRun) {
-      console.log('build-exe-for-python-sdk: [dry-run] restore direct dependencies omitted by legacy deploy')
+      console.log('build-exe-for-python-sdk: [dry-run] fill direct dependencies the closure walk left to a nested store')
       return
     }
     const manifestPath = join(this.staging, 'package.json')
@@ -365,7 +410,7 @@ class SingleExeBuild {
       return
     }
     if (!existsSync(manifestPath)) {
-      throw new Error(`build-exe-for-python-sdk: ${manifestPath} missing — pnpm deploy did not produce a staged package.`)
+      throw new Error(`build-exe-for-python-sdk: ${manifestPath} missing — the deploy stage did not produce a staged package.`)
     }
     if (!existsSync(join(this.staging, ENTRY_BIN))) {
       throw new Error(`build-exe-for-python-sdk: ${join(this.staging, ENTRY_BIN)} missing — run without --skip-build so lib/ artifacts exist.`)
@@ -384,9 +429,12 @@ class SingleExeBuild {
     const product = join(this.outDir, `${OUTPUT_BASENAME}-${target.platform}-${target.arch}`)
     await this.prepareNativePty(target)
     if (!this.cli.dryRun) await mkdir(this.outDir, { recursive: true })
-    await this.run(`pkg ${target.spec}`, pnpmBin(), [
-      'dlx',
-      PKG_SPEC,
+    await this.run(`pkg ${target.spec}`, npmBin(), [
+      'exec',
+      '--yes',
+      `--package=${PKG_SPEC}`,
+      '--',
+      'pkg',
       this.staging,
       '--sea',
       '--targets',

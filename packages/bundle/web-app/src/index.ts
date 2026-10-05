@@ -1,6 +1,6 @@
 /**
  * @origin-ai/cf-web-app — the browser-surface bundle's runtime glue plugin
- * plus the bundle patch (`cordis.patch.yml`, declared by the `dsh.bundle.patch`
+ * plus the bundle patch (`cordis.patch.yml`, declared by the `cf.bundle.patch`
  * manifest field). The plugin owns the browser-surface glue: it resolves
  * the built frontend dist (workspace knowledge of this bundle, never user
  * config), mounts the `frontend-static` fallback owner over it, registers the
@@ -29,7 +29,7 @@ import type {} from '@origin-ai/cf-shell-env'
 /** Stable Cordis plugin name. */
 export const name = 'web-app'
 
-/** This dsh installation's root, from either this package's source or built entry. */
+/** This cf installation's root, from either this package's source or built entry. */
 const SOURCE_ROOT = fileURLToPath(new URL('../../../..', import.meta.url))
 
 /** Runtime service that releases Web rows after bind-dependent values resolve. */
@@ -46,7 +46,7 @@ export interface Config {
   printUrl: boolean
   /**
    * Register the model-visible surface context (the `app:web-surface` prompt
-   * section and the `XHE_WEB_URL` bash variable). A one-shot non-interactive
+   * section and the `CF_WEB_URL` bash variable). A one-shot non-interactive
    * layer can turn it off when its user is not in the GUI, so the
    * orientation text would be false.
    */
@@ -138,10 +138,10 @@ export function resolveLanTrust(bindHost: string, extra: readonly string[]): Web
   return { lanAddresses, trustedHosts: [...lanAddresses, ...extra] }
 }
 
-/** Model-visible orientation and acceptance boundary for sessions created through `dsh web`. */
+/** Model-visible orientation and acceptance boundary for sessions created through `cf web`. */
 function webSurfacePrompt(webUrl: string): string {
   const updateContract = 'The client-plugin HMR receiver is active, but client-plugin changes reload without a refresh only while '
-    + '`pnpm run dev:web` is also running from this same checkout to rebuild their bundles; verify that watcher before promising automatic updates. '
+    + '`npm run dev:web` is also running from this same checkout to rebuild their bundles; verify that watcher before promising automatic updates. '
     + 'Every other change — the apps/web shell and plain packages — requires rebuilding the affected Web artifacts and verifying this existing URL after a page refresh. '
   return `You are interacting with the user through the CodeFusion Web GUI at ${webUrl}. `
     + 'When the user refers to "this page", "this GUI", or "this app" without naming another target, they mean this GUI. '
@@ -166,7 +166,7 @@ function resolveDistIndex(): string {
     return require.resolve('@origin-ai/cf-web-frontend/dist/index.html')
   } catch {
     /* v8 ignore next 2 -- reachable only on a checkout without a built dist; the test tree builds it */
-    throw new Error('web-app: frontend dist not built; run pnpm run build from the repository root first')
+    throw new Error('web-app: frontend dist not built; run npm run build from the repository root first')
   }
 }
 
@@ -262,10 +262,10 @@ export function apply(ctx: Context, config: Config): void {
       const lanCandidate = runtime.lanAddresses[0]
       const port = ctx.webServer.port
       if (config.printUrl) {
-        console.log(`dsh web: ${webUrl}${lanCandidate === undefined ? '' : ` (LAN: http://${lanCandidate}:${String(port)})`}`)
+        console.log(`cf web: ${webUrl}${lanCandidate === undefined ? '' : ` (LAN: http://${lanCandidate}:${String(port)})`}`)
       }
       if (handoffBrowser) {
-        console.log('dsh web: opening the default browser; pass --no-open to disable')
+        console.log('cf web: opening the default browser; pass --no-open to disable')
         void internals.openBrowser(webUrl).catch((error: unknown) => {
           const reason = error instanceof Error ? error.message : String(error)
           console.error(`web-app: could not open the default browser because ${reason}; visit ${webUrl} manually`)

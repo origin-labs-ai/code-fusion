@@ -1,4 +1,4 @@
-/** DeepSeek Files API upload reuse, invalidation, and quota recovery. @module xhe-llm-deepseek/file-store */
+/** DeepSeek Files API upload reuse, invalidation, and quota recovery. @module cf-llm-deepseek/file-store */
 
 import type { RequestImageAttachment } from '@origin-ai/cf-attachment'
 import { LlmError } from '@origin-ai/cf-llm'
@@ -9,7 +9,7 @@ import type { DeepSeekUploadRecord } from './upload-index.ts'
 
 /** DeepSeek chat accepts at most 32 MiB per image even when it is referenced by file id. */
 export const MAX_CHAT_IMAGE_BYTES = 32 * 1024 * 1024
-const OWNED_FILE_PREFIX = 'xhe-'
+const OWNED_FILE_PREFIX = 'cf-'
 
 /** Resolved file-store policy from the plugin configuration. */
 export interface DeepSeekFilePolicy {

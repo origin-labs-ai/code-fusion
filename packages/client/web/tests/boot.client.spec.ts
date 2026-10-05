@@ -2,14 +2,14 @@
 import type { Context } from '@deepseek-ai/cordis'
 import * as modulesClient from '@origin-ai/cf-client-modules/client'
 import type {
-  ClientBundleRegistration, ClientModuleCreateOptions, ClientModuleLoaderTarget, DshWindow,
+  ClientBundleRegistration, ClientModuleCreateOptions, ClientModuleLoaderTarget, CfWindow,
   WebBootEntry,
 } from '@origin-ai/cf-client-modules/client'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AppWebEntry } from '../src/boot.ts'
 
 const MODULES_ID = '@origin-ai/cf-client-modules'
-const win = globalThis as DshWindow
+const win = globalThis as CfWindow
 const moduleFace = modulesClient as unknown as Record<string, unknown>
 
 afterEach(() => {

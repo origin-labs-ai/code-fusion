@@ -1,11 +1,11 @@
 /**
- * XH Skill Discovery — GitHub auto-discovery with mandatory trust gate.
+ * CF Skill Discovery — GitHub auto-discovery with mandatory trust gate.
  *
  * Pipeline: search → rank → vet (isolated: schema + prompt-injection +
  * tool-permission) → fetch (SHA-256 pin) → activate.
  *
  * Remote skills are quarantine-by-default — zero authority until the trust
- * gate passes. Configuration reads `XH_*` with `XH_*` fallback (dual-read)
+ * gate passes. Configuration reads `CF_*` with `CF_*` fallback (dual-read)
  * and enforces a per-run fetch budget cap.
  *
  * @module @origin-ai/cf-skill-discovery
@@ -28,17 +28,17 @@ export function skillId(id: string): SkillId { return id as SkillId }
 export function discoveryId(id: string): DiscoveryId { return id as DiscoveryId }
 
 // ---------------------------------------------------------------------------
-// Env helpers — XH_ dual-read with XH_ fallback
+// Env helpers — CF_ dual-read with CF_ fallback
 // ---------------------------------------------------------------------------
 
 /**
- * Read an env key preferring `XH_*` over `XH_*`.
+ * Read an env key preferring `CF_*` over `CF_*`.
  * @param base - suffix without prefix, e.g. `SKILL_DISCOVERY_ENABLED`
  * @param env - env record to read from (defaults to `process.env`)
  * @returns the resolved value or `undefined`
  */
 export function readEnv(base: string, env: Record<string, string | undefined> = process.env as Record<string, string | undefined>): string | undefined {
-  return env[`XH_${base}`] ?? env[`XH_${base}`]
+  return env[`CF_${base}`] ?? env[`CF_${base}`]
 }
 
 // ---------------------------------------------------------------------------

@@ -1,13 +1,13 @@
 {
   "name": "@origin-ai/cf-client-ui-brand-official",
-  "description": "Official Xee Harness Enhanced brand occupants for the Web client's sidebar and conversation Hero slots",
+  "description": "Official CodeFusion brand occupants for the Web client's sidebar and conversation Hero slots",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/client/ui-brand-official"
   },
   "type": "module",
@@ -45,19 +45,19 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-conversation": "workspace:^",
-    "@origin-ai/cf-client-ui-sidebar": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-ui-conversation": "*",
+    "@origin-ai/cf-client-ui-sidebar": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-conversation": "workspace:^",
-    "@origin-ai/cf-client-ui-primitives": "workspace:^",
-    "@origin-ai/cf-client-ui-sidebar": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-ui-conversation": "*",
+    "@origin-ai/cf-client-ui-primitives": "*",
+    "@origin-ai/cf-client-ui-sidebar": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*",
     "@testing-library/react": "^16.1.0",
     "@types/react": "~18.3.1",
     "react": "^18.2.0",

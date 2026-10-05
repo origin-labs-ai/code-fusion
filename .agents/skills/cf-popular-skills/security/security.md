@@ -1,5 +1,5 @@
-name: xhe-security
-description: Use when user wants to scan for vulnerabilities, perform security audits, or check code for security issues. Covers OWASP Top 10, dependency vulnerabilities, and XHE-specific security patterns.
+name: cf-security
+description: Use when user wants to scan for vulnerabilities, perform security audits, or check code for security issues. Covers OWASP Top 10, dependency vulnerabilities, and CF-specific security patterns.
 ---
 
 # Security Skill (`/security`, `/audit`)
@@ -31,7 +31,7 @@ description: Use when user wants to scan for vulnerabilities, perform security a
 | A09 | **Logging Failure** | Sensitive data in logs | Logging credit card numbers |
 | A10 | **SSRF** | User-controlled URLs fetched | `fetch(userInput)` |
 
-### 2. XHE-Specific Security Patterns
+### 2. CF-Specific Security Patterns
 
 #### Plugin Security
 ```typescript
@@ -70,12 +70,10 @@ sessionLog.append({
 ```bash
 # Check for known CVEs
 npm audit
-pnpm audit
 yarn audit
 
 # Fix automatically
 npm audit fix
-pnpm audit fix
 
 # Check specific package
 npm audit <package-name>
@@ -164,7 +162,7 @@ npm audit <package-name>
 - [ ] Cookie flags secure (HttpOnly, SameSite)
 - [ ] Logging doesn't include PII
 
-### XHE Plugin Security
+### CF Plugin Security
 - [ ] Shell commands use array syntax
 - [ ] File paths validated against base dir
 - [ ] Events don't contain secrets
@@ -213,7 +211,7 @@ const emailRegex = /^([a-z]+)+$/
 const emailRegex = /^[a-z]{1,64}$/
 ```
 
-## Integration with XHE Tools
+## Integration with CF Tools
 
 This skill uses:
 - `ctx.fs` for reading source files

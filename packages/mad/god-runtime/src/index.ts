@@ -1,5 +1,5 @@
 /**
- * GOD Runtime — control plane for XH enhanced orchestration.
+ * GOD Runtime — control plane for CF enhanced orchestration.
  *
  * Provides the 4-level abstraction (Provider / Credential / Model / Instance),
  * the 2-stage router (eligibility filter + scored selection with

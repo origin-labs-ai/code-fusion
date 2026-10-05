@@ -22,7 +22,7 @@ The `servers` record key is the stable provider id reserved on `ctx.lsp`; each v
 |---|---|---|
 | `command` | (required) | Executable to spawn — absolute, or resolved on the child PATH at load. Launch uses no shell. |
 | `args` | `[]` | Arguments passed to the executable. |
-| `env` | `{}` | Extra env merged on top of the credential-scrubbed ambient env (vars matching `KEY`/`PASSWORD`/`SECRET`/`TOKEN` are not forwarded); an explicit `XHE_*` entry merges after the seam's scrub of ambient ones. |
+| `env` | `{}` | Extra env merged on top of the credential-scrubbed ambient env (vars matching `KEY`/`PASSWORD`/`SECRET`/`TOKEN` are not forwarded); an explicit `CF_*` entry merges after the seam's scrub of ambient ones. |
 | `extensionToLanguage` | (required) | Lowercase leading-dot extension → LSP language id (e.g. `{ '.ts': 'typescript' }`). |
 | `initializationOptions` | `null` | Static `initialize` options forwarded to the server. |
 | `configuration` | `null` | Static answer to every `workspace/configuration` item. |
@@ -44,11 +44,11 @@ The provider trusts its configured server and claims no sandbox confinement. It 
 
 ## Model Experience
 
-Indirectly, through `xhe-tool-lsp`, which surfaces this provider's normalized results; this host contributes no prompt or schema itself.
+Indirectly, through `cf-tool-lsp`, which surfaces this provider's normalized results; this host contributes no prompt or schema itself.
 
 #### KV Cache effect
 
-No direct invalidation; `xhe-tool-lsp` owns request-prefix changes.
+No direct invalidation; `cf-tool-lsp` owns request-prefix changes.
 
 ## Known Limitations and Deferred Work
 

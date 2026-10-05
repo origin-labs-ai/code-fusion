@@ -24,10 +24,10 @@
  * @version 2.0.0
  *
  * Also known as:
- * - XeeCode / XCode
+ * - CodeFusion / CodeFusion
  * - CodeFusion
  *
- * Fork of: DSH/SeepSeek Harness
+ * Fork of: CodeFusion
  */
 
 // Import core subsystems
@@ -55,7 +55,7 @@ export type {
 } from './mad'
 
 // Advanced GOD Runtime (Full TRANSCRIPT.md implementation)
-export { GODRuntime, createGODRuntime, xheExecute } from './mad/core/god-runtime'
+export { GODRuntime, createGODRuntime, cfExecute } from './mad/core/god-runtime'
 export type {
   GodRuntime,
   GODRuntimeConfig,
@@ -149,13 +149,13 @@ export const inject = ['commands', 'skills']
 // ============================================================================
 
 export const VERSION = '2.0.0'
-export const DESCRIPTION = 'CodeFusion (CF): I-WIN, MAD GOD Runtime (12 components), BYOK, Gauntlet Loop, Production Sweep, 15 Core Rules — fork of DSH/SeepSeek Harness'
+export const DESCRIPTION = 'CodeFusion (CF): I-WIN, MAD GOD Runtime (12 components), BYOK, Gauntlet Loop, Production Sweep, 15 Core Rules — fork of CodeFusion'
 
 // ============================================================================
 // Main Setup Function
 // ============================================================================
 
-export interface XHEConfig {
+export interface CFConfig {
   // Basic features
   enableIWIN?: boolean
   enableMAD?: boolean
@@ -179,7 +179,7 @@ export interface XHEConfig {
   madConfig?: Partial<MADConfig>
 }
 
-export async function setupXHE(config: XHEConfig = {}): Promise<void> {
+export async function setupCF(config: CFConfig = {}): Promise<void> {
   console.log('╔═══════════════════════════════════════════════════╗')
   console.log('║     🚀 CODEFUSION INITIALIZING                 ║')
   console.log('║     I-WIN | MAD | GOD Runtime | BYOK          ║')
@@ -273,13 +273,13 @@ export async function madTask(
 /**
  * Quick start Advanced MAD (GOD Runtime) - Uses TRANSCRIPT architecture
  */
-export async function xheTask(
+export async function cfTask(
   task: string,
   mode: 'PLAN' | 'BUILD' | 'DEBUG' = 'PLAN',
   options?: Partial<GODRuntimeConfig>,
 ): Promise<FinalReport> {
-  const { xheExecute } = await import('./mad/core/god-runtime')
-  return xheExecute(task, mode, options)
+  const { cfExecute } = await import('./mad/core/god-runtime')
+  return cfExecute(task, mode, options)
 }
 
 /**
@@ -322,14 +322,14 @@ export default {
   name,
   VERSION,
   DESCRIPTION,
-  setup: setupXHE,
+  setup: setupCF,
   iwin: { engine: () => import('./iwin'), task: iwinTask },
   mad: {
     basic: { engine: () => import('./mad'), task: madTask },
-    advanced: { engine: () => import('./mad/core/god-runtime'), task: xheTask },
+    advanced: { engine: () => import('./mad/core/god-runtime'), task: cfTask },
   },
   byok: { engine: () => import('./byok'), setup: setupBYOK },
   // Aliases for convenience
-  xeeCode: { engine: () => import('./mad/core/god-runtime'), task: xheTask },
-  xCode: { engine: () => import('./mad/core/god-runtime'), task: xheTask },
+  xeeCode: { engine: () => import('./mad/core/god-runtime'), task: cfTask },
+  xCode: { engine: () => import('./mad/core/god-runtime'), task: cfTask },
 }

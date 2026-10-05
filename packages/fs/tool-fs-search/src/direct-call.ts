@@ -1,4 +1,4 @@
-/** Shared top-level-call post-policy selection for search result spill. @module xhe-tool-fs-search/direct-call */
+/** Shared top-level-call post-policy selection for search result spill. @module cf-tool-fs-search/direct-call */
 
 import type { Context } from '@deepseek-ai/cordis'
 import type { JsonValue, PostToolDecision, ToolDefinition, ToolExecution, ToolExecutionResult } from '@origin-ai/cf-tools'

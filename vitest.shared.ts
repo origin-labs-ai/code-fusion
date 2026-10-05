@@ -14,7 +14,7 @@ export const vitestExecArgv = process.allowedNodeEnvironmentFlags.has('--webstor
  */
 export function standardDecoratorPlugin() {
   return {
-    name: 'xhe-standard-decorators',
+    name: 'cf-standard-decorators',
     enforce: 'pre' as const,
     transform(code: string, id: string) {
       const file = id.split('?', 1)[0]!

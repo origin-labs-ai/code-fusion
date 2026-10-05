@@ -395,7 +395,7 @@ describe('task admission and package contracts', () => {
       '--stdio',
     ])
 
-    const lockfile = readFileSync(resolve(root, '../../../pnpm-lock.yaml'), 'utf8')
+    const lockfile = readFileSync(resolve(root, '../../../package-lock.json'), 'utf8')
     for (const packageName of CODEX_PLATFORM_PACKAGES) {
       const suffix = packageName.slice('@openai/codex-'.length)
       expect(lockfile).toContain(`  '@openai/codex@${CODEX_VERSION}-${suffix}':`)
@@ -465,7 +465,7 @@ describe('task admission and package contracts', () => {
     const spawnSpecs: SubprocessSpawnSpec[] = []
     vi.spyOn(ctx.subprocess, 'spawn').mockImplementation((spec) => {
       spawnSpecs.push(spec)
-      return spec.env?.XHE_CODEX_INSTANCE === 'safe'
+      return spec.env?.CF_CODEX_INSTANCE === 'safe'
         ? safeChild.handle
         : bypassChild.handle
     })
@@ -479,13 +479,13 @@ describe('task admission and package contracts', () => {
     ctx.on('subagent/provider-removed', providerName => void removed.push(providerName))
     const safeFiber = await ctx.plugin(codex, {
       providerName: 'codex-safe',
-      env: { XHE_CODEX_INSTANCE: 'safe' },
+      env: { CF_CODEX_INSTANCE: 'safe' },
       permissionMode: 'never',
       disposeGraceMs: 11,
     })
     const bypassFiber = await ctx.plugin(codex, {
       providerName: 'codex-bypass',
-      env: { XHE_CODEX_INSTANCE: 'bypass' },
+      env: { CF_CODEX_INSTANCE: 'bypass' },
       permissionMode: 'dangerously-bypass-approvals-and-sandbox',
       disposeGraceMs: 29,
     })
@@ -535,7 +535,7 @@ describe('task admission and package contracts', () => {
       stopReason: 'aborted',
     })
     expect(spawnSpecs.map(spec => ({
-      instance: spec.env?.XHE_CODEX_INSTANCE,
+      instance: spec.env?.CF_CODEX_INSTANCE,
       graceMs: spec.graceMs,
     }))).toEqual([
       { instance: 'safe', graceMs: 11 },
@@ -686,8 +686,8 @@ describe('CodexAppServerWire', () => {
     const initialize = await child.peer.nextMethod('initialize')
     expect(initialize.params).toEqual({
       clientInfo: {
-        name: 'xhe',
-        title: 'Xee Harness Enhanced',
+        name: 'cf',
+        title: 'CodeFusion',
         version: '0.0.1',
       },
       capabilities: {

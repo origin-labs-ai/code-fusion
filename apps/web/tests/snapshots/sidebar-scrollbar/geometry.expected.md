@@ -2,15 +2,15 @@
 
 ## Light palette
 
-- --xhe-scrollbar-thumb, pointer outside the sidebar: rgba(0, 0, 0, 0)
+- --cf-scrollbar-thumb, pointer outside the sidebar: rgba(0, 0, 0, 0)
 - scrollbar-gutter: stable
 - ::-webkit-scrollbar width: 8px
 - ::-webkit-scrollbar-track background: rgba(0, 0, 0, 0)
 - scrollbar-width: auto
 - scrollbar-color: auto
-- ::-webkit-scrollbar-thumb:hover declarations: var(--xhe-scrollbar-thumb-hover)
-- --xhe-scrollbar-thumb, pointer over the list: rgb(229, 229, 229)
-- --xhe-scrollbar-thumb-hover, pointer over the list: rgb(212, 212, 212)
+- ::-webkit-scrollbar-thumb:hover declarations: var(--cf-scrollbar-thumb-hover)
+- --cf-scrollbar-thumb, pointer over the list: rgb(229, 229, 229)
+- --cf-scrollbar-thumb-hover, pointer over the list: rgb(212, 212, 212)
 - list overflows: true
 - reserved band: 8px
 - scrollbar inset from the sidebar edge: 2px
@@ -21,15 +21,15 @@
 
 ## Dark palette
 
-- --xhe-scrollbar-thumb, pointer outside the sidebar: rgba(0, 0, 0, 0)
+- --cf-scrollbar-thumb, pointer outside the sidebar: rgba(0, 0, 0, 0)
 - scrollbar-gutter: stable
 - ::-webkit-scrollbar width: 8px
 - ::-webkit-scrollbar-track background: rgba(0, 0, 0, 0)
 - scrollbar-width: auto
 - scrollbar-color: auto
-- ::-webkit-scrollbar-thumb:hover declarations: var(--xhe-scrollbar-thumb-hover)
-- --xhe-scrollbar-thumb, pointer over the list: rgb(84, 85, 87)
-- --xhe-scrollbar-thumb-hover, pointer over the list: rgb(101, 103, 107)
+- ::-webkit-scrollbar-thumb:hover declarations: var(--cf-scrollbar-thumb-hover)
+- --cf-scrollbar-thumb, pointer over the list: rgb(84, 85, 87)
+- --cf-scrollbar-thumb-hover, pointer over the list: rgb(101, 103, 107)
 - list overflows: true
 - reserved band: 8px
 - scrollbar inset from the sidebar edge: 2px

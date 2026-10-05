@@ -49,7 +49,7 @@ const sk = (directory: string, candidateName: string): string => candidateScopeK
 const testToolSignal = new AbortController().signal
 
 async function tempRepo(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'xhe-workspace-context-'))
+  return mkdtemp(join(tmpdir(), 'cf-workspace-context-'))
 }
 
 async function write(path: string, content: string): Promise<void> {
@@ -579,9 +579,9 @@ describe('workspace context instruction discovery', () => {
     const root = await tempRepo()
     const emptyHome = await tempRepo()
     // Isolate the default-home fallback: blank CF_HOME is treated as unset, and
-    // the home dirs point at an empty dir so the default ~/.dsh holds no global
+    // the home dirs point at an empty dir so the default ~/.cf holds no global
     // scope. Windows homedir() reads USERPROFILE (not HOME), so both must be
-    // stubbed or a real ~/.dsh/AGENTS.md would otherwise leak in.
+    // stubbed or a real ~/.cf/AGENTS.md would otherwise leak in.
     vi.stubEnv('CF_HOME', '')
     vi.stubEnv('HOME', emptyHome)
     if (process.platform === 'win32') vi.stubEnv('USERPROFILE', emptyHome)
@@ -619,7 +619,7 @@ describe('workspace context instruction discovery', () => {
     }
   })
 
-  it('labels the default XHE home as ~/.cf when HOME points at the configured default', async () => {
+  it('labels the default CF home as ~/.cf when HOME points at the configured default', async () => {
     const root = await tempRepo()
     const home = await tempRepo()
     try {

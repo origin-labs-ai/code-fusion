@@ -6,6 +6,6 @@ head:
       content: 0; url=./guide/quickstart
 ---
 
-# Xee Harness Enhanced
+# CodeFusion
 
 English

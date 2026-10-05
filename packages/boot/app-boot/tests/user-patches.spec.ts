@@ -1,5 +1,5 @@
 /**
- * User patch-layer behavior of `xhe-app-boot`: the optional patch-list loader
+ * User patch-layer behavior of `cf-app-boot`: the optional patch-list loader
  * (a profile's `cordis.patch.yml`) and `boot()` applying the user layer over
  * a real Loader tree, kept live through transactional HMR.
  */
@@ -21,9 +21,9 @@ import {
   watchUserPatches,
 } from '../src/index.ts'
 
-const NAME = 'xhe-test-bin'
+const NAME = 'cf-test-bin'
 
-const tmp = (): string => mkdtempSync(join(tmpdir(), 'xhe-user-patches-'))
+const tmp = (): string => mkdtempSync(join(tmpdir(), 'cf-user-patches-'))
 
 async function eventually(test: () => boolean, message: string): Promise<void> {
   const deadline = Date.now() + 10_000
@@ -50,7 +50,7 @@ describe('loadOptionalPatches', () => {
       '- id: agent-loop',
       "  name: '@origin-ai/cf-agent-loop'",
       '  config:',
-      '    model: !!js process.env.XHE_SPEC_MODEL',
+      '    model: !!js process.env.CF_SPEC_MODEL',
       '- insert:',
       '    - id: llm',
       "      name: '@origin-ai/cf-llm-pi-ai'",
@@ -60,7 +60,7 @@ describe('loadOptionalPatches', () => {
     expect(patches).toHaveLength(2)
     expect(patches?.[0]).toMatchObject({
       id: 'agent-loop',
-      config: { model: { __jsExpr: 'process.env.XHE_SPEC_MODEL' } },
+      config: { model: { __jsExpr: 'process.env.CF_SPEC_MODEL' } },
     })
     expect(patches?.[1]?.insert).toHaveLength(1)
   })
@@ -275,13 +275,13 @@ describe('boot with user patches', () => {
       '- id: noop',
       '  name: ./noop.mjs',
       '  config:',
-      '    value: !!js process.env.XHE_APP_BOOT_USER_SPEC',
+      '    value: !!js process.env.CF_APP_BOOT_USER_SPEC',
       '- insert:',
       '    - id: user-extra',
       '      name: ./noop.mjs',
       '',
     ].join('\n'))
-    process.env['XHE_APP_BOOT_USER_SPEC'] = 'user-value'
+    process.env['CF_APP_BOOT_USER_SPEC'] = 'user-value'
     const ctx = await boot(NAME, writeTree(dir), loadOptionalPatches(NAME, join(userDir, PROFILE_PATCH_FILENAME)))
     try {
       const noop = [...ctx.loader.entries()].find(entry => entry.options.id === 'noop')
@@ -290,7 +290,7 @@ describe('boot with user patches', () => {
       expect([...ctx.loader.entries()].some(entry => entry.options.id === 'user-extra')).toBe(true)
     } finally {
       await ctx.fiber.dispose()
-      delete process.env['XHE_APP_BOOT_USER_SPEC']
+      delete process.env['CF_APP_BOOT_USER_SPEC']
     }
   })
 

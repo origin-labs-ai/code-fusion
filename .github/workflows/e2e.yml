@@ -1,6 +1,6 @@
 name: E2E (real DeepSeek API)
 
-# Real-API end-to-end suite (`pnpm run test:e2e`). Unlike ci.yml this job
+# Real-API end-to-end suite (`npm run test:e2e`). Unlike ci.yml this job
 # consumes the DEEPSEEK_API_KEY_EXTERNAL secret (mapped to the env var
 # DEEPSEEK_API_KEY the tests read) and hits the external API at
 # https://api.deepseek.com (DEEPSEEK_BASE_URL is pinned to it explicitly so a
@@ -49,7 +49,7 @@ permissions:
 env:
   # CI runs must never report to the production telemetry endpoint baked
   # into apps/cli/cordis.yml (AppCLIEntry disables the row when set).
-  XHE_TELEMETRY_DISABLED: '1'
+  CF_TELEMETRY_DISABLED: '1'
 
 jobs:
   e2e:
@@ -60,21 +60,19 @@ jobs:
     if: >-
       github.event_name != 'pull_request'
       || !(github.event.pull_request.head.repo.fork || github.event.pull_request.user.login == 'dependabot[bot]')
-    # Bounded file parallelism (XHE_E2E_MAX_WORKERS), 120s/test, retry 2. 45m
+    # Bounded file parallelism (CF_E2E_MAX_WORKERS), 120s/test, retry 2. 45m
     # still bounds retry storms against a slow API while the happy path fans out.
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: pnpm
+          cache: npm
 
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       # The with-key escalation e2e self-skips without a usable runner. Prepare
       # bwrap so trusted CI exercises it; the functional probe remains the
@@ -100,11 +98,11 @@ jobs:
           fi
           echo "DEEPSEEK_API_KEY present."
 
-      # The e2e suites boot the example bins in `lib` mode (XHE_EXAMPLE_MODE=lib):
+      # The e2e suites boot the example bins in `lib` mode (CF_EXAMPLE_MODE=lib):
       # the built artifact under plain Node, resolving plugins through real package
       # exports — the shape a real consumer runs. That requires a prior build.
       - name: Build (lib for the e2e example bins)
-        run: pnpm run build:official
+        run: npm run build:official
 
       # Real-API end-to-end tests only. The keyless gates (lint/typecheck/
       # coverage/snapshot/etc.) already run in ci.yml (pull requests) and
@@ -115,6 +113,6 @@ jobs:
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY_EXTERNAL }}
           DEEPSEEK_BASE_URL: https://api.deepseek.com
-          XHE_E2E_MAX_WORKERS: 14
-          XHE_EXAMPLE_MODE: lib
-        run: pnpm run test:e2e
+          CF_E2E_MAX_WORKERS: 14
+          CF_EXAMPLE_MODE: lib
+        run: npm run test:e2e

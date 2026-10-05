@@ -8,7 +8,7 @@ import { existsSync } from 'node:fs'
 import { boot, installFailLoud, loadEnv, resolveConfigPath } from '@origin-ai/cf-app-boot'
 
 /* v8 ignore start -- composition over tested app-boot/jsonrpc and executable acceptance paths */
-const NAME = 'xhe-jsonrpc-agent'
+const NAME = 'cf-jsonrpc-agent'
 
 /**
  * Boot the explicitly selected external configuration and own process exit.
@@ -22,7 +22,7 @@ export async function runJsonrpcAgent(bareModuleBaseUrl?: string): Promise<void>
   loadEnv(NAME)
 
   // Env wins over argv; empty values are absent. External config defines the deployment.
-  const fromEnv = process.env['XHE_CORDIS_CONFIG']
+  const fromEnv = process.env['CF_CORDIS_CONFIG']
   const fromArgv = process.argv[2]
   const requested = fromEnv !== undefined && fromEnv !== ''
     ? fromEnv
@@ -30,7 +30,7 @@ export async function runJsonrpcAgent(bareModuleBaseUrl?: string): Promise<void>
   const configPath = requested === undefined ? undefined : resolveConfigPath(requested, undefined)
   if (configPath === undefined || !existsSync(configPath)) {
     process.stderr.write(
-      `usage: ${NAME} <path/to/cordis.yml> (or set XHE_CORDIS_CONFIG=<path>, which wins); the config is required — there is no built-in fallback\n`,
+      `usage: ${NAME} <path/to/cordis.yml> (or set CF_CORDIS_CONFIG=<path>, which wins); the config is required — there is no built-in fallback\n`,
     )
     process.exit(1)
   }

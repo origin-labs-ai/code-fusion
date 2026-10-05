@@ -9,17 +9,17 @@
   - tablist:
     - tab "Chat" [selected]
     - tab "Trajectory"
-- text: Use web_search once with queries ["Xee Harness Enhanced snapshot search","Xee Harness Enhanced multi-query search"]. Then reply exactly SEARCH_DONE and stop. {{clock}}
+- text: Use web_search once with queries ["CodeFusion snapshot search","CodeFusion multi-query search"]. Then reply exactly SEARCH_DONE and stop. {{clock}}
 - button "Copy":
   - img
 - button "Context injection @origin-ai/cf-system-prompt":
   - img
   - img
   - text: Context injection @origin-ai/cf-system-prompt
-- button "Search Xee Harness Enhanced snapshot search, Xee Harness Enhanced multi-query search":
+- button "Search CodeFusion snapshot search, CodeFusion multi-query search":
   - img
   - img
-  - text: Search Xee Harness Enhanced snapshot search, Xee Harness Enhanced multi-query search
+  - text: Search CodeFusion snapshot search, CodeFusion multi-query search
 - paragraph: SEARCH_DONE
 - button "Copy":
   - img

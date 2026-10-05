@@ -12,11 +12,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   apply, createClientModuleSystem, parseBootManifest,
   type BootModuleRow, type ClientBundleRegistration, type ClientModuleCreateOptions,
-  type ClientModuleLoader, type ClientModuleLoaderTarget, type DshWindow,
+  type ClientModuleLoader, type ClientModuleLoaderTarget, type CfWindow,
 } from '../src/client/index.ts'
 
 const MODULES_ID = '@origin-ai/cf-client-modules'
-const win = globalThis as DshWindow
+const win = globalThis as CfWindow
 const bootstrapExports = { apply, createClientModuleSystem }
 
 type Factory = ClientBundleRegistration['factory']

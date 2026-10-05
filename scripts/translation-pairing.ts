@@ -116,7 +116,7 @@ export function renderPairMeta(source: string, sourceHash: string, zh: string, z
     '# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each',
     '# side as of the last confirmed-consistent state. Both languages carry equal authority;',
     '# after editing either side, bring the other along and re-record with:',
-    `#   pnpm run verify-translation-pairing --write ${source}`,
+    `#   npm run verify-translation-pairing --write ${source}`,
     `${basename(source)}: ${sourceHash}`,
     `${basename(zh)}: ${zhHash}`,
     '',
@@ -135,7 +135,6 @@ const ROOT_BRAND_GUIDELINES_ARTIFACT = /^brand_guidelines(?:\.md|\.zh\.md|\.i18n
 const NON_SOURCE_DIRECTORIES = new Set([
   'node_modules',
   'lib',
-  '.pnpm-store',
   '.cache',
   'coverage',
   '.sessions',
@@ -153,7 +152,6 @@ export const TRANSLATION_SCOPE_GLOB_EXCLUDES = [
   '.agents/notes/archived/**',
   '**/node_modules/**',
   '**/lib/**',
-  '**/.pnpm-store/**',
   '**/.cache/**',
   '**/coverage/**',
   '**/.doc-typecheck-*/**',
@@ -166,7 +164,7 @@ export const TRANSLATION_SCOPE_GLOB_EXCLUDES = [
   '**/.pytest_cache/**',
   'apps/web/dist/**',
   '.artifacts/**',
-  'python/sdk-runtime/src/deepseek_harness_runtime/runtime/xhe-jsonrpc-agent-*/**',
+  'python/sdk-runtime/src/deepseek_harness_runtime/runtime/cf-jsonrpc-agent-*/**',
   'python/sdk-runtime/src/deepseek_harness_runtime/runtime/node/**',
   'vendor/**',
 ]
@@ -178,7 +176,7 @@ function isTranslationSourceExcluded(file: string): boolean {
       || segment.startsWith('.doc-typecheck-')
     || segment.startsWith('.node-next-types-'))
     || file.startsWith('apps/web/dist/')
-    || file.startsWith('python/sdk-runtime/src/deepseek_harness_runtime/runtime/xhe-jsonrpc-agent-')
+    || file.startsWith('python/sdk-runtime/src/deepseek_harness_runtime/runtime/cf-jsonrpc-agent-')
     || file.startsWith('python/sdk-runtime/src/deepseek_harness_runtime/runtime/node/')
 }
 
@@ -325,7 +323,7 @@ export function parseTranslationMarkdown(content: string): Nodes {
   return fromMarkdown(content, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] })
 }
 
-const PUBLIC_REPOSITORY_BLOB_ROOT = 'https://github.com/deepseek-ai/xhe/blob/master/'
+const PUBLIC_REPOSITORY_BLOB_ROOT = 'https://github.com/deepseek-ai/cf/blob/master/'
 
 /** Return the accepted relative and public-repository links to one counterpart. */
 export function languageSwitcherTargets(counterpart: string): string[] {

@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 function fixture(): string {
-  const root = mkdtempSync(join(tmpdir(), 'xhe-translation-links-'))
+  const root = mkdtempSync(join(tmpdir(), 'cf-translation-links-'))
   roots.push(root)
   mkdirSync(join(root, 'docs/section'), { recursive: true })
   mkdirSync(join(root, 'packages'), { recursive: true })

@@ -18,10 +18,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("prompt", help="Task for the minimal agent")
     parser.add_argument("--workspace", type=Path, default=Path.cwd())
-    parser.add_argument("--session-root", type=Path, default=Path(".dsh-sessions"))
+    parser.add_argument("--session-root", type=Path, default=Path(".cf-sessions"))
     parser.add_argument("--session-id")
     parser.add_argument("--provider", default="deepseek-official")
-    parser.add_argument("--model", default=os.environ.get("DSH_MODEL", "deepseek-v4-flash"))
+    parser.add_argument("--model", default=os.environ.get("CF_MODEL", "deepseek-v4-flash"))
     parser.add_argument("--max-tokens", type=int)
     args = parser.parse_args()
 

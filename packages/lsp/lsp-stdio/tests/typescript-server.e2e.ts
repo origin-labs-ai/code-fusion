@@ -1,6 +1,6 @@
 /**
  * Keyless real-server e2e: drives the real `typescript-language-server` through the full
- * `ctx.lsp` → `xhe-lsp-stdio` stack over the base protocol, exercising all four operations. No API
+ * `ctx.lsp` → `cf-lsp-stdio` stack over the base protocol, exercising all four operations. No API
  * key needed — the server is a local dev dependency. This establishes one compatibility floor
  * (TypeScript), not a cross-language claim.
  */
@@ -15,7 +15,7 @@ import LocalFileSystem from '@origin-ai/cf-fs-local'
 import Lsp, { type LspQueryRequest, type LspQueryResult } from '@origin-ai/cf-lsp'
 import * as LspLocal from '@origin-ai/cf-lsp-stdio'
 
-// The server binary is a dev dependency of this package; resolve its pnpm-hoisted .bin path.
+// The server binary is a dev dependency of this package; resolve its npm-hoisted .bin path.
 const serverBin = join(
   new URL('..', import.meta.url).pathname,
   'node_modules',

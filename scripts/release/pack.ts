@@ -25,7 +25,7 @@ const DEFAULT_OUTPUT = 'dist/npm'
  * @returns The tarball filename.
  */
 function packMember(family: ReleaseFamily, member: ReleaseMember, destination: string): string {
-  run('pnpm', ['--dir', member.directory, 'pack', '--pack-destination', destination])
+  run('npm', ['pack', '--pack-destination', destination], { cwd: member.directory })
 
   const filename = tarballName(member)
   const tarball = join(destination, filename)
@@ -40,7 +40,7 @@ function main(): void {
     options: { family: { type: 'string' }, out: { type: 'string' } },
     allowPositionals: false,
   })
-  if (values.family === undefined) throw new Error('usage: pack.ts --family <dsh|vendor> [--out dist/npm]')
+  if (values.family === undefined) throw new Error('usage: pack.ts --family <cf|vendor> [--out dist/npm]')
 
   const family = releaseFamily(values.family)
   const root = process.cwd()

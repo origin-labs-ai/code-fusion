@@ -17,20 +17,20 @@ import { dirname, isAbsolute, join, resolve } from 'node:path'
 import lefthookPackage from 'lefthook/package.json' with { type: 'json' }
 
 const MINIMUM_GIT = [2, 26, 0]
-const HOOKS_DIRECTORY = 'xhe-hooks'
-const OWNERSHIP_MARKER = '.xhe-lefthook-owned'
+const HOOKS_DIRECTORY = 'cf-hooks'
+const OWNERSHIP_MARKER = '.cf-lefthook-owned'
 const OWNERSHIP_MARKER_VERSION = 1
-const OWNERSHIP_MARKER_OWNER = 'xhe worktree-local lefthook hooks'
-const INSTALL_LOCK = 'xhe-lefthook-install.lock'
+const OWNERSHIP_MARKER_OWNER = 'cf worktree-local lefthook hooks'
+const INSTALL_LOCK = 'cf-lefthook-install.lock'
 const INSTALL_LOCK_TIMEOUT_MS = 30_000
 const INSTALL_LOCK_INITIALIZATION_TIMEOUT_MS = 5_000
 const INSTALL_LOCK_POLL_MS = 50
-const ALLOW_HOOKS_PATH_OVERRIDE = 'XHE_LEFTHOOK_ALLOW_HOOKS_PATH_OVERRIDE'
+const ALLOW_HOOKS_PATH_OVERRIDE = 'CF_LEFTHOOK_ALLOW_HOOKS_PATH_OVERRIDE'
 const REPOSITORY_EXTENSION_PATTERN = '^extensions\\.'
 const PAIRING_MERGE_DRIVER_CONFIG = [
-  ['merge.xhe-translation-pairing.name', 'Xee Harness Enhanced bilingual pairing records'],
+  ['merge.cf-translation-pairing.name', 'CodeFusion bilingual pairing records'],
   [
-    'merge.xhe-translation-pairing.driver',
+    'merge.cf-translation-pairing.driver',
     'scripts/merge-translation-pairing-driver.sh %O %A %B %P',
   ],
 ]
@@ -389,7 +389,7 @@ async function acquireInstallLock(commonDirectory) {
       let ownedStat
       try {
         ownedStat = fstatSync(lockHandle)
-        const writeDelay = Number(process.env.XHE_TEST_LEFTHOOK_LOCK_WRITE_DELAY_MS ?? 0)
+        const writeDelay = Number(process.env.CF_TEST_LEFTHOOK_LOCK_WRITE_DELAY_MS ?? 0)
         if (writeDelay > 0) {
           await new Promise(resolveWait => setTimeout(resolveWait, writeDelay))
         }

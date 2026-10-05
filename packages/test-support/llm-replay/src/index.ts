@@ -534,7 +534,7 @@ export function loadReplayScript(config: ReplayConfig): ReplayEntry[] {
 /** Derive the primary script from the session JSONL, failing loud on a missing fixture. */
 function deriveScriptFromFile(file: string): ReplayEntry[] {
   if (!existsSync(file)) {
-    throw new Error(`llm-replay: fixture not found: ${file} — run \`pnpm run test:snapshot:record\` first`)
+    throw new Error(`llm-replay: fixture not found: ${file} — run \`npm run test:snapshot:record\` first`)
   }
   return deriveReplayScript(parseSessionLog(readFileSync(file, 'utf8')))
 }
@@ -805,14 +805,14 @@ export function installLlmReplay(ctx: Context, config: ReplayConfig): ReplayHand
 export const name = 'llm-replay'
 export const inject = ['llm']
 
-/** Plugin config: the {@link ReplayConfig} inputs, each defaulting to its `XHE_SNAPSHOT_*` env var in `apply`. */
+/** Plugin config: the {@link ReplayConfig} inputs, each defaulting to its `CF_SNAPSHOT_*` env var in `apply`. */
 export interface Config {
-  /** Override the fixture path; defaults to `$XHE_SNAPSHOT_FILE`. */
+  /** Override the fixture path; defaults to `$CF_SNAPSHOT_FILE`. */
   file?: string
-  /** Override the sidecar path; defaults to `$XHE_SNAPSHOT_OVERRIDE`. */
+  /** Override the sidecar path; defaults to `$CF_SNAPSHOT_OVERRIDE`. */
   overrideFile?: string
   /**
-   * Override the child-log paths; defaults to `$XHE_SNAPSHOT_CHILD_FILES` (a
+   * Override the child-log paths; defaults to `$CF_SNAPSHOT_CHILD_FILES` (a
    * path-separator-delimited list). Each is a recorded subagent session log for
    * a nested-agent scenario; absent/empty for a single-session scenario.
    */
@@ -840,13 +840,13 @@ function validateConfiguredModalities(providers: ReplayProviderConfig[] | undefi
 }
 
 export function apply(ctx: Context, config: Config = {}): void {
-  const file = config.file ?? process.env.XHE_SNAPSHOT_FILE
+  const file = config.file ?? process.env.CF_SNAPSHOT_FILE
   if (file === undefined || file.length === 0) {
-    throw new Error('llm-replay: a fixture path is required (Config.file or $XHE_SNAPSHOT_FILE)')
+    throw new Error('llm-replay: a fixture path is required (Config.file or $CF_SNAPSHOT_FILE)')
   }
   validateConfiguredModalities(config.providers)
-  const overrideFile = config.overrideFile ?? process.env.XHE_SNAPSHOT_OVERRIDE
-  const childEnv = process.env.XHE_SNAPSHOT_CHILD_FILES
+  const overrideFile = config.overrideFile ?? process.env.CF_SNAPSHOT_OVERRIDE
+  const childEnv = process.env.CF_SNAPSHOT_CHILD_FILES
   const childFiles = config.childFiles
     ?? (childEnv !== undefined && childEnv.length > 0 ? childEnv.split(pathDelimiter) : [])
   installLlmReplay(ctx, {

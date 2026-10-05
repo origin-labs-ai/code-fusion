@@ -1,6 +1,6 @@
 # @origin-ai/cf-schedule
 
-`xhe-schedule` gives future live root Agents three Session-scoped tools for durable reminders. Version 1 accepts positive safe-integer `after_seconds` delays, explicit absolute `at` targets, and fixed-rate `every_seconds` intervals of at least five minutes. The Session event log owns reminder state; timers, tool values, and model follow-ups are disposable projections of that log.
+`cf-schedule` gives future live root Agents three Session-scoped tools for durable reminders. Version 1 accepts positive safe-integer `after_seconds` delays, explicit absolute `at` targets, and fixed-rate `every_seconds` intervals of at least five minutes. The Session event log owns reminder state; timers, tool values, and model follow-ups are disposable projections of that log.
 
 ## Composition
 

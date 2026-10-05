@@ -11,8 +11,8 @@
 - id: replay
   name: '@origin-ai/cf-llm-replay'
   config:
-    file: !!js process.env.XHE_SNAPSHOT_FILE
-    overrideFile: !!js process.env.XHE_SNAPSHOT_OVERRIDE
+    file: !!js process.env.CF_SNAPSHOT_FILE
+    overrideFile: !!js process.env.CF_SNAPSHOT_OVERRIDE
 
 - id: fs-local
   name: '@origin-ai/cf-fs-local'
@@ -25,7 +25,7 @@
     agents: []
     workspaceContext:
       maxBytes: 65536
-      dshHome: !!js process.cwd() + '/.dsh'
+      cfHome: !!js process.cwd() + '/.cf'
     skills:
       enabled: false
     toolBash: false

@@ -21,7 +21,7 @@ afterEach(async () => {
 
 describe('compaction-tool-result-pruner real Loader composition', () => {
   it('loads and resolves the flat YAML plugin shape', async () => {
-    root = await mkdtemp(join(tmpdir(), 'xhe-compact-tool-result-prune-loader-'))
+    root = await mkdtemp(join(tmpdir(), 'cf-compact-tool-result-prune-loader-'))
     const configPath = join(root, 'cordis.yml')
     await writeFile(configPath, [
       "- name: '@origin-ai/cf-token-meter'",

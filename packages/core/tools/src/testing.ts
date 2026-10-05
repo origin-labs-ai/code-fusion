@@ -1,4 +1,4 @@
-/** Canonical tool-definition fixtures for repository tests. @module xhe-tools/testing */
+/** Canonical tool-definition fixtures for repository tests. @module cf-tools/testing */
 
 import type { ContentBlock } from '@origin-ai/cf-llm'
 import type { JsonValue } from '@origin-ai/cf-session'

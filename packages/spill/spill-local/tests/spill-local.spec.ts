@@ -19,7 +19,7 @@ import LocalSpillStore, { encodeSegment, privateRoot, saveTextFile, sessionDir }
 let root: string
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), 'xhe-spill-test-'))
+  root = mkdtempSync(join(tmpdir(), 'cf-spill-test-'))
 })
 afterEach(() => {
   rmSync(root, { recursive: true, force: true })

@@ -10,13 +10,13 @@ The JSONL storage seam can reduce that envelope cost without changing the logica
 
 ## Decision
 
-`xhe-session-persistence-jsonl` resolves an omitted `packChunks` to `true`. The ACP demo wrapper exposes the same default, and every composition that omits the field inherits packed writes. `packChunks: false` remains an explicit write-side diagnostic mode that stores one event per line.
+`cf-session-persistence-jsonl` resolves an omitted `packChunks` to `true`. The ACP demo wrapper exposes the same default, and every composition that omits the field inherits packed writes. `packChunks: false` remains an explicit write-side diagnostic mode that stores one event per line.
 
 Reading is unconditional and layout-blind. Packed, unpacked, and mixed files load into the same contiguous `SessionEvent[]`, so the default does not require a session-format version change or an on-disk runtime migration. The option controls newly appended batches only; it never selects a reader mode.
 
 ### Logical events and physical rows
 
-Packing stays at the `xhe-session` storage seam through `packChunkRuns()` and `decodeStorageRecord()`. The encoder recognizes exact delta-event shapes, preserves unrecognized events verbatim, and packs only runs of at least three. A packed row is storage vocabulary, not a `SessionEventMap` member: it never enters `Session.events` or fires `session/event`.
+Packing stays at the `cf-session` storage seam through `packChunkRuns()` and `decodeStorageRecord()`. The encoder recognizes exact delta-event shapes, preserves unrecognized events verbatim, and packs only runs of at least three. A packed row is storage vocabulary, not a `SessionEventMap` member: it never enters `Session.events` or fires `session/event`.
 
 The JSONL backend packs each durable append batch. Raw `compression: 'none'` and default Zstandard framing carry the same logical storage records; selecting raw mode for reviewable fixtures does not disable packing. Repository replay readers and normalizers decode the shared row format instead of maintaining snapshot-specific codecs.
 
@@ -30,7 +30,7 @@ Focused package tests keep unpacked and mixed-layout inputs for reader compatibi
 
 ### In-flight branch convergence
 
-The temporary [`scripts/migrate-packed-session-fixtures.ts`](../../../../scripts/migrate-packed-session-fixtures.ts) command lets in-flight branches converge after merging current `master`: `pnpm run migrate:packed-session-fixtures` discovers the same repository-wide fixture set as the permanent gate, preserves each header line, decodes existing mixed records, writes the canonical packed body, proves decoded equality, and proves idempotence. It never calls a model or regenerates transcript and presentation outputs.
+The temporary [`scripts/migrate-packed-session-fixtures.ts`](../../../../scripts/migrate-packed-session-fixtures.ts) command lets in-flight branches converge after merging current `master`: `npm run migrate:packed-session-fixtures` discovers the same repository-wide fixture set as the permanent gate, preserves each header line, decodes existing mixed records, writes the canonical packed body, proves decoded equality, and proves idempotence. It never calls a model or regenerates transcript and presentation outputs.
 
 The command remains linked from the testing policy and ACP snapshot README while older branches may carry fixture edits. The [removal proposal](../../proposed/process/2026-07-26-remove-packed-session-fixture-migrator.md) deletes the CLI, package command, this transitional section, and the documentation links, then replaces the permanent gate's command-specific remediation text once a live open-PR inventory shows that every affected branch is merged, closed, or canonical. The shared canonicalizer and snapshot gate remain permanent.
 

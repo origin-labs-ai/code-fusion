@@ -35,23 +35,23 @@ function execution(sessionId?: string): ToolExecution {
 describe('ShellEnvRegistry', () => {
   it('collects unconditional shell facts and the current agent session id', () => {
     const ctx = new Context()
-    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-cf-home' })
 
     expect(registry.collect(execution())).toEqual({
-      CF_HOME: resolve('./test-xhe-home'),
+      CF_HOME: resolve('./test-cf-home'),
       CF_SHELL: '1',
     })
     expect(registry.collect(execution('session-a'))).toEqual({
-      CF_HOME: resolve('./test-xhe-home'),
+      CF_HOME: resolve('./test-cf-home'),
       CF_SESSION_ID: 'session-a',
       CF_SHELL: '1',
     })
   })
 
   it('resolves CF_HOME from the ambient override or the user-home default', () => {
-    vi.stubEnv('CF_HOME', './ambient-xhe-home')
+    vi.stubEnv('CF_HOME', './ambient-cf-home')
     const fromEnvironment = new ShellEnvRegistry(new Context())
-    expect(fromEnvironment.collect(execution()).CF_HOME).toBe(resolve('./ambient-xhe-home'))
+    expect(fromEnvironment.collect(execution()).CF_HOME).toBe(resolve('./ambient-cf-home'))
 
     vi.stubEnv('CF_HOME', undefined)
     const fromDefault = new ShellEnvRegistry(new Context())
@@ -60,7 +60,7 @@ describe('ShellEnvRegistry', () => {
 
   it('collects declared contributor variables and omits unavailable values', () => {
     const ctx = new Context()
-    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-cf-home' })
     registry.register({
       name: 'optional-session-fact',
       variables: {
@@ -95,7 +95,7 @@ describe('ShellEnvRegistry', () => {
 
   it('rejects duplicate variable ownership at registration time', () => {
     const ctx = new Context()
-    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-cf-home' })
     registry.register({
       name: 'first',
       variables: { CF_SHARED: { description: 'First owner.' } },
@@ -110,7 +110,7 @@ describe('ShellEnvRegistry', () => {
   })
 
   it('rejects duplicate contributor names and malformed declarations', () => {
-    const registry = new ShellEnvRegistry(new Context(), { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(new Context(), { cfHome: './test-cf-home' })
     registry.register({
       name: 'declared',
       variables: { CF_DECLARED: { description: 'Declared fact.' } },
@@ -146,7 +146,7 @@ describe('ShellEnvRegistry', () => {
 
   it('rejects undeclared variables returned by a contributor', () => {
     const ctx = new Context()
-    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-cf-home' })
     registry.register({
       name: 'drifted-provider',
       variables: { CF_DECLARED: { description: 'Declared fact.' } },
@@ -157,7 +157,7 @@ describe('ShellEnvRegistry', () => {
   })
 
   it('rejects non-string values returned by a contributor', () => {
-    const registry = new ShellEnvRegistry(new Context(), { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(new Context(), { cfHome: './test-cf-home' })
     registry.register({
       name: 'wrong-value-type',
       variables: { CF_STRING: { description: 'String fact.' } },
@@ -169,7 +169,7 @@ describe('ShellEnvRegistry', () => {
 
   it('removes an effect-scoped contributor when its plugin is disposed', async () => {
     const ctx = new Context()
-    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(ctx, { cfHome: './test-cf-home' })
     const fiber = await ctx.plugin({
       inject: ['shellEnv'],
       apply(inner: Context) {
@@ -187,7 +187,7 @@ describe('ShellEnvRegistry', () => {
   })
 
   it('returns an explicit contributor disposer', () => {
-    const registry = new ShellEnvRegistry(new Context(), { cfHome: './test-xhe-home' })
+    const registry = new ShellEnvRegistry(new Context(), { cfHome: './test-cf-home' })
     const dispose = registry.register({
       name: 'explicit-disposal',
       variables: { CF_EXPLICIT_DISPOSAL: { description: 'Explicitly disposed fact.' } },

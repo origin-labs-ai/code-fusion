@@ -2,16 +2,16 @@
 import { spawn } from 'node:child_process'
 import { lstat, mkdir, readdir, rm, unlink } from 'node:fs/promises'
 import { join, relative, sep } from 'node:path'
-import { pnpmInvocation } from './pnpm-invocation.ts'
+import { npmInvocation } from './npm-invocation.ts'
 
 /** Environment variable selecting the number of instrumented coverage processes. */
-export const COVERAGE_PARTITIONS_ENV = 'XHE_COVERAGE_PARTITIONS'
+export const COVERAGE_PARTITIONS_ENV = 'CF_COVERAGE_PARTITIONS'
 
 /** Internal marker that suppresses reports and thresholds inside a partition process. */
-export const COVERAGE_PARTITION_MODE_ENV = 'XHE_COVERAGE_PARTITION_MODE'
+export const COVERAGE_PARTITION_MODE_ENV = 'CF_COVERAGE_PARTITION_MODE'
 
 /** Environment variable overriding instrumented test and polling timeouts. */
-export const COVERAGE_TEST_TIMEOUT_ENV = 'XHE_COVERAGE_TEST_TIMEOUT_MS'
+export const COVERAGE_TEST_TIMEOUT_ENV = 'CF_COVERAGE_TEST_TIMEOUT_MS'
 
 /** One child command owned by the coverage coordinator. */
 export interface CoverageCommand {
@@ -50,8 +50,8 @@ export interface CoveragePartitionCoordinatorOptions {
   root: string
   /** Number of concurrent single-worker Vitest processes. */
   partitions: number
-  /** pnpm JavaScript or executable entrypoint from `npm_execpath`. */
-  pnpmEntrypoint: string
+  /** npm JavaScript or executable entrypoint from `npm_execpath`. */
+  npmEntrypoint: string
   /** Additional arguments shared by every partition. */
   vitestArgs?: string[]
   /** Child executor, injectable for scheduler tests. */
@@ -78,7 +78,7 @@ export function coverageTestTimeoutArgs(raw: string | undefined): string[] {
   return [`--testTimeout=${raw}`, `--expect.poll.timeout=${raw}`]
 }
 
-/** Remove pnpm's package-script separator before forwarding Vitest arguments. */
+/** Remove npm's package-script separator before forwarding Vitest arguments. */
 export function forwardedCoverageArgs(args: readonly string[]): string[] {
   return [...args.slice(args[0] === '--' ? 1 : 0)]
 }
@@ -87,7 +87,7 @@ export function forwardedCoverageArgs(args: readonly string[]): string[] {
 export class CoveragePartitionCoordinator {
   private readonly root: string
   private readonly partitions: number
-  private readonly pnpmEntrypoint: string
+  private readonly npmEntrypoint: string
   private readonly vitestArgs: string[]
   private readonly runCommand: CoverageCommandRunner
   private readonly temporaryRoot: string
@@ -100,7 +100,7 @@ export class CoveragePartitionCoordinator {
     }
     this.root = options.root
     this.partitions = options.partitions
-    this.pnpmEntrypoint = options.pnpmEntrypoint
+    this.npmEntrypoint = options.npmEntrypoint
     this.vitestArgs = options.vitestArgs ?? []
     this.runCommand = options.runCommand ?? runCoverageCommand
     this.temporaryRoot = join(this.root, 'coverage', '.partitioned')
@@ -145,7 +145,7 @@ export class CoveragePartitionCoordinator {
   private partitionCommand(index: number): CoverageCommand {
     const blobPath = join(this.blobsRoot, `partition-${index}.json`)
     const reportsDirectory = join(this.temporaryRoot, `coverage-${index}`)
-    const invocation = pnpmInvocation([
+    const invocation = npmInvocation([
       'exec',
       'vitest',
       'run',
@@ -158,7 +158,7 @@ export class CoveragePartitionCoordinator {
       `--outputFile.blob=${this.relativePath(blobPath)}`,
       `--coverage.reportsDirectory=${this.relativePath(reportsDirectory)}`,
       ...this.vitestArgs,
-    ], { npm_execpath: this.pnpmEntrypoint })
+    ], { npm_execpath: this.npmEntrypoint })
     return {
       label: `partition ${index}/${this.partitions}`,
       ...invocation,
@@ -172,12 +172,12 @@ export class CoveragePartitionCoordinator {
   }
 
   private mergeCommand(): CoverageCommand {
-    const invocation = pnpmInvocation([
+    const invocation = npmInvocation([
       'exec',
       'vitest',
       `--merge-reports=${this.relativePath(this.blobsRoot)}`,
       '--coverage',
-    ], { npm_execpath: this.pnpmEntrypoint })
+    ], { npm_execpath: this.npmEntrypoint })
     return {
       label: 'merged coverage report',
       ...invocation,
@@ -207,7 +207,7 @@ export class CoveragePartitionCoordinator {
   }
 }
 
-/** Spawn one pnpm-backed command without a platform shell. */
+/** Spawn one npm-backed command without a platform shell. */
 function runCoverageCommand(command: CoverageCommand): Promise<CoverageCommandResult> {
   return new Promise((resolveCommand) => {
     let outputTail = ''

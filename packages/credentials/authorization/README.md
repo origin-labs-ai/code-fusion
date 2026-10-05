@@ -1,4 +1,4 @@
-# xhe-authorization
+# cf-authorization
 
 Authorization Service Definition (`ctx.authorization`). Some credentials cannot be configured, only obtained: getting one means a conversation with a human — open this page, paste that code, pick an account. This seam owns that conversation and the lifecycle around it, and never the protocol.
 

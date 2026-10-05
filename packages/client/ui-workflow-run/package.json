@@ -1,13 +1,13 @@
 {
   "name": "@origin-ai/cf-client-ui-workflow-run",
-  "description": "Durable workflow-run Conversation Node and nested member disclosure for dsh web",
+  "description": "Durable workflow-run Conversation Node and nested member disclosure for cf web",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/client/ui-workflow-run"
   },
   "type": "module",
@@ -51,28 +51,28 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-client-locale": "workspace:^",
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-conversation": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-tool-workflow": "workspace:^",
-    "@origin-ai/cf-workflow": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-client-locale": "*",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-ui-conversation": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-tool-workflow": "*",
+    "@origin-ai/cf-workflow": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-client-locale": "workspace:^",
-    "@origin-ai/cf-client-runtime": "workspace:^",
-    "@origin-ai/cf-client-test-runtime": "workspace:^",
-    "@origin-ai/cf-client-ui-conversation": "workspace:^",
-    "@origin-ai/cf-client-ui-primitives": "workspace:^",
-    "@origin-ai/cf-client-ui-slots": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-tool-workflow": "workspace:^",
-    "@origin-ai/cf-workflow": "workspace:^",
+    "@origin-ai/cf-client-locale": "*",
+    "@origin-ai/cf-client-runtime": "*",
+    "@origin-ai/cf-client-test-runtime": "*",
+    "@origin-ai/cf-client-ui-conversation": "*",
+    "@origin-ai/cf-client-ui-primitives": "*",
+    "@origin-ai/cf-client-ui-slots": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-tool-workflow": "*",
+    "@origin-ai/cf-workflow": "*",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/cordis": "*",
     "react": "^18.2.0"
   }
 }

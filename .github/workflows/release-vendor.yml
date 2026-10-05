@@ -1,6 +1,6 @@
 # Pack the vendored framework sequence: the nine rescoped Cordis packages under
 # vendor/, each on its own version line. This sequence releases independently of
-# dsh and of the native packages.
+# cf and of the native packages.
 #
 # Pack runs without credentials on every pull request and master push.
 # Publication is a manual workflow_dispatch of release-vendor-publish.yml from a
@@ -24,7 +24,7 @@ concurrency:
 
 env:
   PRIMARY_NODE_VERSION: '24'
-  XHE_TELEMETRY_DISABLED: '1'
+  CF_TELEMETRY_DISABLED: '1'
 
 jobs:
   pack:
@@ -37,45 +37,37 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-        with:
-          dest: ${{ runner.temp }}/setup-pnpm
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.PRIMARY_NODE_VERSION }}
 
-      - name: Configure pnpm store path
-        id: pnpm-store
-        run: |
-          store_root="$HOME/.local/share/pnpm/store"
-          echo "PNPM_CONFIG_STORE_DIR=$store_root" >> "$GITHUB_ENV"
-          store_path=$(PNPM_CONFIG_STORE_DIR="$store_root" pnpm store path --silent)
-          echo "path=$store_path" >> "$GITHUB_OUTPUT"
+      - name: Configure npm cache path
+        id: npm-store
+        run: echo "path=$(npm config get cache)" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache/restore@v4
         with:
-          path: ${{ steps.pnpm-store.outputs.path }}
-          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.npm-store.outputs.path }}
+          key: ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-pnpm-
+            ${{ runner.os }}-node-${{ env.PRIMARY_NODE_VERSION }}-npm-
 
       - name: Install (immutable)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Verify release version
-        run: pnpm run release:verify --family vendor
+        run: npm run release:verify --family vendor
 
       # The vendored packages publish their own sources and build outputs; the
       # host build produces what their manifests select.
       - name: Build
-        run: pnpm run build:lib:host
+        run: npm run build:lib:host
 
       - name: Pack release tarballs
-        run: pnpm run release:pack --family vendor --out dist/npm-vendor
+        run: npm run release:pack --family vendor --out dist/npm-vendor
 
       - name: Verify packed install
-        run: pnpm run release:verify-packed-install --family vendor --from dist/npm-vendor
+        run: npm run release:verify-packed-install --family vendor --from dist/npm-vendor
 
       - uses: actions/upload-artifact@v4
         with:

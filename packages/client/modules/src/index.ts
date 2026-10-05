@@ -1,6 +1,6 @@
 /**
- * Node half of the client module system (`dsh.client` dual-face package): scans
- * the host Loader's entries for packages declaring `dsh.client`, composes the
+ * Node half of the client module system (`cf.client` dual-face package): scans
+ * the host Loader's entries for packages declaring `cf.client`, composes the
  * `window.__CF_BOOT__` entry graph (wire single source: {@link WebBootEntry}
  * in `./client/manifest.ts`) in module-graph order, serves
  * `/plugins/<id>/client.js` and its source map, contributes the boot manifest
@@ -46,8 +46,8 @@ declare module '@deepseek-ai/cordis' {
   }
 }
 
-/** package.json `dsh.client` declaration fields, validated one by one after reading the file. */
-interface DshClientDeclaration {
+/** package.json `cf.client` declaration fields, validated one by one after reading the file. */
+interface CfClientDeclaration {
   inject?: string[]
   platform: string
   /** Boot phase-one prefetch mark; absent means lazy (fetched on demand). */
@@ -70,13 +70,13 @@ interface WebBootRowFields {
   immediately: boolean
 }
 
-/** Resolved package metadata for one `dsh.client` package (cached per name, never expires). */
+/** Resolved package metadata for one `cf.client` package (cached per name, never expires). */
 interface PkgMeta extends WebBootRowFields {
   clientPath: string
 }
 
 /** Recovery instruction shared by grouped startup and steady-state bundle diagnostics. */
-const CLIENT_BUNDLE_BUILD_INSTRUCTION = 'run `pnpm run build` before launch'
+const CLIENT_BUNDLE_BUILD_INSTRUCTION = 'run `npm run build` before launch'
 
 /** Missing built client export, retained as structured data for activation-error grouping. */
 class MissingClientBundleError extends Error {
@@ -122,20 +122,20 @@ interface WebPluginRecord {
   meta: PkgMeta
 }
 
-/** Narrow an unknown parsed JSON value to the `dsh.client` declaration, throwing on malformed fields. */
-function parseDshClient(pkgName: string, value: unknown): DshClientDeclaration | undefined {
+/** Narrow an unknown parsed JSON value to the `cf.client` declaration, throwing on malformed fields. */
+function parseCfClient(pkgName: string, value: unknown): CfClientDeclaration | undefined {
   if (value === undefined) return undefined
   if (typeof value !== 'object' || value === null) {
-    throw new Error(`client-modules: ${pkgName} has a non-object dsh.client declaration`)
+    throw new Error(`client-modules: ${pkgName} has a non-object cf.client declaration`)
   }
   const decl = value as Record<string, unknown>
   if (typeof decl.platform !== 'string') {
-    throw new Error(`client-modules: ${pkgName} dsh.client.platform must be a string`)
+    throw new Error(`client-modules: ${pkgName} cf.client.platform must be a string`)
   }
-  const inject = optionalStringArray(pkgName, 'dsh.client.inject', decl.inject)
-  const external = optionalStringArray(pkgName, 'dsh.client.external', decl.external)
+  const inject = optionalStringArray(pkgName, 'cf.client.inject', decl.inject)
+  const external = optionalStringArray(pkgName, 'cf.client.external', decl.external)
   if (decl.immediately !== undefined && typeof decl.immediately !== 'boolean') {
-    throw new Error(`client-modules: ${pkgName} dsh.client.immediately must be a boolean`)
+    throw new Error(`client-modules: ${pkgName} cf.client.immediately must be a boolean`)
   }
   return {
     platform: decl.platform,
@@ -206,7 +206,7 @@ export function orderByModuleGraph(entries: readonly WebBootEntry[]): WebBootEnt
       if (dependency === entry) {
         throw new Error(
           `client-modules: "${entry.id}" requests module "${name}" that it answers itself `
-          + '— a row must not declare its own package in dsh.client.external',
+          + '— a row must not declare its own package in cf.client.external',
         )
       }
       if (dependency !== undefined) visit(dependency)
@@ -273,7 +273,7 @@ window.__ModuleLoader__={
 }
 
 /**
- * The web plugin table service: incremental `dsh.client` scan + wire composition
+ * The web plugin table service: incremental `cf.client` scan + wire composition
  * + bundle route + index injection rows. Construction runs the activation scan
  * synchronously — a malformed declaration or missing bundle among the
  * already-loaded entries aggregates into one loud throw (FAILED fiber; the
@@ -284,7 +284,7 @@ export class ClientModuleRegistry extends Service {
 
   private readonly table = new Map<string, WebPluginRecord>()
   // Negative verdicts (unresolvable specifier — builtins like cordis:include,
-  // subpath rows — or a package without a web `dsh.client` declaration) are
+  // subpath rows — or a package without a web `cf.client` declaration) are
   // cached as null and never expire: plugin-set changes take effect on restart.
   private readonly pkgMeta = new Map<string, PkgMeta | null>()
   private readonly rebuildListeners = new Set<(id: string, rev: string) => void>()
@@ -302,7 +302,7 @@ export class ClientModuleRegistry extends Service {
     super(ctx, 'clientModules')
     // Resolution anchor: the config tree's baseUrl (the cordis.yml directory,
     // whose package declares every composed plugin as a dependency). The
-    // modules package's own URL would miss sibling packages under pnpm's
+    // modules package's own URL would miss sibling packages under npm's
     // isolated node_modules.
     if (ctx.baseUrl === undefined) {
       throw new Error('client-modules: ctx.baseUrl is unset — the node half needs the config-tree anchor to resolve plugin packages')
@@ -439,10 +439,10 @@ export class ClientModuleRegistry extends Service {
       return null
     }
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as Record<string, unknown>
-    const dsh = pkg.dsh
-    const decl = parseDshClient(
+    const cf = pkg.cf
+    const decl = parseCfClient(
       pkgName,
-      dsh !== null && typeof dsh === 'object' ? (dsh as Record<string, unknown>).client : undefined,
+      cf !== null && typeof cf === 'object' ? (cf as Record<string, unknown>).client : undefined,
     )
     if (decl === undefined || decl.platform !== 'web') {
       this.pkgMeta.set(pkgName, null)
@@ -450,7 +450,7 @@ export class ClientModuleRegistry extends Service {
     }
     const clientRel = clientExportOf(pkgName, pkg.exports)
     if (clientRel === undefined) {
-      throw new Error(`client-modules: ${pkgName} declares dsh.client but exports no "./client" bundle`)
+      throw new Error(`client-modules: ${pkgName} declares cf.client but exports no "./client" bundle`)
     }
     const meta: PkgMeta = {
       clientPath: join(dirname(pkgPath), clientRel),

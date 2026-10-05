@@ -1,17 +1,17 @@
-# xhe-tool-call-timeout-policy
+# cf-tool-call-timeout-policy
 
 Tool-call timeout enforcer: a single `tools/execute` around-dispatch listener that arms a per-call cooperative deadline on `exec.signal` for a tool declaring `timeoutMs` on its `ToolDefinition` and returns a structured `TOOL_TIMEOUT` result when that deadline wins. The budget is read from the tool's own declaration (`ToolDefinition.timeoutMs`, set by the owning tool plugin), so this plugin is **zero-config**. It is the reference `tools/execute` wrapper and the enforcement home for model-facing tool-call budgets ([timeout-library Agent Note](../../../.agents/notes/implemented/architecture/2026-07-06-timeout-deadline-library.md)).
 
 ## Plugin (namespace: `timeout-policy`)
 
-A function/namespace plugin (`name` / `inject` / `apply`), not a service. It registers no tool and takes no config — it consumes `ctx.tools`'s `tools/execute` waterfall (which the `xhe-tools` registry always provides) and reads each dispatched tool's declared `timeoutMs` from the registry (`ctx.tools.get(exec.name)`).
+A function/namespace plugin (`name` / `inject` / `apply`), not a service. It registers no tool and takes no config — it consumes `ctx.tools`'s `tools/execute` waterfall (which the `cf-tools` registry always provides) and reads each dispatched tool's declared `timeoutMs` from the registry (`ctx.tools.get(exec.name)`).
 
 ```yaml
 - id: timeout-policy
   name: '@origin-ai/cf-tool-call-timeout-policy'
 ```
 
-The per-tool budget is declared by the tool plugin (e.g. `xhe-tool-web`'s `fetchTimeoutMs`/`searchTimeoutMs` config, attached as `ToolDefinition.timeoutMs`); this plugin only enforces it, so a mistyped tool name is not possible.
+The per-tool budget is declared by the tool plugin (e.g. `cf-tool-web`'s `fetchTimeoutMs`/`searchTimeoutMs` config, attached as `ToolDefinition.timeoutMs`); this plugin only enforces it, so a mistyped tool name is not possible.
 
 ### Behavior
 
@@ -27,7 +27,7 @@ The base `next()` of `tools/execute` is the registry's dispatch-with-normalizati
 
 ### Cooperative, not a hard kill
 
-The derived signal only **notifies**; termination stays with the tool and the capability it forwards `exec.signal` to (the `xhe-timeout` library owns no kill). **Declaring `timeoutMs` therefore means "cooperative with `exec.signal`"**: a tool that ignores the signal will not stop on timeout. Only signal-forwarding tools should declare it — the shipped `web_fetch`/`web_search` (which forward through `ctx.web` to providers) are the reference. `TOOL_TIMEOUT` needs no session event for reconstructability: it is the final model-facing `tool/result`, already logged by the loop.
+The derived signal only **notifies**; termination stays with the tool and the capability it forwards `exec.signal` to (the `cf-timeout` library owns no kill). **Declaring `timeoutMs` therefore means "cooperative with `exec.signal`"**: a tool that ignores the signal will not stop on timeout. Only signal-forwarding tools should declare it — the shipped `web_fetch`/`web_search` (which forward through `ctx.web` to providers) are the reference. `TOOL_TIMEOUT` needs no session event for reconstructability: it is the final model-facing `tool/result`, already logged by the loop.
 
 ### Composing with other `tools/execute` wrappers
 

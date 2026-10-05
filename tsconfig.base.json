@@ -150,8 +150,8 @@
         "./packages/identity/*/src/invariant.ts",
         "./packages/test-support/*/src/invariant.ts"
       ],
-      // host/client package names prefix the group dir (xhe-client-<dir>), so
-      // the generic xhe-*/invariant list above cannot map them; strip the
+      // host/client package names prefix the group dir (cf-client-<dir>), so
+      // the generic cf-*/invariant list above cannot map them; strip the
       // group prefix with a dedicated wildcard per group instead.
       "@origin-ai/cf-host-*/invariant": ["./packages/host/*/src/invariant.ts"],
       "@origin-ai/cf-client-*/invariant": ["./packages/client/*/src/invariant.ts"],

@@ -1,7 +1,7 @@
 /**
  * Default Agent driver over queued turns and step-boundary input. Every request
  * is derived from the session log.
- * @module xhe-agent-loop/agent
+ * @module cf-agent-loop/agent
  */
 
 import type {

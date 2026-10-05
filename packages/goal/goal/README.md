@@ -29,7 +29,7 @@ The separately published `./invariant` companion maintains an independent fold o
 
 ## Extension points
 
-Policy plugins call the service verbs and react to the scoped `goal/changed` event. A continuation consumer admits rounds as `user/message` events with `GoalMessageSource`; ordinary human turns never increment `roundsStarted`. Consumers use the `Agent` interface and events rather than importing `xhe-agent-loop`.
+Policy plugins call the service verbs and react to the scoped `goal/changed` event. A continuation consumer admits rounds as `user/message` events with `GoalMessageSource`; ordinary human turns never increment `roundsStarted`. Consumers use the `Agent` interface and events rather than importing `cf-agent-loop`.
 
 ## Model Experience
 

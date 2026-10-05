@@ -15,7 +15,7 @@ let capability: DirectoryPickerBrowseCapability
 let dispose: () => Promise<void>
 
 beforeAll(async () => {
-  root = await mkdtemp(join(tmpdir(), 'xhe-browse-'))
+  root = await mkdtemp(join(tmpdir(), 'cf-browse-'))
   await mkdir(join(root, 'projects'))
   await mkdir(join(root, 'projects', 'harness'))
   await mkdir(join(root, '.hidden-dir'))

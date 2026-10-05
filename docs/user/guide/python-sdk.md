@@ -15,11 +15,11 @@ This tutorial is the programmatic alternative to the Web UI. It installs the pub
 Clone the repository for its runnable example, create a virtual environment, and install the SDK with its same-version bundled runtime:
 
 ```sh
-git clone https://github.com/deepseek-ai/xhe.git
-cd xhe
+git clone https://github.com/deepseek-ai/cf.git
+cd cf
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install xhe-sdk
+python -m pip install cf-sdk
 ```
 
 The installed runtime needs no system Node.js. Repository contributors who need to build the runtime or wheels from source should use the [Python contributor workflows](../../../python/development.md).
@@ -31,8 +31,8 @@ Set the credential in the environment. Set `DEEPSEEK_BASE_URL` as well when the 
 ```sh
 export DEEPSEEK_API_KEY=sk-your-key-here
 # export DEEPSEEK_BASE_URL=http://127.0.0.1:8000/v1
-# export XHE_MODEL=deepseek-v4-flash
-# export XHE_SYSTEM_PROMPT='You are a helpful software engineer assistant.'
+# export CF_MODEL=deepseek-v4-flash
+# export CF_SYSTEM_PROMPT='You are a helpful software engineer assistant.'
 ```
 
 Run one task against an isolated workspace and session directory:
@@ -82,14 +82,14 @@ print(result.final_response)
 
 | Property | Value |
 |---|---|
-| System prompt | `XHE_SYSTEM_PROMPT`, falling back to `You are a helpful software engineer assistant.` |
-| Model in `minimal.py` | `--model`, then `XHE_MODEL`, then `deepseek-v4-flash` |
+| System prompt | `CF_SYSTEM_PROMPT`, falling back to `You are a helpful software engineer assistant.` |
+| Model in `minimal.py` | `--model`, then `CF_MODEL`, then `deepseek-v4-flash` |
 | Model-facing tools | Persistent `bash` and `str_replace_editor` only |
 | Bash timeout | 300 seconds |
 | Editor output limit | 16,000 characters |
 | Context compaction | Disabled |
 | Filesystem | Bare local backend; absolute editor paths may address any path visible to the runtime process |
-| Session persistence | Uncompressed JSONL under `XHE_SESSION_ROOT` |
+| Session persistence | Uncompressed JSONL under `CF_SESSION_ROOT` |
 
 The composition omits harness identity, workspace prompt text, skills, one-shot Bash, task tools, compaction, and every other model-facing plugin. Sandbox-policy facts are logged as runtime user context rather than appended to the system prompt.
 

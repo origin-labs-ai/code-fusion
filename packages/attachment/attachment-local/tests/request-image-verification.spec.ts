@@ -29,7 +29,7 @@ afterEach(async () => {
 
 describe('request image verification', () => {
   it('rejects an encoded request whose decoded facts disagree with the encoder result', async () => {
-    const cfHome = await mkdtemp(join(tmpdir(), 'xhe-request-verification-'))
+    const cfHome = await mkdtemp(join(tmpdir(), 'cf-request-verification-'))
     homes.push(cfHome)
     const attachments = new LocalAttachmentStore(new Context(), { cfHome })
     const source = new Uint8Array(await sharp({

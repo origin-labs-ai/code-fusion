@@ -1,9 +1,9 @@
 {
-  "organization": "xhe",
-  "repository": "xhe",
+  "organization": "cf",
+  "repository": "cf",
   "projectNumber": 1,
-  "projectTitle": "XHE Issue Management",
-  "lifecycleActor": "xhe-issue-management",
+  "projectTitle": "CF Issue Management",
+  "lifecycleActor": "cf-issue-management",
   "priorityField": "Priority",
   "allowUnassignedOwner": true,
   "statuses": [

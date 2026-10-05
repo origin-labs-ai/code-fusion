@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/fs/fs-sandbox"
   },
   "type": "module",
@@ -32,19 +32,19 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-fs": "workspace:^",
-    "@origin-ai/cf-fs-local": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-sandbox": "workspace:^",
-    "@origin-ai/cf-sandbox-policy": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-fs": "*",
+    "@origin-ai/cf-fs-local": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-sandbox": "*",
+    "@origin-ai/cf-sandbox-policy": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-fs": "workspace:^",
-    "@origin-ai/cf-fs-local": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-sandbox": "workspace:^",
-    "@origin-ai/cf-sandbox-policy": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-fs": "*",
+    "@origin-ai/cf-fs-local": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-sandbox": "*",
+    "@origin-ai/cf-sandbox-policy": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

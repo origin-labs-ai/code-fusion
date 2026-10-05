@@ -9,7 +9,7 @@ process.stdin.on('end', () => {
     args: process.argv.slice(2),
     cwd: process.cwd(),
     cfHome: process.env.CF_HOME,
-    agentsHome: process.env.XHE_AGENTS_HOME,
+    agentsHome: process.env.CF_AGENTS_HOME,
     marker: process.env.LOADER_SMOKE_MARKER,
     input,
   }))

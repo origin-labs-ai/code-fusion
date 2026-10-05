@@ -1,8 +1,8 @@
 /**
  * The writable root is this package's own, not an assembly fact each app must
  * remember: a roster configured with only a `system` root still discovers and
- * authors into `<dshHome>/.agent-presets`, the way `xhe-skill-filesystem` owns
- * `<dshHome>/skills`. `includeUserRoot: false` is how a deployment — or a test
+ * authors into `<cfHome>/.agent-presets`, the way `cf-skill-filesystem` owns
+ * `<cfHome>/skills`. `includeUserRoot: false` is how a deployment — or a test
  * pinning an exact roster — opts out.
  *
  * `$CF_HOME` is repointed per test because the derived root is resolved in the
@@ -31,7 +31,7 @@ let home: string
 let previousHome: string | undefined
 
 beforeEach(async () => {
-  home = await mkdtemp(join(tmpdir(), 'xhe-preset-home-'))
+  home = await mkdtemp(join(tmpdir(), 'cf-preset-home-'))
   previousHome = process.env.CF_HOME
   process.env.CF_HOME = home
 })
@@ -115,7 +115,7 @@ describe('the harness-home preset root', () => {
   })
 
   it('yields to a configured user root for authoring, which writableRoot takes first', async () => {
-    const explicit = await mkdtemp(join(tmpdir(), 'xhe-preset-explicit-'))
+    const explicit = await mkdtemp(join(tmpdir(), 'cf-preset-explicit-'))
     const ctx = await roster({
       roots: [
         { path: SYSTEM_ROOT, trust: 'system' as const },

@@ -11,26 +11,26 @@ afterEach(() => {
 
 describe('DocumentTitle', () => {
   it('projects a durable title and restores the product title', () => {
-    vi.stubEnv('XHE_CLIENT_TITLE', 'Xee Harness Enhanced')
+    vi.stubEnv('CF_CLIENT_TITLE', 'CodeFusion')
     document.title = 'stale title'
     const mounted = render(<DocumentTitle />)
-    expect(document.title).toBe('Xee Harness Enhanced')
+    expect(document.title).toBe('CodeFusion')
     mounted.rerender(<DocumentTitle title="First title" />)
-    expect(document.title).toBe('First title — Xee Harness Enhanced')
+    expect(document.title).toBe('First title — CodeFusion')
     mounted.rerender(<DocumentTitle title="Revised title" />)
-    expect(document.title).toBe('Revised title — Xee Harness Enhanced')
+    expect(document.title).toBe('Revised title — CodeFusion')
     mounted.rerender(<DocumentTitle />)
-    expect(document.title).toBe('Xee Harness Enhanced')
+    expect(document.title).toBe('CodeFusion')
     mounted.unmount()
-    expect(document.title).toBe('Xee Harness Enhanced')
+    expect(document.title).toBe('CodeFusion')
   })
 
   it('uses the generic title when the build provides no title', () => {
-    vi.stubEnv('XHE_CLIENT_TITLE', '')
-    delete process.env.XHE_CLIENT_TITLE
+    vi.stubEnv('CF_CLIENT_TITLE', '')
+    delete process.env.CF_CLIENT_TITLE
     const mounted = render(<DocumentTitle title="First title" />)
-    expect(document.title).toBe('First title — XHE Local Build')
+    expect(document.title).toBe('First title — CF Local Build')
     mounted.unmount()
-    expect(document.title).toBe('DSH Local Build')
+    expect(document.title).toBe('CF Local Build')
   })
 })

@@ -1,13 +1,13 @@
 {
   "name": "@origin-ai/cf-settings",
-  "description": "Abstract user-settings seam (ctx.settings) for the Xee Harness Enhanced",
+  "description": "Abstract user-settings seam (ctx.settings) for the CodeFusion",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/settings/settings"
   },
   "type": "module",
@@ -37,15 +37,15 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*",
+    "@deepseek-ai/schemastery": "*"
   }
 }

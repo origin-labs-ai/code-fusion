@@ -15,12 +15,12 @@ import {
 import { clientBundle } from '../packages/client/tsdown.client.ts'
 
 const root = resolve(import.meta.dirname, '..')
-const PROBE_NAME = 'XHE_CLIENT_BUILD_TEST'
+const PROBE_NAME = 'CF_CLIENT_BUILD_TEST'
 const COMMIT_HASH = '0123456789abcdef0123456789abcdef01234567'
 const PROBE_KEY = `process.env.${PROBE_NAME}`
 const originalProbe = process.env[PROBE_NAME]
 const roots: string[] = []
-const dshBuildWorkflows = [
+const buildWorkflows = [
   'build-exe-for-python-sdk.yml',
   'ci.yml',
   'e2b-e2e.yml',
@@ -43,7 +43,7 @@ function write(path: string, content: string): void {
 }
 
 function buildFixture(environment: Record<string, string>): string {
-  const fixtureRoot = mkdtempSync(join(tmpdir(), 'xhe-client-build-'))
+  const fixtureRoot = mkdtempSync(join(tmpdir(), 'cf-client-build-'))
   roots.push(fixtureRoot)
   write(join(fixtureRoot, 'apps/web/dist/index.html'), '<main></main>')
   write(join(fixtureRoot, 'packages/client/example/lib/client.js'), 'module.exports = {}\n')
@@ -54,65 +54,65 @@ function buildFixture(environment: Record<string, string>): string {
 describe('client build environment', () => {
   it('requires an exact public environment for a named artifact profile', () => {
     const expected = {
-      XHE_CLIENT_BUILD_PROFILE: 'official',
-      XHE_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      XHE_CLIENT_TITLE: 'Xee Harness Enhanced',
+      CF_CLIENT_BUILD_PROFILE: 'official',
+      CF_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      CF_CLIENT_TITLE: 'CodeFusion',
     } as const
 
     expect(() => { assertClientBuildEnvironment({ PATH: '/bin', ...expected }, expected) }).not.toThrow()
-    expect(() => { assertClientBuildEnvironment({}, expected) }).toThrow(/XHE_CLIENT_TITLE/)
-    expect(() => { assertClientBuildEnvironment({ XHE_CLIENT_TITLE: 'Other' }, expected) }).toThrow(/XHE_CLIENT_TITLE/)
+    expect(() => { assertClientBuildEnvironment({}, expected) }).toThrow(/CF_CLIENT_TITLE/)
+    expect(() => { assertClientBuildEnvironment({ CF_CLIENT_TITLE: 'Other' }, expected) }).toThrow(/CF_CLIENT_TITLE/)
     expect(() => {
-      assertClientBuildEnvironment({ ...expected, XHE_CLIENT_UNDECLARED: 'value' }, expected)
-    }).toThrow(/XHE_CLIENT_UNDECLARED/)
+      assertClientBuildEnvironment({ ...expected, CF_CLIENT_UNDECLARED: 'value' }, expected)
+    }).toThrow(/CF_CLIENT_UNDECLARED/)
   })
 
   it('inherits public values by default and isolates an explicit official profile', () => {
     const parent = {
       PATH: '/bin',
-      XHE_BUILD_CLIENT_PROFILE: 'official',
-      XHE_CLIENT_BUILD_PROFILE: 'local',
-      XHE_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      XHE_CLIENT_TITLE: 'Local title',
-      XHE_CLIENT_EXTRA: 'local-extra',
+      CF_BUILD_CLIENT_PROFILE: 'official',
+      CF_CLIENT_BUILD_PROFILE: 'local',
+      CF_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      CF_CLIENT_TITLE: 'Local title',
+      CF_CLIENT_EXTRA: 'local-extra',
     }
 
-    expect(resolveClientBuildEnvironment({ XHE_CLIENT_TITLE: 'Local title' })).toEqual({
-      XHE_CLIENT_TITLE: 'Local title',
+    expect(resolveClientBuildEnvironment({ CF_CLIENT_TITLE: 'Local title' })).toEqual({
+      CF_CLIENT_TITLE: 'Local title',
     })
     expect(resolveClientBuildEnvironment(parent)).toEqual({
-      XHE_CLIENT_BUILD_PROFILE: 'official',
-      XHE_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      XHE_CLIENT_TITLE: 'Xee Harness Enhanced',
+      CF_CLIENT_BUILD_PROFILE: 'official',
+      CF_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      CF_CLIENT_TITLE: 'CodeFusion',
     })
     expect(() => {
-      resolveClientBuildEnvironment({ XHE_BUILD_CLIENT_PROFILE: 'official' })
-    }).toThrow(/XHE_CLIENT_COMMIT_HASH/)
+      resolveClientBuildEnvironment({ CF_BUILD_CLIENT_PROFILE: 'official' })
+    }).toThrow(/CF_CLIENT_COMMIT_HASH/)
     expect(() => { resolveClientBuildEnvironment({}, 'unknown') }).toThrow(/unknown client build profile/)
     expect(clientBuildProcessEnvironment(parent, {
-      XHE_CLIENT_BUILD_PROFILE: 'official',
-      XHE_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      XHE_CLIENT_TITLE: 'Xee Harness Enhanced',
+      CF_CLIENT_BUILD_PROFILE: 'official',
+      CF_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      CF_CLIENT_TITLE: 'CodeFusion',
     })).toEqual({
       PATH: '/bin',
-      XHE_CLIENT_BUILD_PROFILE: 'official',
-      XHE_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      XHE_CLIENT_TITLE: 'Xee Harness Enhanced',
+      CF_CLIENT_BUILD_PROFILE: 'official',
+      CF_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      CF_CLIENT_TITLE: 'CodeFusion',
     })
-    expect(repositoryCommitHash('/unused', { XHE_CLIENT_COMMIT_HASH: COMMIT_HASH })).toBe(COMMIT_HASH.slice(0, 7))
+    expect(repositoryCommitHash('/unused', { CF_CLIENT_COMMIT_HASH: COMMIT_HASH })).toBe(COMMIT_HASH.slice(0, 7))
   })
 
   it('defines only public client values over a non-enumerable fallback', () => {
     expect(clientBuildEnvironmentDefines({
       PATH: '/bin',
-      XHE_TEST_API_KEY: 'secret',
-      XHE_CLIENT_VARIANT: 'quoted "value"',
-      XHE_CLIENT_EMPTY: '',
-      XHE_CLIENT_UNSET: undefined,
+      CF_TEST_API_KEY: 'secret',
+      CF_CLIENT_VARIANT: 'quoted "value"',
+      CF_CLIENT_EMPTY: '',
+      CF_CLIENT_UNSET: undefined,
     })).toEqual({
       'process.env': '{}',
-      'process.env.XHE_CLIENT_EMPTY': '""',
-      'process.env.XHE_CLIENT_VARIANT': '"quoted \\"value\\""',
+      'process.env.CF_CLIENT_EMPTY': '""',
+      'process.env.CF_CLIENT_VARIANT': '"quoted \\"value\\""',
     })
   })
 
@@ -122,7 +122,7 @@ describe('client build environment', () => {
     const configs = clientBundle('@origin-ai/cf-client-ui-sidebar', [
       'lib/types/index.js',
       'lib/types/invariant.js',
-    ])({ env: { XHE_BUILD_FACE: 'client' } })
+    ])({ env: { CF_BUILD_FACE: 'client' } })
     if (!Array.isArray(configs)) throw new TypeError('client bundle config must be an array')
     const dynamic = configs.find(config => config.name === '@origin-ai/cf-client-ui-sidebar/client')
     expect(dynamic?.define).toMatchObject({
@@ -148,15 +148,15 @@ describe('client build environment', () => {
 
   it('binds the recorded environment to a complete set of client artifacts', () => {
     const officialEnvironment = {
-      XHE_CLIENT_BUILD_PROFILE: 'official',
-      XHE_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
-      XHE_CLIENT_TITLE: 'Xee Harness Enhanced',
+      CF_CLIENT_BUILD_PROFILE: 'official',
+      CF_CLIENT_COMMIT_HASH: COMMIT_HASH.slice(0, 7),
+      CF_CLIENT_TITLE: 'CodeFusion',
     }
     const official = buildFixture(officialEnvironment)
     const defaultBuild = buildFixture({})
 
     expect(readClientBuildRecord(official, officialEnvironment).environment).toEqual(officialEnvironment)
-    expect(() => { readClientBuildRecord(defaultBuild, officialEnvironment) }).toThrow(/XHE_CLIENT_/)
+    expect(() => { readClientBuildRecord(defaultBuild, officialEnvironment) }).toThrow(/CF_CLIENT_/)
     expect(() => { readClientBuildRecord(join(defaultBuild, 'missing')) }).toThrow(/record.*missing/)
 
     write(join(official, 'apps/web/dist/index.html'), '<main>changed</main>')
@@ -164,13 +164,13 @@ describe('client build environment', () => {
   })
 
   it('keeps public client values out of workflow-wide environments', () => {
-    for (const name of dshBuildWorkflows) {
+    for (const name of buildWorkflows) {
       const path = `.github/workflows/${name}`
       const document: unknown = yaml.load(readFileSync(resolve(root, path), 'utf8'))
       if (typeof document !== 'object' || document === null || Array.isArray(document)) {
         throw new TypeError(`${path} must contain a workflow object`)
       }
-      expect(JSON.stringify(document), path).not.toContain('XHE_CLIENT_')
+      expect(JSON.stringify(document), path).not.toContain('CF_CLIENT_')
     }
   })
 })

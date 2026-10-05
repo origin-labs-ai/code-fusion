@@ -66,7 +66,7 @@ async function bootFixture(
   resolve: (program: Command) => unknown = resolveDemo,
   options: { objectInject?: boolean; withoutProvider?: boolean } = {},
 ): Promise<Fixture> {
-  const dir = mkdtempSync(join(tmpdir(), 'xhe-cmdline-'))
+  const dir = mkdtempSync(join(tmpdir(), 'cf-cmdline-'))
   const observed: Observed = { exits: [], out: '' }
   writeFileSync(join(dir, 'reader.mjs'), `
 export const name = 'reader'

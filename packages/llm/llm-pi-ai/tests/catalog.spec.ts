@@ -37,7 +37,7 @@ afterEach(async () => {
 
 /** A throwaway $CF_HOME with an empty settings document. */
 async function home(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'xhe-pi-catalog-'))
+  const dir = await mkdtemp(join(tmpdir(), 'cf-pi-catalog-'))
   homes.push(dir)
   await writeFile(join(dir, 'settings.yaml'), '')
   return dir

@@ -15,7 +15,7 @@ const POLL_MS = 20
 
 let dir: string
 
-beforeEach(() => { dir = mkdtempSync(join(tmpdir(), 'xhe-hmr-')) })
+beforeEach(() => { dir = mkdtempSync(join(tmpdir(), 'cf-hmr-')) })
 afterEach(() => { rmSync(dir, { recursive: true, force: true }) })
 
 /**

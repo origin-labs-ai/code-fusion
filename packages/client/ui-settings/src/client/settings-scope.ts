@@ -1,6 +1,6 @@
 /**
  * Host transport for the settings-namespace scope contract. The contract types
- * live in `xhe-client-runtime` (the common dependency of every feature that
+ * live in `cf-client-runtime` (the common dependency of every feature that
  * owns a preference); this file owns the per-namespace derivation over the
  * shared {@link SettingsDescribeMirror} and the serialized write path, both of
  * which are Settings-surface concerns. Reads never touch the wire here: the

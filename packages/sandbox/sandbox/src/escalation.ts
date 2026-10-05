@@ -13,7 +13,7 @@
  * hands the closure down, so this package never depends on the approval or
  * agent packages.
  *
- * @module xhe-sandbox/escalation
+ * @module cf-sandbox/escalation
  */
 
 import { assertNever } from '@origin-ai/cf-llm'

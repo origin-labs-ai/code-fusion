@@ -12,7 +12,7 @@
     root: './.sessions'
     compression: none
 
-# file/override/childFiles all default to their XHE_SNAPSHOT_* env vars.
+# file/override/childFiles all default to their CF_SNAPSHOT_* env vars.
 - id: replay
   name: '@origin-ai/cf-llm-replay'
 

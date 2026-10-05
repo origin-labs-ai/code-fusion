@@ -12,8 +12,8 @@ it('ships install metadata with the built web application', async () => {
   const manifest: unknown = JSON.parse(await readFile(join(DIST_ROOT, 'manifest.webmanifest'), 'utf8'))
   expect(manifest).toEqual({
     id: '/',
-    name: 'Xee Harness Enhanced',
-    short_name: 'XHE',
+    name: 'CodeFusion',
+    short_name: 'CF',
     start_url: '/',
     scope: '/',
     display: 'fullscreen',

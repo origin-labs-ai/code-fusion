@@ -21,7 +21,7 @@ The seam exposes exactly four semantic operations — `goToDefinition`, `findRef
 
 Selection is per query and order-independent: a provider owns a set of extensions exclusively, so registration and HMR order never change routing. Extension keys normalize to lowercase, leading-dot form; the `languageId` only synchronizes the transient document, never participates in selection. The first version has no glob, language-id, or explicit route selector.
 
-Providers register **capabilities**, not tools. `xhe-tool-lsp` is the only owner of the model-facing name, description, prompt guidance, schema, and presentation.
+Providers register **capabilities**, not tools. `cf-tool-lsp` is the only owner of the model-facing name, description, prompt guidance, schema, and presentation.
 
 ## Vocabulary
 
@@ -29,11 +29,11 @@ Providers register **capabilities**, not tools. `xhe-tool-lsp` is the only owner
 
 ## Model Experience
 
-Indirectly, through `xhe-tool-lsp`, which owns the model-facing `lsp` schema, prompt, and rendered results while this registry contributes no prompt or schema itself.
+Indirectly, through `cf-tool-lsp`, which owns the model-facing `lsp` schema, prompt, and rendered results while this registry contributes no prompt or schema itself.
 
 #### KV Cache effect
 
-No direct invalidation; `xhe-tool-lsp` owns request-prefix changes.
+No direct invalidation; `cf-tool-lsp` owns request-prefix changes.
 
 ## Known Limitations and Deferred Work
 

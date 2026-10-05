@@ -1,7 +1,7 @@
 /**
  * Harness request-history conversion into pi-ai's Context vocabulary.
  *
- * @module xhe-llm-pi-ai/context
+ * @module cf-llm-pi-ai/context
  */
 
 import { CallId, contentHasImage, LlmError, offloadRequestImagesWithPolicy, requestImageHandleText } from '@origin-ai/cf-llm'

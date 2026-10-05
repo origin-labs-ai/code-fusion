@@ -58,7 +58,7 @@ import type {
 import {
   GodRuntime,
   createGODRuntime,
-  xheExecute as godXheExecute
+  cfExecute as godXheExecute
 } from './mad/core/god-runtime'
 
 // ============================================================================
@@ -1455,7 +1455,7 @@ export function createAdvancedMADEngine(config?: Partial<AdvancedMADConfig>): Ad
 /**
  * Quick execute function for simple use cases
  */
-export async function xheAdvExecute(
+export async function cfAdvExecute(
   task: string,
   options?: {
     mode?: MADMode
@@ -1647,11 +1647,11 @@ export type { MAgentResponse, LLMProviderConfig, AdvancedMADConfig, DiscussionTu
 export { MADEngine }
 
 // GOD Runtime exports
-export { GodRuntime, createGODRuntime, godXheExecute, xheExecute }
+export { GodRuntime, createGODRuntime, godXheExecute, cfExecute }
 export type { GodRuntime }
 
 // Convenience function
-export async function xheTask(
+export async function cfTask(
   task: string,
   mode: MADMode = 'PLAN',
   options?: Partial<AdvancedMADConfig>

@@ -7,7 +7,7 @@
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import type {
-  BootManifest, ClientModuleCreateOptions, ClientModuleSystem, DshWindow,
+  BootManifest, ClientModuleCreateOptions, ClientModuleSystem, CfWindow,
 } from '@origin-ai/cf-client-modules/client'
 import type {} from '@origin-ai/cf-client-ui-renderer/client'
 import { BootPage } from './boot-page.ts'
@@ -45,7 +45,7 @@ export class AppWebEntry {
    */
   async run(): Promise<void> {
     try {
-      const win = globalThis as DshWindow
+      const win = globalThis as CfWindow
       const moduleLoader = win.__ModuleLoader__
       if (moduleLoader === undefined) {
         throw new Error('web boot: window.__ModuleLoader__ bootstrap facade is missing')
@@ -56,8 +56,8 @@ export class AppWebEntry {
       // this structural slice reads one optional member without adding a
       // package edge.
       const transport = (globalThis as {
-        __XHE_TRANSPORT__?: { loadBundle?: ClientModuleCreateOptions['loadBundle'] }
-      }).__XHE_TRANSPORT__
+        __CF_TRANSPORT__?: { loadBundle?: ClientModuleCreateOptions['loadBundle'] }
+      }).__CF_TRANSPORT__
       this.modules = moduleLoader.create({
         boot: win.__CF_BOOT__,
         staticModules: getStaticModules(),
@@ -99,8 +99,8 @@ export class AppWebEntry {
     // against its static deployment answers nothing. A transport without
     // loadBundle leaves bundles on HTTP, prefetch included.
     const transport = (globalThis as {
-      __XHE_TRANSPORT__?: { loadBundle?: unknown }
-    }).__XHE_TRANSPORT__
+      __CF_TRANSPORT__?: { loadBundle?: unknown }
+    }).__CF_TRANSPORT__
     if (transport?.loadBundle !== undefined) return
     await Promise.all(this.manifest.plugins
       .filter(row => row.immediately)

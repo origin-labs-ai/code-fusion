@@ -12,7 +12,7 @@ import * as InvariantCompanion from '../src/invariant.ts'
 const roots: string[] = []
 
 async function freshRoot(): Promise<string> {
-  const root = await mkdtemp(join(tmpdir(), 'xhe-storage-json-'))
+  const root = await mkdtemp(join(tmpdir(), 'cf-storage-json-'))
   roots.push(root)
   return root
 }

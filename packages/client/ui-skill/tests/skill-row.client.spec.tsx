@@ -22,7 +22,7 @@ function settled(over: Partial<ToolResultNode> = {}): ToolResultNode {
     seq: 3,
     time: 3_000,
     callId: 'call-skill',
-    call: { name: 'skill', argsRaw: '{"name":"xhe-manage-issues"}' },
+    call: { name: 'skill', argsRaw: '{"name":"cf-manage-issues"}' },
     callTime: 2_000,
     content: [{ type: 'text', text: 'Follow the issue workflow.\nKeep project fields in sync.' }],
     isError: false,
@@ -33,7 +33,7 @@ function settled(over: Partial<ToolResultNode> = {}): ToolResultNode {
   }
 }
 
-function running(argsRaw = '{"name":"xhe-manage-issues"}'): RunningToolCall {
+function running(argsRaw = '{"name":"cf-manage-issues"}'): RunningToolCall {
   return {
     callId: 'call-skill', name: 'skill', argsRaw, turn: 1, step: 1, time: 2_000, callView: null, subCalls: [],
   }
@@ -64,7 +64,7 @@ describe('SkillRow', () => {
     expect(row.getAttribute('aria-expanded')).toBe('true')
     const card = screen.getByLabelText('说明')
     expect(card.textContent).toBe('说明Follow the issue workflow.\nKeep project fields in sync.')
-    expect(view.container.textContent).not.toContain('{"name":"xhe-manage-issues"}')
+    expect(view.container.textContent).not.toContain('{"name":"cf-manage-issues"}')
     fireEvent.click(screen.getByRole('button', { name: 'Inspect' }))
     expect(inspect).toHaveBeenCalledTimes(1)
 
@@ -88,7 +88,7 @@ describe('SkillRow', () => {
     const row = view.container.querySelector('[data-tool="skill"] > div')!
     expect(row.getAttribute('role')).toBeNull()
     expect(view.container.textContent).toContain('正在加载 skill')
-    expect(view.container.textContent).toContain('xhe-manage-issues')
+    expect(view.container.textContent).toContain('cf-manage-issues')
     expect(view.container.querySelector('svg [fill="currentColor"]')).not.toBeNull()
   })
 

@@ -33,7 +33,7 @@ afterEach(async () => {
 })
 
 async function loadComposition(): Promise<Context> {
-  root = await mkdtemp(join(tmpdir(), 'xhe-title-loader-'))
+  root = await mkdtemp(join(tmpdir(), 'cf-title-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
     "- name: '@origin-ai/cf-llm'",

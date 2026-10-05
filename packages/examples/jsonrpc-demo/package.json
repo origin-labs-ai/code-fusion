@@ -7,14 +7,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/examples/jsonrpc-demo"
   },
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
   "bin": {
-    "xhe-jsonrpc-agent": "lib/bin.js"
+    "cf-jsonrpc-agent": "lib/bin.js"
   },
   "exports": {
     ".": {
@@ -45,14 +45,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@origin-ai/cf-app-boot": "workspace:^"
+    "@origin-ai/cf-app-boot": "*"
   },
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

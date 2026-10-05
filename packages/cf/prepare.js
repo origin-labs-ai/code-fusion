@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * XH Enhanced - Prepare Script
+ * CodeFusion - Prepare Script
  * Generates required entry points for workspace build compatibility
  */
 
@@ -18,21 +18,21 @@ mkdirSync(libTypesDir, { recursive: true })
 // Entry point files that tsdown workspace build expects
 const entries = {
   'index.js': `/**
- * XH Enhanced - Main Entry (auto-generated)
- * @origin-labs-ai/xh-enhanced
+ * CodeFusion - Main Entry (auto-generated)
+ * @origin-labs-ai/cf-enhanced
  */
 export { name, VERSION, DESCRIPTION } from '../../src/index.ts'
 export * from '../../src/index.ts'
 `,
   
   'invariant.js': `/**
- * XH Enhanced - Invariant Entry (auto-generated)
+ * CodeFusion - Invariant Entry (auto-generated)
  */
 export { invariant, assertModelAccountability, assertBalancedAggression } from '../../src/invariant.ts'
 `,
   
   'startup.js': `/**
- * XH Enhanced - Startup Entry (auto-generated)
+ * CodeFusion - Startup Entry (auto-generated)
  */
 export { startup, DEFAULT_BEHAVIOR } from '../../src/startup.ts`
 }
@@ -44,4 +44,4 @@ for (const [filename, content] of Object.entries(entries)) {
   console.log(`✅ Created ${filepath}`)
 }
 
-console.log('📦 XH Enhanced: Workspace entry points ready!')
+console.log('📦 CodeFusion: Workspace entry points ready!')

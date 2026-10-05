@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/subagent/subagent-spawn-in-process"
   },
   "type": "module",
@@ -32,29 +32,29 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-subagent-in-process-driver": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-subagent-in-process-driver": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-loop": "workspace:^",
-    "@origin-ai/cf-agent-loop-testkit": "workspace:^",
-    "@origin-ai/cf-bash-local": "workspace:^",
-    "@origin-ai/cf-subprocess-local": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-llm-deepseek": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@origin-ai/cf-subagent-in-process-driver": "workspace:^",
-    "@origin-ai/cf-tool-bash": "workspace:^",
-    "@origin-ai/cf-tool-subagent": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-loop": "*",
+    "@origin-ai/cf-agent-loop-testkit": "*",
+    "@origin-ai/cf-bash-local": "*",
+    "@origin-ai/cf-subprocess-local": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-llm-deepseek": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@origin-ai/cf-subagent-in-process-driver": "*",
+    "@origin-ai/cf-tool-bash": "*",
+    "@origin-ai/cf-tool-subagent": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

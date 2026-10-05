@@ -4,7 +4,15 @@ import { chmodSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const entry = fileURLToPath(import.meta.resolve('node-pty'))
+// Best-effort repair: node-pty may not be linked yet when lifecycle scripts run
+// in parallel (npm), or the helper may not exist on this platform (Windows).
+// Skipping is safe — the runtime probe fails closed when no helper is usable.
+let entry
+try {
+  entry = fileURLToPath(import.meta.resolve('node-pty'))
+} catch {
+  process.exit(0)
+}
 const packageRoot = dirname(dirname(entry))
 const candidates = [
   join(packageRoot, 'prebuilds', `${process.platform}-${process.arch}`, 'spawn-helper'),

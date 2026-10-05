@@ -1,4 +1,4 @@
-# xhe-credentials-local
+# cf-credentials-local
 
 File-backed [credentials](../credentials/README.md) provider: four layers, one honest precedence.
 
@@ -9,7 +9,7 @@ File-backed [credentials](../credentials/README.md) provider: four layers, one h
 | `<invocation cwd>/.env` | `project-env` | not here | over the user `.env` |
 | `$CF_HOME/.env` | `user-env` | not here | otherwise |
 
-The launching environment wins because a per-run override (`DEEPSEEK_API_KEY=… dsh`, a CI secret, a container `-e`) is operator intent for this run — and because it cannot be edited from inside, it must be *visibly* read-only: `describe()` reports `source: 'env', writable: false`, and `set`/`unset` reject instead of writing a change the reader would never see.
+The launching environment wins because a per-run override (`DEEPSEEK_API_KEY=… cf`, a CI secret, a container `-e`) is operator intent for this run — and because it cannot be edited from inside, it must be *visibly* read-only: `describe()` reports `source: 'env', writable: false`, and `set`/`unset` reject instead of writing a change the reader would never see.
 
 Everything below it loses to the managed store, so a key written by the Models page takes effect immediately even when an older key sits in a `.env`. Those two layers still resolve when nothing is stored, and `describe()` names them `project-env` or `user-env` with `writable: true` — storing a key replaces them as the effective source.
 
@@ -20,7 +20,7 @@ Under the product CLI, resolution reads the launcher's frozen [environment snaps
 | Field | Default | Meaning |
 |---|---|---|
 | `path` | `<harness home>/.credentials.yaml` | Credentials document location. |
-| `dshHome` | `$CF_HOME` or `~/.cf` | Harness home used when `path` is omitted. |
+| `cfHome` | `$CF_HOME` or `~/.cf` | Harness home used when `path` is omitted. |
 | `watch` | `true` | Hot-publish external edits. |
 | `debounceMs` | `100` | Watcher write-settle window. |
 
@@ -57,7 +57,7 @@ A `grant` payload must survive a JSON round trip, enforced in both directions. Y
 
 The pre-release layout was a flat mapping with no `version`. A boot that recognizes it exactly — addressable names over non-empty string scalars, no directives — upgrades the document in place under the writer lock: the original lines nest verbatim under `refs:`, so values, comments, and spellings survive byte for byte. Any other flat shape is refused by name, with the entry count and the one edit needed (`version: 1`, nest under `refs:`) — never read as an empty store, which would surface as an authentication failure on the first request instead of at load. A live reload never migrates: a flat document restored mid-run keeps the last good snapshot until the next boot.
 
-Writes patch the parsed document rather than rebuilding it, so comments and the formatting of every untouched entry survive. A comment directly above an entry is that entry's annotation and is removed with it. Every write first re-reads the document under the cross-process writer lock of [`xhe-atomic-write`](../../util/atomic-write/README.md) and publishes anything it had not observed, then commits atomically with mode `0600` under an owner-only (`0700`) directory — so a concurrent writer or an external edit inside the watcher's debounce window is folded in rather than overwritten. An on-disk document that no longer parses fails the write instead of overwriting content the provider could not understand.
+Writes patch the parsed document rather than rebuilding it, so comments and the formatting of every untouched entry survive. A comment directly above an entry is that entry's annotation and is removed with it. Every write first re-reads the document under the cross-process writer lock of [`cf-atomic-write`](../../util/atomic-write/README.md) and publishes anything it had not observed, then commits atomically with mode `0600` under an owner-only (`0700`) directory — so a concurrent writer or an external edit inside the watcher's debounce window is folded in rather than overwritten. An on-disk document that no longer parses fails the write instead of overwriting content the provider could not understand.
 
 Any string value round-trips, multi-line values included, so no entry is unwritable for want of a quoting style. An empty stored value is absent, per the seam rule — which is why an empty string in the document is rejected outright: `unset` removes a key, it does not blank it.
 
@@ -88,4 +88,4 @@ No direct invalidation; credentials never enter a request prefix.
 - **Same-reference concurrent writes are last-write-wins** — the writer lock and the read-modify-write keep concurrent writers from dropping each other's entries, but two writers editing one reference still resolve to the later write; there is no revision check.
 - **A same-UID process can read the document** — see [Security boundary](#security-boundary): the file-effect sandbox modes do not deny reads, and an OS-keychain provider is deferred.
 - **Environment changes are invisible** — the snapshot is frozen at launch, so a variable exported after startup reaches neither resolution nor `describe`; changing an environment-sourced credential takes a restart.
-- **Atomic, not crash-durable** — inherited from `xhe-atomic-write`; the store re-reads on boot.
+- **Atomic, not crash-durable** — inherited from `cf-atomic-write`; the store re-reads on boot.

@@ -8,6 +8,6 @@ An experimental provider-composition POC that places one filesystem/process exec
 | [`fs-e2b`](fs-e2b/README.md) (`@origin-ai/cf-fs-e2b`) | `ctx.fs` | Implement the filesystem seam over E2B Filesystem APIs |
 | [`subprocess-e2b`](subprocess-e2b/README.md) (`@origin-ai/cf-subprocess-e2b`) | `ctx.subprocess` | Implement executable lookup, managed process groups and stdio, remote spill files, and terminal sessions over E2B Commands and PTY APIs |
 
-The existing [`xhe-bash-local`](../shell/bash-local/README.md), [`xhe-terminal-bash`](../terminal/terminal-bash/README.md), and [`xhe-lsp-stdio`](../lsp/lsp-stdio/README.md) need no E2B-specific forks. They delegate every execution-world operation to `ctx.fs` and `ctx.subprocess`, so mounting the two E2B adapters places their mutable work in the same sandbox.
+The existing [`cf-bash-local`](../shell/bash-local/README.md), [`cf-terminal-bash`](../terminal/terminal-bash/README.md), and [`cf-lsp-stdio`](../lsp/lsp-stdio/README.md) need no E2B-specific forks. They delegate every execution-world operation to `ctx.fs` and `ctx.subprocess`, so mounting the two E2B adapters places their mutable work in the same sandbox.
 
 This boundary does not move the harness process, Cordis objects, model calls, agent/session state, session persistence, skills, higher-level protocol state, or E2B SDK buffers. The [portable execution-world decision](../../.agents/notes/implemented/architecture/2026-07-28-portable-execution-world-consumers.md) owns both the generic composition and this POC boundary.

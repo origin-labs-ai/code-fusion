@@ -26,9 +26,9 @@ afterEach(() => {
 /** Create a resolvable package whose client export points at the returned path. */
 function writePackage(
   packageName: string,
-  metadata: Record<string, unknown> = { dsh: { client: { platform: 'web' } } },
+  metadata: Record<string, unknown> = { cf: { client: { platform: 'web' } } },
 ): string {
-  root ??= realpathSync(mkdtempSync(join(tmpdir(), 'xhe-client-modules-')))
+  root ??= realpathSync(mkdtempSync(join(tmpdir(), 'cf-client-modules-')))
   const pkgRoot = join(root, 'node_modules', ...packageName.split('/'))
   const clientPath = join(pkgRoot, 'lib', 'client.js')
   mkdirSync(pkgRoot, { recursive: true })
@@ -45,7 +45,7 @@ function writePackage(
 
 /** Create a built package with the supplied client declaration. */
 function writeBuiltPackage(packageName: string, client: Record<string, unknown>): void {
-  const clientPath = writePackage(packageName, { dsh: { client: { platform: 'web', ...client } } })
+  const clientPath = writePackage(packageName, { cf: { client: { platform: 'web', ...client } } })
   mkdirSync(dirname(clientPath), { recursive: true })
   writeFileSync(clientPath, 'module.exports = {}\n')
 }
@@ -164,10 +164,10 @@ describe('HTML bootstrap facade', () => {
 })
 
 describe('client bundle activation', () => {
-  it('allows sibling dsh roles', () => {
+  it('allows sibling cf roles', () => {
     const currentName = '@fixture/current-client-field'
     const clientPath = writePackage(currentName, {
-      dsh: {
+      cf: {
         bundle: { patch: './cordis.patch.yml' },
         client: { platform: 'web' },
         profile: { bundles: [] },
@@ -185,7 +185,7 @@ describe('client bundle activation', () => {
     const secondPath = writePackage(secondName)
     expect(() => construct([firstName, secondName])).toThrow([
       'client-modules: 2 client packages failed to compose:',
-      '  client bundles not found; run `pnpm run build` before launch:',
+      '  client bundles not found; run `npm run build` before launch:',
       `    - package: ${firstName}`,
       `      path: ${firstPath}`,
       `    - package: ${secondName}`,
@@ -206,7 +206,7 @@ describe('client bundle activation', () => {
     expect(String(thrown)).toContain('client-modules: 1 client package failed to compose:')
     expect(String(thrown)).toContain('  other failures:')
     expect(String(thrown)).toContain('EISDIR')
-    expect(String(thrown)).not.toContain('pnpm run build')
+    expect(String(thrown)).not.toContain('npm run build')
   })
 
   it('serves the source map beside a registered client bundle', async () => {
@@ -269,7 +269,7 @@ describe('shared module declarations', () => {
     const packageName = '@fixture/external-not-array'
     writeBuiltPackage(packageName, { external: 'react' })
     expect(() => construct([packageName]))
-      .toThrow(`client-modules: ${packageName} dsh.client.external must be a string array`)
+      .toThrow(`client-modules: ${packageName} cf.client.external must be a string array`)
   })
 })
 

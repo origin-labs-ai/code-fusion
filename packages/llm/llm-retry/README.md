@@ -24,7 +24,7 @@ The separately published `./invariant` companion checks that every scheduled ret
 - name: '@origin-ai/cf-llm-retry'
 ```
 
-The executor has no policy config. Multi-provider adapters such as `xhe-llm-pi-ai` place `retryPolicy` inside each provider profile, avoiding a second provider-name list.
+The executor has no policy config. Multi-provider adapters such as `cf-llm-pi-ai` place `retryPolicy` inside each provider profile, avoiding a second provider-name list.
 
 ## Model Experience
 

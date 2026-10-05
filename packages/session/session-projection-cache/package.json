@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/session/session-projection-cache"
   },
   "type": "module",
@@ -32,24 +32,24 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@deepseek-ai/schemastery": "*",
     "zod": "^4.4.3"
   },
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-persistence": "workspace:^",
-    "@origin-ai/cf-session-projection": "workspace:^",
-    "@origin-ai/cf-storage-domain": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-persistence": "*",
+    "@origin-ai/cf-session-projection": "*",
+    "@origin-ai/cf-storage-domain": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-persistence": "workspace:^",
-    "@origin-ai/cf-session-projection": "workspace:^",
-    "@origin-ai/cf-storage": "workspace:^",
-    "@origin-ai/cf-storage-domain": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-persistence": "*",
+    "@origin-ai/cf-session-projection": "*",
+    "@origin-ai/cf-storage": "*",
+    "@origin-ai/cf-storage-domain": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

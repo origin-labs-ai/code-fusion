@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Browser, Page } from 'playwright'
 
-/** The built page under test; `pnpm run test:web` rebuilds it before running. */
+/** The built page under test; `npm run test:web` rebuilds it before running. */
 export const DIST_INDEX = fileURLToPath(new URL('../dist/index.html', import.meta.url))
 
 export const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url))
@@ -34,11 +34,11 @@ export async function newEnglishPage(browser: Browser, height = 1000): Promise<P
 /** Fail loud on a stale checkout instead of testing yesterday's bundle. */
 export function requireDist(): void {
   if (!existsSync(DIST_INDEX)) {
-    throw new Error('web app dist not built — run `pnpm run build` from the repository root (`pnpm run test:web` does this first)')
+    throw new Error('web app dist not built — run `npm run build` from the repository root (`npm run test:web` does this first)')
   }
 }
 
-/** OS-assigned free port, released before use (the spawned `dsh web` needs a concrete --port). */
+/** OS-assigned free port, released before use (the spawned `cf web` needs a concrete --port). */
 export function probeFreePort(): Promise<number> {
   return new Promise((resolvePort, reject) => {
     const probe = createServer()
@@ -125,7 +125,7 @@ export async function saveFailureShot(page: Page, name: string): Promise<void> {
  * The conversation engine's Context key format, restated here rather than
  * imported: these specs live in the Host compiler aggregate, which must not
  * reach the Client plane. The engine's own copy is
- * `conversationContextKey` in xhe-client-runtime; a drift between them makes
+ * `conversationContextKey` in cf-client-runtime; a drift between them makes
  * the key miss its rendered node, so the assertion fails loudly.
  * @param kind - Definition kind.
  * @param id - Definition-local business identity.

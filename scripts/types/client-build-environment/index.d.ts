@@ -2,6 +2,6 @@
 declare const process: {
   readonly env: {
     readonly NODE_ENV?: string
-    readonly [name: `XHE_CLIENT_${string}`]: string | undefined
+    readonly [name: `CF_CLIENT_${string}`]: string | undefined
   }
 }

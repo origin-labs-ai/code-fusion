@@ -61,11 +61,11 @@ Tool determinism comes from a generated cwd, scrubbed environment, fresh non-log
 
 ### The replay plugin is its own package
 
-`@origin-ai/xhe-llm-replay` is a support package rather than example-local glue. It replaces the real adapter by short-circuiting `llm/stream` with streams reconstructed from JSONL, and its package placement keeps the replay logic under normal coverage gates.
+`@origin-ai/cf-llm-replay` is a support package rather than example-local glue. It replaces the real adapter by short-circuiting `llm/stream` with streams reconstructed from JSONL, and its package placement keeps the replay logic under normal coverage gates.
 
 ### Two subcommands, replay in the default gate
 
-`pnpm run test:snapshot` replays committed fixtures keylessly; `test:snapshot:record` uses the real API and rewrites the projected session snapshot and stdout expected output. The same keyless gate discovers repository JSONL by its `session` header and rejects any fixture that differs from the shared codec's projected canonical packed representation. Missing fixtures fail loud. Every scenario carries `input.json`, `stdout.expected.jsonl`, and `session.jsonl`; no-model cases use a header-only log. `replay.override.json` is required only for scenarios marked `overridden`, because its presence replaces derived replay. Fixture guards reject missing, mismatched, and orphaned files. Both commands accept scenario filters.
+`npm run test:snapshot` replays committed fixtures keylessly; `test:snapshot:record` uses the real API and rewrites the projected session snapshot and stdout expected output. The same keyless gate discovers repository JSONL by its `session` header and rejects any fixture that differs from the shared codec's projected canonical packed representation. Missing fixtures fail loud. Every scenario carries `input.json`, `stdout.expected.jsonl`, and `session.jsonl`; no-model cases use a header-only log. `replay.override.json` is required only for scenarios marked `overridden`, because its presence replaces derived replay. Fixture guards reject missing, mismatched, and orphaned files. Both commands accept scenario filters.
 
 ## Alternatives considered
 

@@ -1,6 +1,6 @@
 {
   "name": "@origin-ai/cf-gauntlet",
-  "description": "XH Gauntlet: acquire→freeze→split→builder→blind-critic→compare→gap→fix loop with hardened gates",
+  "description": "CF Gauntlet: acquire→freeze→split→builder→blind-critic→compare→gap→fix loop with hardened gates",
   "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
@@ -26,13 +26,13 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@origin-ai/cf-brand": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-brand": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

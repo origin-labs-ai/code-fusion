@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/sdk/server"
   },
   "type": "module",
@@ -32,31 +32,31 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@deepseek-ai/schemastery": "*"
   },
   "peerDependencies": {
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-llm-deepseek": "workspace:^",
-    "@origin-ai/cf-scope": "workspace:^",
-    "@origin-ai/cf-sdk-protocol": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-llm-deepseek": "*",
+    "@origin-ai/cf-scope": "*",
+    "@origin-ai/cf-sdk-protocol": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-agent": "workspace:^",
-    "@origin-ai/cf-agent-spine-demo": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@origin-ai/cf-llm": "workspace:^",
-    "@origin-ai/cf-llm-deepseek": "workspace:^",
-    "@origin-ai/cf-scope": "workspace:^",
-    "@origin-ai/cf-sdk-protocol": "workspace:^",
-    "@origin-ai/cf-session": "workspace:^",
-    "@origin-ai/cf-session-persistence-jsonl": "workspace:^",
-    "@origin-ai/cf-subagent": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-agent": "*",
+    "@origin-ai/cf-agent-spine-demo": "*",
+    "@origin-ai/cf-invariants": "*",
+    "@origin-ai/cf-llm": "*",
+    "@origin-ai/cf-llm-deepseek": "*",
+    "@origin-ai/cf-scope": "*",
+    "@origin-ai/cf-sdk-protocol": "*",
+    "@origin-ai/cf-session": "*",
+    "@origin-ai/cf-session-persistence-jsonl": "*",
+    "@origin-ai/cf-subagent": "*",
+    "@deepseek-ai/cordis": "*"
   }
 }

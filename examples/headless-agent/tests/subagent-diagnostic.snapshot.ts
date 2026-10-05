@@ -23,7 +23,7 @@ const binScript = fileURLToPath(new URL('./fixtures/headless-driver.ts', import.
 const tsconfigPath = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
 const parentId = SessionId('subagent-diagnostic-parent')
 const childId = SessionId('subagent-diagnostic-child')
-const refreshing = process.env.XHE_SNAPSHOT === 'refresh'
+const refreshing = process.env.CF_SNAPSHOT === 'refresh'
 const task = 'Call list_agents once and report what it shows.'
 
 /**
@@ -75,15 +75,15 @@ describe('descriptor-less cold child diagnostic snapshot', () => {
     let cwd = ''
     const result = await runLoaderSmoke({
       label: 'subagent diagnostic headless stream-json snapshot',
-      tempDirPrefix: 'xhe-subagent-diag-',
+      tempDirPrefix: 'cf-subagent-diag-',
       binScript,
       libBinScript: binScript,
       configPath,
       binArgs: [configPath, task],
       tsconfigPath,
       env: {
-        XHE_SNAPSHOT_FILE: replayOverride,
-        XHE_SNAPSHOT_OVERRIDE: replayOverride,
+        CF_SNAPSHOT_FILE: replayOverride,
+        CF_SNAPSHOT_OVERRIDE: replayOverride,
       },
       prepare: async (runCwd) => {
         cwd = runCwd

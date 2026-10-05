@@ -1,11 +1,11 @@
 ---
 name: cf-pre-push-checks
-description: Use before pushing, force-pushing, marking ready for review, or claiming checks pass on a xhe branch, and immediately after gh stack sync publishes rewritten branches, to select the smallest tests and checks that cover the outgoing or just-published diff without reflexively running the full repository suite.
+description: Use before pushing, force-pushing, marking ready for review, or claiming checks pass on a cf branch, and immediately after gh stack sync publishes rewritten branches, to select the smallest tests and checks that cover the outgoing or just-published diff without reflexively running the full repository suite.
 ---
 
-# XHE Pre-Push Checks
+# CF Pre-Push Checks
 
-Use this skill to run relevant local evidence once before a `xhe` push. The sole ordering exception is `gh stack sync`, which may publish a cascading rebase before the rewritten layers can be validated; validate them immediately afterward and do not merge until the evidence passes. Git hooks are intentionally narrow: pre-commit fixes staged lint, checks staged whitespace, and guards vendored-source metadata; pre-push runs only the incremental repository typecheck. CI owns exhaustive coverage and the platform matrix.
+Use this skill to run relevant local evidence once before a `cf` push. The sole ordering exception is `gh stack sync`, which may publish a cascading rebase before the rewritten layers can be validated; validate them immediately afterward and do not merge until the evidence passes. Git hooks are intentionally narrow: pre-commit fixes staged lint, checks staged whitespace, and guards vendored-source metadata; pre-push runs only the incremental repository typecheck. CI owns exhaustive coverage and the platform matrix.
 
 ## Inspect the outgoing change
 
@@ -19,7 +19,7 @@ git rev-parse --show-toplevel
 2. Verify the live PR base or stack parent, fetch that ref, and inspect the complete scope against it.
 
 ```sh
-pnpm --silent run change-scope --base <verified-base-ref>
+npm --silent run change-scope --base <verified-base-ref>
 ```
 
 The command never guesses or fetches a base. Supply the ref verified from current remote or stack state; use `--head <ref>` when inspecting a commit other than `HEAD`. Its versioned JSON records committed paths relative to the resolved merge base, while staged, unstaged, and untracked paths describe the current worktree. After merging a changed base, rerun the report, reassess which behavior the combined scope can affect, and rerun only checks invalidated by the merge.
@@ -29,10 +29,10 @@ The command never guesses or fetches a base. Supply the ref verified from curren
 There is no universal local baseline beyond the hooks. Every behavior change needs the narrowest available test or purpose-built check that would fail for its regression; add broader checks only for surfaces the diff actually reaches.
 
 - **Package or script behavior:** run the owning Vitest file or focused test name. Add adjacent package tests when a shared contract changes; leave repository-wide coverage to CI unless the change is genuinely cross-cutting or the user requests it.
-- **Documentation, Agent Notes, catalogs, or doc-linked comments:** run `pnpm run doc-sync`; run full lint when the documentation workflow requires it.
+- **Documentation, Agent Notes, catalogs, or doc-linked comments:** run `npm run doc-sync`; run full lint when the documentation workflow requires it.
 - **Model-, editor-, CLI-, or terminal-visible output:** run the focused keyless snapshot or real runnable-example scenario that owns the output.
-- **Package manifests, public exports, build configuration, worker/bin entries, or built runtime paths:** run `pnpm run build`, the relevant hygiene checks, and the owning built-artifact smoke.
-- **Real provider or agent behavior:** run the relevant `pnpm run test:e2e` target when credentials are available; never print secrets.
+- **Package manifests, public exports, build configuration, worker/bin entries, or built runtime paths:** run `npm run build`, the relevant hygiene checks, and the owning built-artifact smoke.
+- **Real provider or agent behavior:** run the relevant `npm run test:e2e` target when credentials are available; never print secrets.
 
 Do not manually repeat a passing check merely because commit or push follows. In particular, do not run typecheck immediately before pushing solely to duplicate the pre-push hook.
 
@@ -41,7 +41,7 @@ Do not manually repeat a passing check merely because commit or push follows. In
 Test selection and coverage selection are separate. A Vitest file filter chooses which tests run, while the repository configuration otherwise measures every `packages/*/*/src/**/*.ts` file. When unit coverage is relevant, name both the owning tests and the source files or package whose coverage those tests must prove:
 
 ```sh
-pnpm exec vitest run packages/<group>/<package>/tests/<behavior>.spec.ts \
+npx vitest run packages/<group>/<package>/tests/<behavior>.spec.ts \
   --coverage \
   --coverage.include='packages/<group>/<package>/src/**/*.ts'
 ```
@@ -51,7 +51,7 @@ Use an exact source file when the behavior is truly confined to one module. Repe
 When the owning tests are unclear, use Vitest's dependency graph to discover a candidate set, then inspect the selected tests before treating the run as evidence:
 
 ```sh
-pnpm exec vitest related packages/<group>/<package>/src/<changed>.ts \
+npx vitest related packages/<group>/<package>/src/<changed>.ts \
   --run \
   --coverage \
   --coverage.include='packages/<group>/<package>/src/<changed>.ts'

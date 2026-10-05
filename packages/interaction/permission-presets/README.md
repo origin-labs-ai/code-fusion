@@ -12,7 +12,7 @@ Two optional children ship the product surfaces over the same service: a `permis
 
 ## Model Experience
 
-Indirectly, through `xhe-user-approval` and `xhe-tool-bash`, which render the approval-policy prompt, switch notice, and sandboxed tool outcomes selected by this service's knob events; `permissionPresets/preset` itself is log-only.
+Indirectly, through `cf-user-approval` and `cf-tool-bash`, which render the approval-policy prompt, switch notice, and sandboxed tool outcomes selected by this service's knob events; `permissionPresets/preset` itself is log-only.
 
 #### KV Cache effect
 

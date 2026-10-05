@@ -7,7 +7,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/deepseek-ai/xhe.git",
+    "url": "git+https://github.com/deepseek-ai/cf.git",
     "directory": "packages/client/web"
   },
   "type": "module",
@@ -27,22 +27,22 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@origin-ai/cf-client-modules": "workspace:^",
-    "@origin-ai/cf-client-ui-renderer": "workspace:^",
-    "@origin-ai/cf-client-ui-primitives": "workspace:^",
-    "@origin-ai/cf-client-ui-slots": "workspace:^",
-    "@origin-ai/cf-invariants": "workspace:^",
+    "@deepseek-ai/cordis-plugin-loader": "*",
+    "@origin-ai/cf-client-modules": "*",
+    "@origin-ai/cf-client-ui-renderer": "*",
+    "@origin-ai/cf-client-ui-primitives": "*",
+    "@origin-ai/cf-client-ui-slots": "*",
+    "@origin-ai/cf-invariants": "*",
     "@types/react": "~18.3.1",
     "@types/react-dom": "~18.3.0",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/cordis": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "@origin-ai/cf-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@origin-ai/cf-invariants": "*",
+    "@deepseek-ai/cordis": "*"
   },
   "files": [
     "lib/index.js",

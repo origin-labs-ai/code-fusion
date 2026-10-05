@@ -1,5 +1,5 @@
 /**
- * Startup initialization for XH Popular Skills
+ * Startup initialization for CF Popular Skills
  * Handles plugin bootstrapping and model behavior configuration
  */
 
@@ -30,7 +30,7 @@ const DEFAULT_BEHAVIOR: ModelBehaviorConfig = {
 }
 
 export async function startup(config: StartupConfig = {}): Promise<void> {
-  console.log('🚀 XH Popular Skills starting up...')
+  console.log('🚀 CF Popular Skills starting up...')
   
   invariant(typeof config === 'object', 'Config must be object')
   
@@ -53,7 +53,7 @@ export async function startup(config: StartupConfig = {}): Promise<void> {
     initBYOKSystem()
   }
   
-  console.log('✅ XH Popular Skills initialized successfully!')
+  console.log('✅ CF Popular Skills initialized successfully!')
 }
 
 function applyModelBehaviorRules(behavior: ModelBehaviorConfig): void {

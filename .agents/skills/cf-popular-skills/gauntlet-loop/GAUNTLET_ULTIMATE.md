@@ -1,4 +1,4 @@
-name: xhe-gauntlet-ultimate
+name: cf-gauntlet-ultimate
 description: **THE ULTIMATE NEVER-SURRENDER GAUNTLET LOOP** 🏆 This skill NEVER gives up. Runs for WEEKS if needed. Uses Matt Shumer's original pattern + 7 community variants + game theory (Claude of Duty, Kart Royale). Split → Build → Blind-Critic → Repeat until VICTORY or user explicitly stops it. No "can't be done" - only "not yet". Use when user wants ABSOLUTE BEST quality output, no matter how many iterations it takes.
 ---
 
@@ -620,9 +620,9 @@ Still Under Bar:
   --quality obsessed
 ```
 
-### XHE-Specific Usage
+### CF-Specific Usage
 ```bash
-# Review XHE codebase with gauntlet quality
+# Review CF codebase with gauntlet quality
 /gauntlet "Review packages/core/ for bugs" \
   --bar "Zero known critical bugs" \
   --type code-review \
@@ -702,4 +702,4 @@ Obsession says "YES WE CAN AND WE WILL"
 
 *Ultimate Gauntlet Loop v3.0 - Never Surrender Edition*
 *Based on Matt Shumer's original + 7 community variants + 2 game case studies*
-*Enhanced for XHE (Xee Harness Enhanced) with full integration*
+*Enhanced for CF (CodeFusion) with full integration*

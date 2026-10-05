@@ -47,7 +47,7 @@ describe('verify-cordis-config metadata expressions', () => {
 
 describe('workspace Bundle discovery and product dependency closures', () => {
   it('discovers a Bundle outside packages/bundle from its manifest declaration', () => {
-    const fixture = mkdtempSync(join(tmpdir(), 'xhe-bundle-discovery-'))
+    const fixture = mkdtempSync(join(tmpdir(), 'cf-bundle-discovery-'))
     try {
       const bundleDir = join(fixture, 'packages/subagent/example')
       const plainDir = join(fixture, 'packages/bundle/plain')
@@ -55,7 +55,7 @@ describe('workspace Bundle discovery and product dependency closures', () => {
       mkdirSync(plainDir, { recursive: true })
       writeFileSync(join(bundleDir, 'package.json'), JSON.stringify({
         name: '@origin-ai/cf-subagent-example',
-        dsh: { bundle: { patch: './cordis.patch.yml' } },
+        cf: { bundle: { patch: './cordis.patch.yml' } },
       }))
       writeFileSync(join(plainDir, 'package.json'), JSON.stringify({
         name: '@origin-ai/cf-plain',

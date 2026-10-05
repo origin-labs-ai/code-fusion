@@ -37,7 +37,7 @@ import {
   ResilienceManager,
   PluginSystem,
   // Types
-  type XHEPlugin,
+  type CFPlugin,
   type PluginHook,
   type PluginContext
 } from '../core/god-runtime'
@@ -208,7 +208,7 @@ async function examplePluginSystem(): Promise<void> {
   const pluginSystem = runtime.getPluginSystem()
   
   // Define a custom plugin
-  const loggingPlugin: XHEPlugin = {
+  const loggingPlugin: CFPlugin = {
     manifest: {
       name: 'logging-plugin',
       version: '1.0.0',
@@ -242,7 +242,7 @@ async function examplePluginSystem(): Promise<void> {
   }
   
   // Define an analytics plugin
-  const analyticsPlugin: XHEPlugin = {
+  const analyticsPlugin: CFPlugin = {
     manifest: {
       name: 'analytics-plugin',
       version: '2.0.0',

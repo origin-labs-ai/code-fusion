@@ -62,7 +62,7 @@ while time.monotonic() < deadline:
             output.extend(chunk)
 
     snapshot = bytes(output)
-    if not termination_sent and b"dsh web: http://127.0.0.1:" in snapshot:
+    if not termination_sent and b"cf web: http://127.0.0.1:" in snapshot:
         ready_seen = True
         os.kill(pid, signal.SIGTERM)
         termination_sent = True
@@ -77,11 +77,11 @@ if status is None:
     _, status = os.waitpid(pid, 0)
 sys.stdout.buffer.write(output)
 if not ready_seen:
-    sys.stderr.write("installed dsh web did not reach its ready URL\n")
+    sys.stderr.write("installed cf web did not reach its ready URL\n")
     sys.exit(124)
 actual_exit = os.waitstatus_to_exitcode(status)
 if actual_exit != 0:
-    sys.stderr.write(f"installed dsh web exited {actual_exit}, expected 0\n")
+    sys.stderr.write(f"installed cf web exited {actual_exit}, expected 0\n")
     sys.exit(125)
 `
 
@@ -209,7 +209,7 @@ class DetachedWorktree {
   ) {}
 
   static create(repositoryRoot: string, commit: string, runner: CommandRunner): DetachedWorktree {
-    const temporaryRoot = mkdtempSync(join(tmpdir(), 'xhe-npm-baseline-'))
+    const temporaryRoot = mkdtempSync(join(tmpdir(), 'cf-npm-baseline-'))
     const path = join(temporaryRoot, 'worktree')
     try {
       runner.run('git', ['worktree', 'add', '--detach', path, commit], repositoryRoot)
@@ -422,7 +422,7 @@ class ReleaseBundle {
   }
 }
 
-/** Installs one complete bundle outside the workspace and probes the shipped dsh entry. */
+/** Installs one complete bundle outside the workspace and probes the shipped cf entry. */
 class InstalledBundleSmoke {
   constructor(
     private readonly bundle: ReleaseBundle,
@@ -430,14 +430,14 @@ class InstalledBundleSmoke {
   ) {}
 
   run(): void {
-    const consumerRoot = mkdtempSync(join(tmpdir(), 'xhe-npm-consumer-'))
+    const consumerRoot = mkdtempSync(join(tmpdir(), 'cf-npm-consumer-'))
     try {
       const dependencies = Object.fromEntries(this.bundle.manifest.packages.map(pkg => [
         pkg.name,
         pathToFileURL(this.bundle.tarballPath(pkg)).href,
       ]))
       writeFileSync(resolve(consumerRoot, 'package.json'), `${JSON.stringify({
-        name: 'xhe-npm-baseline-consumer',
+        name: 'cf-npm-baseline-consumer',
         version: '0.0.0',
         private: true,
         dependencies,
@@ -455,7 +455,7 @@ class InstalledBundleSmoke {
       ], consumerRoot, npmClientEnvironment())
 
       const bin = resolve(consumerRoot, 'node_modules/@origin-ai/cf/lib/bin.js')
-      assertPathWithin(consumerRoot, bin, 'installed dsh bin')
+      assertPathWithin(consumerRoot, bin, 'installed cf bin')
       const environment = installedArtifactEnvironment(consumerRoot)
       const version = this.runner.capture(
         process.execPath,
@@ -465,12 +465,12 @@ class InstalledBundleSmoke {
       )
       if (version !== this.bundle.manifest.version) {
         throw new Error(
-          `installed dsh --version returned ${JSON.stringify(version)}; `
+          `installed cf --version returned ${JSON.stringify(version)}; `
           + `expected ${this.bundle.manifest.version}`,
         )
       }
       this.probeWeb(bin, consumerRoot, environment)
-      console.log('publish-npm-baseline: installed dsh entry and Web startup probes passed')
+      console.log('publish-npm-baseline: installed cf entry and Web startup probes passed')
     } finally {
       rmSync(consumerRoot, { recursive: true, force: true })
     }
@@ -478,7 +478,7 @@ class InstalledBundleSmoke {
 
   private probeWeb(bin: string, consumerRoot: string, environment: NodeJS.ProcessEnv): void {
     if (process.platform === 'win32') {
-      throw new Error('installed dsh Web probe requires a POSIX host with python3')
+      throw new Error('installed cf Web probe requires a POSIX host with python3')
     }
     const result = this.runner.result(
       'python3',
@@ -487,7 +487,7 @@ class InstalledBundleSmoke {
       environment,
     )
     if (result.status !== 0) {
-      throw commandFailure('python3', ['installed-xhe-web-probe'], result)
+      throw commandFailure('python3', ['installed-cf-web-probe'], result)
     }
   }
 }
@@ -555,8 +555,8 @@ class BaselinePackager {
       }
 
       console.log(`publish-npm-baseline: installing detached worktree ${plan.shortCommit}`)
-      this.runner.run('pnpm', ['install', '--frozen-lockfile'], worktree.path)
-      this.runner.run('pnpm', ['run', 'constraints'], worktree.path)
+      this.runner.run('npm', ['ci'], worktree.path)
+      this.runner.run('npm', ['run', 'constraints'], worktree.path)
       packageSet.stage(worktree.path, plan.version)
       mkdirSync(artifactDirectory, { recursive: true })
       createdArtifactDirectory = true
@@ -564,15 +564,16 @@ class BaselinePackager {
       console.log(
         `publish-npm-baseline: building ${packageSet.packages.length} packages as ${plan.version}`,
       )
-      this.runner.run('pnpm', ['run', 'build'], worktree.path)
-      this.runner.run('pnpm', ['run', 'publint'], worktree.path)
-      this.runner.run('pnpm', ['run', 'verify-built-package-invariants'], worktree.path)
-      this.runner.run('pnpm', [
-        '--filter', './vendor/**',
-        '--filter', './packages/**',
-        '--filter', './apps/**',
-        '--recursive',
+      this.runner.run('npm', ['run', 'build'], worktree.path)
+      this.runner.run('npm', ['run', 'publint'], worktree.path)
+      this.runner.run('npm', ['run', 'verify-built-package-invariants'], worktree.path)
+      // npm selects publish members by workspace path, one `--workspace` each:
+      // the publish set is exactly the discovered vendor/, packages/, and apps/
+      // manifests, and a bare `--workspaces` would also pack the demo, site,
+      // Python, and launcher workspaces that are not published from here.
+      this.runner.run('npm', [
         'pack',
+        ...packageSet.packages.flatMap(target => ['--workspace', target.directory]),
         '--pack-destination', artifactDirectory,
       ], worktree.path)
 
@@ -591,10 +592,11 @@ class BaselinePackager {
       console.log(`  version:  ${bundle.manifest.version}`)
       console.log(`  dist-tag: ${bundle.manifest.distTag}`)
       console.log(`  manifest: ${resolve(bundle.directory, RELEASE_MANIFEST_NAME)}`)
-      console.log('  publish:  ' + formatCopyableCommand('pnpm', [
-        '--dir',
+      console.log('  publish:  ' + formatCopyableCommand('npm', [
+        '--prefix',
         this.repositoryRoot,
         'exec',
+        '--',
         'tsx',
         resolve(this.repositoryRoot, 'scripts/publish-npm-baseline.ts'),
         'publish',
@@ -912,9 +914,9 @@ function installedArtifactEnvironment(consumerRoot: string): NodeJS.ProcessEnv {
   const environment = npmClientEnvironment()
   delete environment.NODE_OPTIONS
   delete environment.NODE_PATH
-  environment.CF_HOME = resolve(consumerRoot, '.dsh')
-  environment.XHE_AGENTS_HOME = resolve(consumerRoot, '.agents')
-  environment.XHE_TELEMETRY_DISABLED = '1'
+  environment.CF_HOME = resolve(consumerRoot, '.cf')
+  environment.CF_AGENTS_HOME = resolve(consumerRoot, '.agents')
+  environment.CF_TELEMETRY_DISABLED = '1'
   environment.DEEPSEEK_API_KEY = 'keyless-installed-web-no-call'
   environment.LANG = 'en_US.UTF-8'
   environment.LC_ALL = 'en_US.UTF-8'
@@ -1004,10 +1006,10 @@ function quoteShellArgument(value: string): string {
 
 function printUsage(): void {
   console.log(`Usage:
-  pnpm exec tsx scripts/publish-npm-baseline.ts pack [options]
-  pnpm exec tsx scripts/publish-npm-baseline.ts release [options] [--yes]
-  pnpm exec tsx scripts/publish-npm-baseline.ts publish --manifest <path> [--yes]
-  pnpm exec tsx scripts/publish-npm-baseline.ts verify --manifest <path>
+  npx tsx scripts/publish-npm-baseline.ts pack [options]
+  npx tsx scripts/publish-npm-baseline.ts release [options] [--yes]
+  npx tsx scripts/publish-npm-baseline.ts publish --manifest <path> [--yes]
+  npx tsx scripts/publish-npm-baseline.ts verify --manifest <path>
 
 Pack/release options:
   --ref <git-ref>       Git commit to stage (default: HEAD)

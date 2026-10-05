@@ -13,13 +13,13 @@ import { basename, dirname, join, resolve } from 'node:path'
 export const CF_HOME_DIR_NAME = '.cf'
 
 /** Directory name of the pre-CodeFusion home, kept for one-way migration. */
-export const LEGACY_DSH_HOME_DIR_NAME = '.dsh'
+export const LEGACY_CF_HOME_DIR_NAME = '.dsh'
 
 /** Stable user-facing display form for the default CodeFusion home. */
 export const DEFAULT_CF_HOME_DISPLAY = `~/${CF_HOME_DIR_NAME}`
 
 /** User-facing display form of the legacy pre-CodeFusion home. */
-export const LEGACY_DSH_HOME_DISPLAY = `~/${LEGACY_DSH_HOME_DIR_NAME}`
+export const LEGACY_CF_HOME_DISPLAY = `~/${LEGACY_CF_HOME_DIR_NAME}`
 
 /** Environment variable that overrides the default CodeFusion home. */
 export const CF_HOME_ENV = 'CF_HOME'
@@ -74,7 +74,7 @@ export function defaultCfHome(): string {
  * @returns the absolute legacy harness home path.
  */
 export function legacyCfHome(): string {
-  return join(homedir(), LEGACY_DSH_HOME_DIR_NAME)
+  return join(homedir(), LEGACY_CF_HOME_DIR_NAME)
 }
 
 /**
@@ -91,7 +91,7 @@ export function legacyCfHome(): string {
  * legacy home holds data.
  */
 export function migrateLegacyCfHome(home: string = defaultCfHome(), osHome: string = homedir()): 'migrated' | 'fresh' | 'legacy-only' {
-  const legacy = join(osHome, LEGACY_DSH_HOME_DIR_NAME)
+  const legacy = join(osHome, LEGACY_CF_HOME_DIR_NAME)
   const exists = (path: string): boolean => {
     try {
       return statSync(path).isDirectory()

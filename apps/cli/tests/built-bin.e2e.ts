@@ -11,7 +11,7 @@ const repoRoot = fileURLToPath(new URL('../../../', import.meta.url))
 // The release version, including a prerelease such as 0.0.1-rc.1: `--version`
 // prints what this manifest carries, so no test may pin it to a literal.
 const cliVersion = (JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string }).version
-const dshBin = join(repoRoot, 'apps/cli/lib/bin.js')
+const cfBin = join(repoRoot, 'apps/cli/lib/bin.js')
 const invalidProvider = fileURLToPath(new URL('./fixtures/invalid-provider.cordis.yml', import.meta.url))
 
 async function runBuiltBin(
@@ -23,7 +23,7 @@ async function runBuiltBin(
     Object.entries({ ...process.env, ...env })
       .filter((entry): entry is [string, string] => entry[1] !== undefined),
   )
-  const result = await execa(process.execPath, [dshBin, ...args], {
+  const result = await execa(process.execPath, [cfBin, ...args], {
     input: '',
     timeout: 25_000,
     killSignal: 'SIGKILL',
@@ -33,7 +33,7 @@ async function runBuiltBin(
     ...cwd === undefined ? {} : { cwd },
   })
   if (result.timedOut) {
-    throw new Error(`dsh built bin did not exit within 25s. stdout:\n${result.stdout}\nstderr:\n${result.stderr}`)
+    throw new Error(`cf built bin did not exit within 25s. stdout:\n${result.stdout}\nstderr:\n${result.stderr}`)
   }
   return { stdout: result.stdout, code: result.exitCode ?? -1, stderr: result.stderr }
 }
@@ -41,7 +41,7 @@ async function runBuiltBin(
 async function waitForFile(file: string): Promise<void> {
   const deadline = Date.now() + 20_000
   while (!existsSync(file)) {
-    if (Date.now() >= deadline) throw new Error(`dsh profile lifecycle marker did not appear: ${file}`)
+    if (Date.now() >= deadline) throw new Error(`cf profile lifecycle marker did not appear: ${file}`)
     await new Promise(resolve => setTimeout(resolve, 20))
   }
 }
@@ -56,11 +56,11 @@ interface ProfileLifecycleFixture {
 
 /**
  * A minimal custom profile: one lifecycle-marker plugin bundle listed in
- * dsh.profile.bundles, no xhe-base — proving out-of-box composition machinery without
+ * cf.profile.bundles, no cf-base — proving out-of-box composition machinery without
  * booting the entire product tree.
  */
 function createProfileLifecycleFixture(): ProfileLifecycleFixture {
-  const home = mkdtempSync(join(tmpdir(), 'xhe-profile-lifecycle-'))
+  const home = mkdtempSync(join(tmpdir(), 'cf-profile-lifecycle-'))
   const ready = join(home, 'ready')
   const settled = join(home, 'settled')
   const disposed = join(home, 'disposed')
@@ -103,22 +103,22 @@ function createProfileLifecycleFixture(): ProfileLifecycleFixture {
     '',
   ].join('\n'))
   writeFileSync(join(bundleDir, 'package.json'), JSON.stringify({
-    name: 'xhe-lifecycle-bundle',
+    name: 'cf-lifecycle-bundle',
     version: '0.0.0',
     type: 'module',
-    dsh: { bundle: { patch: './cordis.patch.yml' } },
+    cf: { bundle: { patch: './cordis.patch.yml' } },
   }, undefined, 2))
   const profileDir = join(home, 'profiles', 'lifecycle')
   mkdirSync(join(profileDir, 'node_modules'), { recursive: true })
   writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-    name: 'xhe-profile-lifecycle',
+    name: 'cf-profile-lifecycle',
     private: true,
     dependencies: {},
-    dsh: { profile: { bundles: ['xhe-lifecycle-bundle'] } },
+    cf: { profile: { bundles: ['cf-lifecycle-bundle'] } },
   }, undefined, 2))
   // Hand-place the "installed" bundle where profile resolution finds it.
   writeFileSync(join(profileDir, 'cordis.patch.yml'), '[]\n')
-  const linkTarget = join(profileDir, 'node_modules', 'xhe-lifecycle-bundle')
+  const linkTarget = join(profileDir, 'node_modules', 'cf-lifecycle-bundle')
   mkdirSync(join(profileDir, 'node_modules'), { recursive: true })
   try {
     rmSync(linkTarget, { recursive: true, force: true })
@@ -132,7 +132,7 @@ function createProfileLifecycleFixture(): ProfileLifecycleFixture {
 }
 
 function startProfileLifecycle(fixture: ProfileLifecycleFixture, args: readonly string[] = []) {
-  return execa(process.execPath, [dshBin, '--profile', 'lifecycle', ...args], {
+  return execa(process.execPath, [cfBin, '--profile', 'lifecycle', ...args], {
     cwd: fixture.home,
     input: '',
     reject: false,
@@ -183,10 +183,10 @@ function createEnvironmentProbeProfile(home: string, project: string): void {
   const profileDir = join(home, 'profiles', 'environment-probe')
   mkdirSync(profileDir, { recursive: true })
   writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-    name: 'xhe-profile-environment-probe',
+    name: 'cf-profile-environment-probe',
     private: true,
     dependencies: {},
-    dsh: { profile: { bundles: ['@origin-ai/cf-base'] } },
+    cf: { profile: { bundles: ['@origin-ai/cf-base'] } },
   }, undefined, 2))
   writeFileSync(join(profileDir, 'cordis.patch.yml'), [
     '- insert:',
@@ -213,12 +213,12 @@ interface StartupFixture {
  * fallback, exactly as an installed out-of-tree bundle does.
  */
 function createStartupFixture(): StartupFixture {
-  const home = mkdtempSync(join(tmpdir(), 'xhe-profile-startup-'))
+  const home = mkdtempSync(join(tmpdir(), 'cf-profile-startup-'))
   const profileDir = join(home, 'profiles', 'startup')
   // Written straight into the installed location: a row module resolves its
   // own imports from where it is installed, and only inside the profile does
   // Node's parent walk reach the installation fallback these plugins need.
-  const bundleDir = join(profileDir, 'node_modules', 'xhe-startup-bundle')
+  const bundleDir = join(profileDir, 'node_modules', 'cf-startup-bundle')
   mkdirSync(bundleDir, { recursive: true })
   writeFileSync(join(bundleDir, 'startup.mjs'), [
     "import { Command } from 'commander'",
@@ -273,16 +273,16 @@ function createStartupFixture(): StartupFixture {
     '',
   ].join('\n'))
   writeFileSync(join(bundleDir, 'package.json'), JSON.stringify({
-    name: 'xhe-startup-bundle',
+    name: 'cf-startup-bundle',
     version: '0.0.0',
     type: 'module',
-    dsh: { bundle: { patch: './cordis.patch.yml' } },
+    cf: { bundle: { patch: './cordis.patch.yml' } },
   }, undefined, 2))
   writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-    name: 'xhe-profile-startup',
+    name: 'cf-profile-startup',
     private: true,
     dependencies: {},
-    dsh: { profile: { bundles: ['xhe-startup-bundle'] } },
+    cf: { profile: { bundles: ['cf-startup-bundle'] } },
   }, undefined, 2))
   writeFileSync(join(profileDir, 'cordis.patch.yml'), '[]\n')
   return {
@@ -295,7 +295,7 @@ function createStartupFixture(): StartupFixture {
 }
 
 function startStartupProfile(fixture: StartupFixture, args: readonly string[]) {
-  return execa(process.execPath, [dshBin, '--profile', 'startup', ...args], {
+  return execa(process.execPath, [cfBin, '--profile', 'startup', ...args], {
     cwd: fixture.home,
     input: '',
     reject: false,
@@ -309,7 +309,7 @@ function startStartupProfile(fixture: StartupFixture, args: readonly string[]) {
   })
 }
 
-describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', () => {
+describe.skipIf(!existsSync(cfBin))('cf BUILT bin (node lib/bin.js, no tsx)', () => {
   it('requires --profile and rejects removed commands', async () => {
     const bare = await runBuiltBin()
     expect(bare.code).toBe(1)
@@ -317,8 +317,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
     expect(bare.stderr).toContain('--profile <name> is required')
     const help = await runBuiltBin(['--help'])
     expect(help.code).toBe(0)
-    expect(help.stdout).toContain('dsh --profile web')
-    expect(help.stdout).toContain('dsh plugin --profile')
+    expect(help.stdout).toContain('cf --profile web')
+    expect(help.stdout).toContain('cf plugin --profile')
     expect(help.stdout).not.toMatch(/^\s+(?:tui|meta|upgrade)\b/mu)
     for (const removed of [['tui'], ['--config', 'x.yml'], ['-p', 'task'], ['run', 'task']]) {
       const result = await runBuiltBin(removed)
@@ -327,38 +327,38 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('routes help and usage errors without activating startup-dependent rows', async () => {
-    const home = mkdtempSync(join(tmpdir(), 'xhe-app-help-'))
+    const home = mkdtempSync(join(tmpdir(), 'cf-app-help-'))
     try {
       const web = await runBuiltBin(['--profile', 'web', '--help'], {
         CF_HOME: home,
-        XHE_TELEMETRY_DISABLED: '1',
+        CF_TELEMETRY_DISABLED: '1',
       })
       expect(web.code).toBe(0)
       expect(web.stderr).toBe('')
-      expect(web.stdout).toContain('Usage: dsh --profile web')
+      expect(web.stdout).toContain('Usage: cf --profile web')
       expect(web.stdout).toContain('--port <port>')
-      expect(web.stdout).not.toContain('dsh web: http://')
+      expect(web.stdout).not.toContain('cf web: http://')
 
       const wildcardHost = await runBuiltBin(['web', '--host', '0.0.0.0'], {
         CF_HOME: home,
-        XHE_TELEMETRY_DISABLED: '1',
+        CF_TELEMETRY_DISABLED: '1',
       })
       expect(wildcardHost.code).toBe(1)
       expect(wildcardHost.stdout).toBe('')
       expect(wildcardHost.stderr).toContain('--host 0.0.0.0 is intentionally not supported yet for safety: it would expose remote code execution to the network; use 127.0.0.1 instead')
-      expect(wildcardHost.stderr).not.toContain('dsh web: http://')
+      expect(wildcardHost.stderr).not.toContain('cf web: http://')
 
       const headlessHelp = await runBuiltBin(['--profile', 'headless', '--help'], {
         CF_HOME: home,
-        XHE_TELEMETRY_DISABLED: '1',
+        CF_TELEMETRY_DISABLED: '1',
       })
       expect(headlessHelp.code).toBe(0)
       expect(headlessHelp.stderr).toBe('')
-      expect(headlessHelp.stdout).toContain('Usage: dsh --profile headless')
+      expect(headlessHelp.stdout).toContain('Usage: cf --profile headless')
 
       const missingTask = await runBuiltBin(['--profile', 'headless'], {
         CF_HOME: home,
-        XHE_TELEMETRY_DISABLED: '1',
+        CF_TELEMETRY_DISABLED: '1',
       })
       expect(missingTask.code).toBe(1)
       expect(missingTask.stderr).toContain('a task is required')
@@ -368,17 +368,17 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('runs the headless profile through its app-owned task positional', async () => {
-    const apiKey = 'built-xhe-headless-key'
+    const apiKey = 'built-cf-headless-key'
     const server = await startMockLlmServer({
       sequence: ['success'],
       apiKey,
       successText: 'published headless profile reached the mock',
     })
-    const home = mkdtempSync(join(tmpdir(), 'xhe-built-headless-'))
+    const home = mkdtempSync(join(tmpdir(), 'cf-built-headless-'))
     try {
       const result = await runBuiltBin(['--profile', 'headless', 'answer', 'from', 'the', 'published', 'entry'], {
         CF_HOME: home,
-        XHE_TELEMETRY_DISABLED: '1',
+        CF_TELEMETRY_DISABLED: '1',
         DEEPSEEK_API_KEY: apiKey,
         DEEPSEEK_BASE_URL: server.baseURL,
       })
@@ -395,7 +395,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('does not load a project environment for --version', async () => {
-    const project = mkdtempSync(join(tmpdir(), 'xhe-version-project-'))
+    const project = mkdtempSync(join(tmpdir(), 'cf-version-project-'))
     writeFileSync(join(project, '.env'), 'PATH=/project-only-path\n')
     try {
       const result = await runBuiltBin(['--version'], {}, project)
@@ -406,12 +406,12 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   })
 
   it('fails loud on a nonexistent profile with the plugin-command hint', async () => {
-    const home = mkdtempSync(join(tmpdir(), 'xhe-missing-profile-'))
+    const home = mkdtempSync(join(tmpdir(), 'cf-missing-profile-'))
     try {
       const result = await runBuiltBin(['--profile', 'nope'], { CF_HOME: home })
       expect(result.code).toBe(1)
       expect(result.stderr).toContain('profile "nope" does not exist')
-      expect(result.stderr).toContain('dsh plugin --profile nope add')
+      expect(result.stderr).toContain('cf plugin --profile nope add')
     } finally {
       rmSync(home, { recursive: true, force: true })
     }
@@ -424,8 +424,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       apiKey,
       successText: 'launching endpoint reached the mock',
     })
-    const home = mkdtempSync(join(tmpdir(), 'xhe-home-environment-'))
-    const project = mkdtempSync(join(tmpdir(), 'xhe-home-project-'))
+    const home = mkdtempSync(join(tmpdir(), 'cf-home-environment-'))
+    const project = mkdtempSync(join(tmpdir(), 'cf-home-project-'))
     writeFileSync(join(home, '.credentials.yaml'), `version: 1\nrefs:\n  DEEPSEEK_API_KEY: ${apiKey}\n`, { mode: 0o600 })
     createEnvironmentProbeProfile(home, project)
     try {
@@ -433,7 +433,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         ['--profile', 'environment-probe'],
         {
           CF_HOME: home,
-          XHE_TELEMETRY_DISABLED: '1',
+          CF_TELEMETRY_DISABLED: '1',
           DEEPSEEK_API_KEY: undefined,
           DEEPSEEK_BASE_URL: server.baseURL,
         },
@@ -460,14 +460,14 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   it('reports a patch-overlay boot failure without hanging', async () => {
     // The HMR main watcher's initial scan once refreshed the include
     // mid-initial-apply, deadlocking the failing apply's rollback against the
-    // refresh drain: dsh exited 13 with no diagnostic instead of settling
+    // refresh drain: cf exited 13 with no diagnostic instead of settling
     // ([Agent Note](../../../.agents/notes/implemented/bug-fix/2026-08-03-hmr-initial-scan-boot-deadlock.md)).
-    const home = mkdtempSync(join(tmpdir(), 'xhe-invalid-patch-'))
+    const home = mkdtempSync(join(tmpdir(), 'cf-invalid-patch-'))
     try {
       const result = await runBuiltBin(['--profile', 'web', '--patch', invalidProvider], {
         CF_HOME: home,
         DEEPSEEK_API_KEY: 'keyless-invalid-config',
-        XHE_TELEMETRY_DISABLED: '1',
+        CF_TELEMETRY_DISABLED: '1',
       })
       expect(result.code).toBe(1)
       expect(result.stdout).toBe('')
@@ -623,19 +623,19 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('anchors a relative add spec to the invoking directory, not the profile', async () => {
-    // `dsh plugin --profile x add .` from a plugin checkout must install THAT
-    // checkout — pnpm's cwd is the profile directory, so an un-anchored `.`
+    // `cf plugin --profile x add .` from a plugin checkout must install THAT
+    // checkout — npm's cwd is the profile directory, so an un-anchored `.`
     // would self-link the profile.
-    const home = mkdtempSync(join(tmpdir(), 'xhe-plugin-anchor-'))
-    const checkout = mkdtempSync(join(tmpdir(), 'xhe-plugin-checkout-'))
+    const home = mkdtempSync(join(tmpdir(), 'cf-plugin-anchor-'))
+    const checkout = mkdtempSync(join(tmpdir(), 'cf-plugin-checkout-'))
     try {
       writeFileSync(join(checkout, 'package.json'), JSON.stringify({
         name: 'anchored-bundle',
         version: '1.0.0',
-        dsh: { bundle: { patch: './cordis.patch.yml' } },
+        cf: { bundle: { patch: './cordis.patch.yml' } },
       }))
       writeFileSync(join(checkout, 'cordis.patch.yml'), '[]\n')
-      const result = await execa(process.execPath, [dshBin, 'plugin', '--profile', 'anchor', 'add', '.'], {
+      const result = await execa(process.execPath, [cfBin, 'plugin', '--profile', 'anchor', 'add', '.'], {
         cwd: checkout,
         input: '',
         timeout: 60_000,
@@ -646,10 +646,10 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       expect(result.exitCode).toBe(0)
       const manifest = JSON.parse(readFileSync(join(home, 'profiles', 'anchor', 'package.json'), 'utf8')) as {
         dependencies: Record<string, string>
-        dsh: { profile: { bundles: string[] } }
+        cf: { profile: { bundles: string[] } }
       }
       expect(Object.keys(manifest.dependencies)).toEqual(['anchored-bundle'])
-      expect(manifest.dsh.profile.bundles).toContain('anchored-bundle')
+      expect(manifest.cf.profile.bundles).toContain('anchored-bundle')
 
       const removed = await runBuiltBin(
         ['plugin', '--profile', 'anchor', 'remove', 'anchored-bundle'],
@@ -661,48 +661,48 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         readFileSync(join(home, 'profiles', 'anchor', 'package.json'), 'utf8'),
       ) as {
         dependencies?: Record<string, string>
-        dsh: { profile: { bundles: string[] } }
+        cf: { profile: { bundles: string[] } }
       }
       expect(Object.keys(afterRemove.dependencies ?? {})).toEqual([])
-      expect(afterRemove.dsh.profile.bundles).not.toContain('anchored-bundle')
+      expect(afterRemove.cf.profile.bundles).not.toContain('anchored-bundle')
     } finally {
       rmSync(home, { recursive: true, force: true })
       rmSync(checkout, { recursive: true, force: true })
     }
   }, 90_000)
 
-  it('activates a dependency that gained dsh.bundle in a later update', async () => {
-    // Reconcile runs against the INSTALLED state on every successful pnpm
+  it('activates a dependency that gained cf.bundle in a later update', async () => {
+    // Reconcile runs against the INSTALLED state on every successful npm
     // run, so `update` (not only `add`) activates a package whose newer
-    // version declares dsh.bundle. Simulated without a registry: hand-place
-    // the installed package, flip its manifest, and run a benign pnpm verb.
-    const home = mkdtempSync(join(tmpdir(), 'xhe-plugin-update-'))
+    // version declares cf.bundle. Simulated without a registry: hand-place
+    // the installed package, flip its manifest, and run a benign npm verb.
+    const home = mkdtempSync(join(tmpdir(), 'cf-plugin-update-'))
     try {
       const profileDir = join(home, 'profiles', 'up')
       const installed = join(profileDir, 'node_modules', 'late-bundle')
       mkdirSync(installed, { recursive: true })
       writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-        name: 'xhe-profile-up',
+        name: 'cf-profile-up',
         private: true,
         dependencies: { 'late-bundle': 'file:./late-bundle' },
-        dsh: { profile: { bundles: ['@origin-ai/cf-base'] } },
+        cf: { profile: { bundles: ['@origin-ai/cf-base'] } },
       }))
       writeFileSync(join(profileDir, 'cordis.patch.yml'), '[]\n')
-      // v1: no dsh manifest — a plain dependency.
+      // v1: no cf manifest — a plain dependency.
       writeFileSync(join(installed, 'package.json'), JSON.stringify({ name: 'late-bundle', version: '1.0.0' }))
       const first = await runBuiltBin(['plugin', '--profile', 'up', 'root'], { CF_HOME: home })
       expect(first.code).toBe(0)
-      let manifest = JSON.parse(readFileSync(join(profileDir, 'package.json'), 'utf8')) as { dsh: { profile: { bundles: string[] } } }
-      expect(manifest.dsh.profile.bundles).toEqual(['@origin-ai/cf-base'])
-      // v2: the installed package now declares dsh.bundle (an update landed).
+      let manifest = JSON.parse(readFileSync(join(profileDir, 'package.json'), 'utf8')) as { cf: { profile: { bundles: string[] } } }
+      expect(manifest.cf.profile.bundles).toEqual(['@origin-ai/cf-base'])
+      // v2: the installed package now declares cf.bundle (an update landed).
       writeFileSync(join(installed, 'package.json'), JSON.stringify({
-        name: 'late-bundle', version: '2.0.0', dsh: { bundle: { patch: './cordis.patch.yml' } },
+        name: 'late-bundle', version: '2.0.0', cf: { bundle: { patch: './cordis.patch.yml' } },
       }))
       writeFileSync(join(installed, 'cordis.patch.yml'), '[]\n')
       const second = await runBuiltBin(['plugin', '--profile', 'up', 'root'], { CF_HOME: home })
       expect(second.code).toBe(0)
-      manifest = JSON.parse(readFileSync(join(profileDir, 'package.json'), 'utf8')) as { dsh: { profile: { bundles: string[] } } }
-      expect(manifest.dsh.profile.bundles).toEqual(['@origin-ai/cf-base', 'late-bundle'])
+      manifest = JSON.parse(readFileSync(join(profileDir, 'package.json'), 'utf8')) as { cf: { profile: { bundles: string[] } } }
+      expect(manifest.cf.profile.bundles).toEqual(['@origin-ai/cf-base', 'late-bundle'])
     } finally {
       rmSync(home, { recursive: true, force: true })
     }
@@ -710,7 +710,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
 
   describe('config dump', () => {
     let home: string
-    beforeEach(() => { home = mkdtempSync(join(tmpdir(), 'xhe-dump-bin-')) })
+    beforeEach(() => { home = mkdtempSync(join(tmpdir(), 'cf-dump-bin-')) })
     afterEach(() => { rmSync(home, { recursive: true, force: true }) })
 
     it('prints the web profile bundle layers without a user layer', async () => {
@@ -731,9 +731,9 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       expect(code).toBe(0)
       expect(stderr).toBe('')
       expect(stdout).toContain("name: '@origin-ai/cf-headless'")
-      expect(stdout).not.toMatch(/name: '@deepseek-ai\/xhe-host-/)
+      expect(stdout).not.toMatch(/name: '@deepseek-ai\/cf-host-/)
       expect(stdout).not.toContain("name: '@origin-ai/cf-web-app'")
-      expect(stdout).not.toMatch(/name: '@deepseek-ai\/xhe-client-/)
+      expect(stdout).not.toMatch(/name: '@deepseek-ai\/cf-client-/)
     }, 30_000)
 
     it('composes the profile user layer and a --patch overlay in order', async () => {

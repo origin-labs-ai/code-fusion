@@ -2,7 +2,7 @@
  * Host-side vocabulary of the goal domain: live views, durable change
  * payloads, message attribution, replay folds, and the scoped `goal/changed`
  * event. Kept separate from ./types.ts (the pure client-safe outlet) because
- * these declarations pull xhe-agent, xhe-llm, and cordis into the program —
+ * these declarations pull cf-agent, cf-llm, and cordis into the program —
  * the one-program-per-side layout forbids that on client aggregates.
  * @module @origin-ai/cf-goal
  */
