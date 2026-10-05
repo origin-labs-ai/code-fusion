@@ -68,8 +68,16 @@ export const INLINE_SAFE = /^@deepseek-ai\/cf-(host-apiproxy|file-reference|sess
  */
 const VENDORED_LIBRARY = /^@deepseek-ai\/(cosmokit|schemastery)(\/|$)/
 
-/** Generated descriptor/codec contribution with no shared runtime identity. */
-const GENERATED_REMOTE = /^@deepseek-ai\/cf-[a-z0-9]+(?:-[a-z0-9]+)*\/remote$/
+/**
+ * Generated descriptor/codec contribution with no shared runtime identity.
+ *
+ * The name is any `@deepseek-ai` workspace package, not only the `cf-` ones:
+ * Typert generates a `/remote` contribution for every Host package that
+ * declares `@Remote` services, and the vendored Cordis packages are Host
+ * packages too (`packages/api/remotes` projects `cordis-host-runner`'s).
+ * A specifier that no workspace package exports still fails resolution.
+ */
+const GENERATED_REMOTE = /^@deepseek-ai\/[a-z0-9]+(?:-[a-z0-9]+)*\/remote$/
 
 /**
  * Workspace mode replaces an empty config array with the root defaults. A
