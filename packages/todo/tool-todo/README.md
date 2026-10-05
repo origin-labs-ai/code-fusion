@@ -40,7 +40,7 @@ A function/namespace plugin: it exports `name` / `inject` / `apply` and NO defau
 
 #### What the model sees
 
-The model sees the generated [`todo_write` schema](../../../docs/tool-catalog.md#deepseek-aixhe-tool-todo).
+The model sees the generated [`todo_write` schema](../../../docs/tool-catalog.md#origin-aicf-tool-todo).
 
 #### Token effect
 
