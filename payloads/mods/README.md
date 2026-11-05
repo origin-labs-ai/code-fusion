@@ -8,6 +8,11 @@ Mods are on by default in Claude Code 2.1.287 and later. Builds from 2.1.259
 to 2.1.286 need `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`; 2.1.287+ ignores it.
 Docs: https://code.claude.com/docs/en/plugins/mods/overview
 
+> **Pack:** this directory is the [Origin Labs Mod Pack](./PACK.md).
+> Every mod carries its upstream `LICENSE`; the full inventory is in
+> [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md), and the
+> claudemods.si checklist is in [SUBMIT.md](./SUBMIT.md).
+
 ## Layout in this repo
 
 Each mod is a complete plugin directory, exactly Anthropic's `mods/` layout:
